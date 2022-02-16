@@ -44,9 +44,154 @@ void test_Not() {
   expectEqual(n.out, true);
 }
 
+void test_And() {
+  And chip;
+  chip.a = true;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = false;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = false;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = true;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+}
+
+void test_Or() {
+  Or chip;
+  chip.a = true;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  chip.a = false;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = false;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  chip.a = true;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+}
+
+void test_Xor() {
+  Xor chip;
+  chip.a = true;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  chip.a = false;
+  chip.b = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = false;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  chip.a = true;
+  chip.b = true;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+}
+
+void test_Mux() {
+  Mux chip;
+  chip.a = false;
+  chip.b = false;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = true;
+  chip.b = false;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  chip.a = false;
+  chip.b = true;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  chip.a = true;
+  chip.b = true;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+}
+
+void test_DMux() {
+  DMux chip;
+
+  chip.in = true;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.a, true);
+  expectEqual(chip.b, false);
+
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, true);
+
+  chip.in = false;
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+}
+
 int main() {
   test_Nand();
   test_Not();
+  test_And();
+  test_Or();
+  test_Xor();
+  test_Mux();
+  test_DMux();
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
