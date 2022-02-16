@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "Chips.h"
 
@@ -9,6 +10,21 @@ int failedCt = 0;
 
 template <typename T>
 bool expectEqual(const T& actual, const T& theoretical);
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T> v) {
+  size_t len = v.size();
+  out << '{';
+  for (size_t i = 0; i < len; i++) {
+    out << v[i];
+    if (i < len - 1) {
+      out << ',';
+    }
+  }
+  out << '}';
+
+  return out;
+}
 
 void test_Nand() {
   Nand n1;
@@ -184,6 +200,68 @@ void test_DMux() {
   expectEqual(chip.b, false);
 }
 
+void test_Not16() {
+  Not16 chip;
+  std::vector<bool> in =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
+  std::vector<bool> out = {1,1,0,1, 0,0,1,0, 1,1,1,0, 1,0,0,0};
+
+  for (int i = 0; i < 16; i++) {
+    chip.in[i] = in[i];
+  }
+
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+}
+
+void test_And16() {
+  And16 chip;
+  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
+  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
+  std::vector<bool> out = {0,0,1,0, 1,0,0,0, 0,0,0,0, 0,1,0,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.a[i] = a[i];
+    chip.b[i] = b[i];
+  }
+
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+}
+
+void test_Or16() {
+  Or16 chip;
+  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
+  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
+  std::vector<bool> out = {1,1,1,0, 1,1,0,1, 1,0,1,1, 1,1,1,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.a[i] = a[i];
+    chip.b[i] = b[i];
+  }
+
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+}
+
+void test_Mux16() {
+  Mux16 chip;
+  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
+  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.a[i] = a[i];
+    chip.b[i] = b[i];
+  }
+
+  chip.sel = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out + 16), a);
+
+  chip.sel = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out + 16), b);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -192,6 +270,10 @@ int main() {
   test_Xor();
   test_Mux();
   test_DMux();
+  test_Not16();
+  test_And16();
+  test_Or16();
+  test_Mux16();
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
