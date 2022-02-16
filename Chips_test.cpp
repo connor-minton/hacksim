@@ -262,6 +262,434 @@ void test_Mux16() {
   expectEqual(std::vector<bool>(chip.out, chip.out + 16), b);
 }
 
+void test_Or8Way() {
+  Or8Way chip;
+  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0};
+  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0};
+  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0};
+  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.in[i] = in1[i];
+  }
+  chip.computeOutput();
+  expectEqual(chip.out, false);
+
+  for (int i = 0; i < 16; i++) {
+    chip.in[i] = in2[i];
+  }
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  for (int i = 0; i < 16; i++) {
+    chip.in[i] = in3[i];
+  }
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+
+  for (int i = 0; i < 16; i++) {
+    chip.in[i] = in4[i];
+  }
+  chip.computeOutput();
+  expectEqual(chip.out, true);
+}
+
+void test_Mux4Way16() {
+  Mux4Way16 chip;
+
+  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0};
+  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0, 1,0,0,1, 1,0,1,0};
+  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.a[i] = in1[i];
+    chip.b[i] = in2[i];
+    chip.c[i] = in3[i];
+    chip.d[i] = in4[i];
+  }
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in1);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in2);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in3);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in4);
+}
+
+void test_Mux8Way16() {
+  Mux8Way16 chip;
+
+  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0};
+  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0, 1,0,0,1, 1,0,1,0};
+  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,0,1};
+  std::vector<bool> in5 = {1,0,1,1, 1,1,0,1, 1,1,1,1, 1,1,1,1};
+  std::vector<bool> in6 = {1,1,1,1, 1,1,0,1, 1,1,1,0, 1,0,1,1};
+  std::vector<bool> in7 = {1,1,1,1, 1,1,1,1, 1,0,1,1, 1,1,1,1};
+  std::vector<bool> in8 = {1,1,0,1, 1,0,1,1, 1,1,1,1, 0,1,1,1};
+
+  for (int i = 0; i < 16; i++) {
+    chip.a[i] = in1[i];
+    chip.b[i] = in2[i];
+    chip.c[i] = in3[i];
+    chip.d[i] = in4[i];
+    chip.e[i] = in5[i];
+    chip.f[i] = in6[i];
+    chip.g[i] = in7[i];
+    chip.h[i] = in8[i];
+  }
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in1);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in2);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in3);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in4);
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in5);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in6);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in7);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(std::vector<bool>(chip.out, chip.out+16), in8);
+}
+
+void test_DMux4Way() {
+  DMux4Way chip;
+
+  chip.in = false;
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.in = true;
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, true);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, true);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, true);
+  expectEqual(chip.d, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, true);
+}
+
+void test_DMux8Way() {
+  DMux8Way chip;
+
+  chip.in = false;
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.in = true;
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, true);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, true);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, true);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = false;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, true);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, true);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = false;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, true);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = false;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, true);
+  expectEqual(chip.h, false);
+
+  chip.sel[0] = true;
+  chip.sel[1] = true;
+  chip.sel[2] = true;
+  chip.computeOutput();
+  expectEqual(chip.a, false);
+  expectEqual(chip.b, false);
+  expectEqual(chip.c, false);
+  expectEqual(chip.d, false);
+  expectEqual(chip.e, false);
+  expectEqual(chip.f, false);
+  expectEqual(chip.g, false);
+  expectEqual(chip.h, true);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -274,6 +702,11 @@ int main() {
   test_And16();
   test_Or16();
   test_Mux16();
+  test_Or8Way();
+  test_Mux4Way16();
+  test_Mux8Way16();
+  test_DMux4Way();
+  test_DMux8Way();
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'

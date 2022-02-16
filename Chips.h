@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+
 // class Chip {
 // public:
 //   virtual ~Chip() = default;
@@ -512,4 +514,220 @@ public:
 
 private:
   Mux m_muxs[16];
+};
+
+class Or8Way {
+public:
+  bool in[8];
+  bool out;
+
+  Or8Way() : in{0} { computeOutput(); }
+
+  inline void computeOutput() {
+    m_or01.a = in[0];
+    m_or01.b = in[1];
+    m_or01.computeOutput();
+
+    m_or23.a = in[2];
+    m_or23.b = in[3];
+    m_or23.computeOutput();
+
+    m_or45.a = in[4];
+    m_or45.b = in[5];
+    m_or45.computeOutput();
+
+    m_or67.a = in[6];
+    m_or67.b = in[7];
+    m_or67.computeOutput();
+
+    m_or0123.a = m_or01.out;
+    m_or0123.b = m_or23.out;
+    m_or0123.computeOutput();
+
+    m_or4567.a = m_or45.out;
+    m_or4567.b = m_or67.out;
+    m_or4567.computeOutput();
+
+    m_orOut.a = m_or0123.out;
+    m_orOut.b = m_or4567.out;
+    m_orOut.computeOutput();
+
+    out = m_orOut.out;
+  }
+
+private:
+  Or m_or01;
+  Or m_or23;
+  Or m_or45;
+  Or m_or67;
+
+  Or m_or0123;
+  Or m_or4567;
+
+  Or m_orOut;
+};
+
+class Mux4Way16 {
+public:
+  bool a[16];
+  bool b[16];
+  bool c[16];
+  bool d[16];
+  bool sel[2];
+  bool out[16];
+
+  Mux4Way16() : a{0}, b{0}, c{0}, d{0}, sel{0} { computeOutput(); }
+
+  inline void computeOutput() {
+    memcpy(m_ab.a, a, sizeof(a));
+    memcpy(m_ab.b, b, sizeof(b));
+    m_ab.sel = sel[0];
+    m_ab.computeOutput();
+
+    memcpy(m_cd.a, c, sizeof(c));
+    memcpy(m_cd.b, d, sizeof(d));
+    m_cd.sel = sel[0];
+    m_cd.computeOutput();
+
+    memcpy(m_muxOut.a, m_ab.out, sizeof(m_ab.out));
+    memcpy(m_muxOut.b, m_cd.out, sizeof(m_cd.out));
+    m_muxOut.sel = sel[1];
+    m_muxOut.computeOutput();
+
+    memcpy(out, m_muxOut.out, sizeof(out));
+  }
+
+private:
+  Mux16 m_ab;
+  Mux16 m_cd;
+  Mux16 m_muxOut;
+};
+
+class Mux8Way16 {
+public:
+  bool a[16];
+  bool b[16];
+  bool c[16];
+  bool d[16];
+  bool e[16];
+  bool f[16];
+  bool g[16];
+  bool h[16];
+  bool sel[3];
+  bool out[16];
+
+  Mux8Way16() : a{0}, b{0}, c{0}, d{0},
+                e{0}, f{0}, g{0}, h{0}, sel{0} { computeOutput(); }
+
+  inline void computeOutput() {
+    memcpy(m_abcd.a, a, sizeof(a));
+    memcpy(m_abcd.b, b, sizeof(b));
+    memcpy(m_abcd.c, c, sizeof(c));
+    memcpy(m_abcd.d, d, sizeof(d));
+    m_abcd.sel[0] = sel[0];
+    m_abcd.sel[1] = sel[1];
+    m_abcd.computeOutput();
+
+    memcpy(m_efgh.a, e, sizeof(e));
+    memcpy(m_efgh.b, f, sizeof(f));
+    memcpy(m_efgh.c, g, sizeof(g));
+    memcpy(m_efgh.d, h, sizeof(h));
+    m_efgh.sel[0] = sel[0];
+    m_efgh.sel[1] = sel[1];
+    m_efgh.computeOutput();
+
+    memcpy(m_muxOut.a, m_abcd.out, sizeof(m_abcd.out));
+    memcpy(m_muxOut.b, m_efgh.out, sizeof(m_efgh.out));
+    m_muxOut.sel = sel[2];
+    m_muxOut.computeOutput();
+
+    memcpy(out, m_muxOut.out, sizeof(out));
+  }
+
+private:
+  Mux4Way16 m_abcd;
+  Mux4Way16 m_efgh;
+  Mux16 m_muxOut;
+};
+
+class DMux4Way {
+public:
+  bool in;
+  bool sel[2];
+  bool a;
+  bool b;
+  bool c;
+  bool d;
+
+  DMux4Way() : in(false), sel{0} { computeOutput(); }
+
+  inline void computeOutput() {
+    m_dm1.in = in;
+    m_dm1.sel = sel[1];
+    m_dm1.computeOutput();
+
+    m_dm2.in = m_dm1.a;
+    m_dm2.sel = sel[0];
+    m_dm2.computeOutput();
+
+    m_dm3.in = m_dm1.b;
+    m_dm3.sel = sel[0];
+    m_dm3.computeOutput();
+
+    a = m_dm2.a;
+    b = m_dm2.b;
+    c = m_dm3.a;
+    d = m_dm3.b;
+  }
+
+private:
+  DMux m_dm1;
+  DMux m_dm2;
+  DMux m_dm3;
+};
+
+class DMux8Way {
+public:
+  bool in;
+  bool sel[3];
+  bool a;
+  bool b;
+  bool c;
+  bool d;
+  bool e;
+  bool f;
+  bool g;
+  bool h;
+
+  DMux8Way() : in(false), sel{0} { computeOutput(); }
+
+  inline void computeOutput() {
+    m_mux.in = in;
+    m_mux.sel = sel[2];
+    m_mux.computeOutput();
+
+    m_mux4abcd.in = m_mux.a;
+    m_mux4abcd.sel[0] = sel[0];
+    m_mux4abcd.sel[1] = sel[1];
+    m_mux4abcd.computeOutput();
+
+    m_mux4efgh.in = m_mux.b;
+    m_mux4efgh.sel[0] = sel[0];
+    m_mux4efgh.sel[1] = sel[1];
+    m_mux4efgh.computeOutput();
+
+    a = m_mux4abcd.a;
+    b = m_mux4abcd.b;
+    c = m_mux4abcd.c;
+    d = m_mux4abcd.d;
+    e = m_mux4efgh.a;
+    f = m_mux4efgh.b;
+    g = m_mux4efgh.c;
+    h = m_mux4efgh.d;
+  }
+
+private:
+  DMux m_mux;
+  DMux4Way m_mux4abcd;
+  DMux4Way m_mux4efgh;
 };
