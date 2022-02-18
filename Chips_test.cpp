@@ -202,64 +202,56 @@ void test_DMux() {
 
 void test_Not16() {
   Not16 chip;
-  std::vector<bool> in =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
-  std::vector<bool> out = {1,1,0,1, 0,0,1,0, 1,1,1,0, 1,0,0,0};
+  uint16_t in = 0x2d17;
+  uint16_t out = ~in;
 
-  for (int i = 0; i < 16; i++) {
-    chip.in[i] = in[i];
-  }
+  chip.set_in(in);
 
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+  expectEqual(chip.out(), out);
 }
 
 void test_And16() {
   And16 chip;
-  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
-  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
-  std::vector<bool> out = {0,0,1,0, 1,0,0,0, 0,0,0,0, 0,1,0,1};
+  uint16_t a = 0x2d17;
+  uint16_t b = 0xe8ad;
+  uint16_t out = a & b;
 
-  for (int i = 0; i < 16; i++) {
-    chip.a[i] = a[i];
-    chip.b[i] = b[i];
-  }
+  chip.set_a(a);
+  chip.set_b(b);
 
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+  expectEqual(chip.out(), out);
 }
 
 void test_Or16() {
   Or16 chip;
-  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
-  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
-  std::vector<bool> out = {1,1,1,0, 1,1,0,1, 1,0,1,1, 1,1,1,1};
+  uint16_t a = 0x2d17;
+  uint16_t b = 0xe8ad;
+  uint16_t out = a | b;
 
-  for (int i = 0; i < 16; i++) {
-    chip.a[i] = a[i];
-    chip.b[i] = b[i];
-  }
+  chip.set_a(a);
+  chip.set_b(b);
 
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out + 16), out);
+  expectEqual(chip.out(), out);
 }
 
 void test_Mux16() {
   Mux16 chip;
-  std::vector<bool> a  =  {0,0,1,0, 1,1,0,1, 0,0,0,1, 0,1,1,1};
-  std::vector<bool> b  =  {1,1,1,0, 1,0,0,0, 1,0,1,0, 1,1,0,1};
+  uint16_t a = 0x2d17;
+  uint16_t b = 0xe8ad;
 
-  for (int i = 0; i < 16; i++) {
-    chip.a[i] = a[i];
-    chip.b[i] = b[i];
-  }
+  chip.set_a(a);
+  chip.set_b(b);
 
-  chip.sel = false;
+  chip.set_sel(false);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out + 16), a);
+  expectEqual(chip.out(), a);
 
-  chip.sel = true;
+  chip.set_sel(true);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out + 16), b);
+  expectEqual(chip.out(), b);
 }
 
 void test_Or8Way() {
@@ -297,109 +289,85 @@ void test_Or8Way() {
 void test_Mux4Way16() {
   Mux4Way16 chip;
 
-  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0};
-  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0, 1,0,0,1, 1,0,1,0};
-  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
+  uint16_t a = 0x0000;
+  uint16_t b = 0x4040;
+  uint16_t c = 0x9a9a;
+  uint16_t d = 0xffff;
 
-  for (int i = 0; i < 16; i++) {
-    chip.a[i] = in1[i];
-    chip.b[i] = in2[i];
-    chip.c[i] = in3[i];
-    chip.d[i] = in4[i];
-  }
+  chip.set_a(a);
+  chip.set_b(b);
+  chip.set_c(c);
+  chip.set_d(d);
 
-  chip.sel[0] = false;
-  chip.sel[1] = false;
+  chip.set_sel(0);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in1);
+  expectEqual(chip.out(), a);
 
-  chip.sel[0] = true;
-  chip.sel[1] = false;
+  chip.set_sel(1);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in2);
+  expectEqual(chip.out(), b);
 
-  chip.sel[0] = false;
-  chip.sel[1] = true;
+  chip.set_sel(2);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in3);
+  expectEqual(chip.out(), c);
 
-  chip.sel[0] = true;
-  chip.sel[1] = true;
+  chip.set_sel(3);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in4);
+  expectEqual(chip.out(), d);
 }
 
 void test_Mux8Way16() {
   Mux8Way16 chip;
 
-  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0};
-  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0, 1,0,0,1, 1,0,1,0};
-  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,0,1};
-  std::vector<bool> in5 = {1,0,1,1, 1,1,0,1, 1,1,1,1, 1,1,1,1};
-  std::vector<bool> in6 = {1,1,1,1, 1,1,0,1, 1,1,1,0, 1,0,1,1};
-  std::vector<bool> in7 = {1,1,1,1, 1,1,1,1, 1,0,1,1, 1,1,1,1};
-  std::vector<bool> in8 = {1,1,0,1, 1,0,1,1, 1,1,1,1, 0,1,1,1};
+  uint16_t a = 0x0000;
+  uint16_t b = 0x4040;
+  uint16_t c = 0x9a9a;
+  uint16_t d = 0xfffd;
+  uint16_t e = 0xbdff;
+  uint16_t f = 0xfdeb;
+  uint16_t g = 0xffbf;
+  uint16_t h = 0xdbf7;
 
-  for (int i = 0; i < 16; i++) {
-    chip.a[i] = in1[i];
-    chip.b[i] = in2[i];
-    chip.c[i] = in3[i];
-    chip.d[i] = in4[i];
-    chip.e[i] = in5[i];
-    chip.f[i] = in6[i];
-    chip.g[i] = in7[i];
-    chip.h[i] = in8[i];
-  }
+  chip.set_a(a);
+  chip.set_b(b);
+  chip.set_c(c);
+  chip.set_d(d);
+  chip.set_e(e);
+  chip.set_f(f);
+  chip.set_g(g);
+  chip.set_h(h);
 
-  chip.sel[0] = false;
-  chip.sel[1] = false;
-  chip.sel[2] = false;
+  chip.set_sel(0);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in1);
+  expectEqual(chip.out(), a);
 
-  chip.sel[0] = true;
-  chip.sel[1] = false;
-  chip.sel[2] = false;
+  chip.set_sel(1);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in2);
+  expectEqual(chip.out(), b);
 
-  chip.sel[0] = false;
-  chip.sel[1] = true;
-  chip.sel[2] = false;
+  chip.set_sel(2);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in3);
+  expectEqual(chip.out(), c);
 
-  chip.sel[0] = true;
-  chip.sel[1] = true;
-  chip.sel[2] = false;
+  chip.set_sel(3);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in4);
+  expectEqual(chip.out(), d);
 
-  chip.sel[0] = false;
-  chip.sel[1] = false;
-  chip.sel[2] = true;
+  chip.set_sel(4);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in5);
+  expectEqual(chip.out(), e);
 
-  chip.sel[0] = true;
-  chip.sel[1] = false;
-  chip.sel[2] = true;
+  chip.set_sel(5);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in6);
+  expectEqual(chip.out(), f);
 
-  chip.sel[0] = false;
-  chip.sel[1] = true;
-  chip.sel[2] = true;
+  chip.set_sel(6);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in7);
+  expectEqual(chip.out(), g);
 
-  chip.sel[0] = true;
-  chip.sel[1] = true;
-  chip.sel[2] = true;
+  chip.set_sel(7);
   chip.computeOutput();
-  expectEqual(std::vector<bool>(chip.out, chip.out+16), in8);
+  expectEqual(chip.out(), h);
 }
 
 void test_DMux4Way() {
