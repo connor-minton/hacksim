@@ -1226,6 +1226,31 @@ void test_PC() {
   expectEqual(chip.out(), (uint16_t)0x35);
 }
 
+void test_RAM8() {
+  RAM8 chip;
+
+  chip.set_load(false);
+  chip.set_address(4);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0);
+
+  chip.set_load(true);
+  chip.set_address(4);
+  chip.set_in(0x1234);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x1234);
+
+  chip.set_load(false);
+  chip.set_address(3);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x0);
+
+  chip.set_load(false);
+  chip.set_address(4);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x1234);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -1252,6 +1277,7 @@ int main() {
   test_Bit();
   test_Register();
   test_PC();
+  test_RAM8();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1277,7 +1303,8 @@ int main() {
             << "size of DFF: "  << sizeof(DFF) << '\n'
             << "size of Bit: "  << sizeof(Bit) << '\n'
             << "size of Register: "  << sizeof(Register) << '\n'
-            << "size of PC: "  << sizeof(PC) << '\n';
+            << "size of PC: "  << sizeof(PC) << '\n'
+            << "size of RAM8: "  << sizeof(RAM8) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
