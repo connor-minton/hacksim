@@ -1171,6 +1171,61 @@ void test_Register() {
   expectEqual(chip.out(), (uint16_t)0x0000);
 }
 
+void test_PC() {
+  PC chip;
+
+  expectEqual(chip.out(), (uint16_t)0);
+
+  chip.set_load(true);
+  chip.set_reset(false);
+  chip.set_inc(false);
+  chip.set_in(0x30);
+  expectEqual(chip.out(), (uint16_t)0);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x30);
+
+  chip.set_load(true);
+  chip.set_reset(true);
+  chip.set_inc(true);
+  expectEqual(chip.out(), (uint16_t)0x30);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0);
+
+  chip.set_load(true);
+  chip.set_reset(false);
+  chip.set_inc(true);
+  expectEqual(chip.out(), (uint16_t)0);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x30);
+
+  chip.set_load(false);
+  chip.set_reset(false);
+  chip.set_inc(false);
+  expectEqual(chip.out(), (uint16_t)0x30);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x30);
+
+  chip.set_load(false);
+  chip.set_reset(false);
+  chip.set_inc(true);
+  expectEqual(chip.out(), (uint16_t)0x30);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x31);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x32);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x33);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x34);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x35);
+  chip.set_inc(false);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x35);
+  chip.tock();
+  expectEqual(chip.out(), (uint16_t)0x35);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -1196,6 +1251,7 @@ int main() {
   test_DFF();
   test_Bit();
   test_Register();
+  test_PC();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1220,7 +1276,8 @@ int main() {
             << "size of ALU: "  << sizeof(ALU) << '\n'
             << "size of DFF: "  << sizeof(DFF) << '\n'
             << "size of Bit: "  << sizeof(Bit) << '\n'
-            << "size of Register: "  << sizeof(Register) << '\n';
+            << "size of Register: "  << sizeof(Register) << '\n'
+            << "size of PC: "  << sizeof(PC) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'

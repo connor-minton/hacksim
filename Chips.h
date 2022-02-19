@@ -1324,12 +1324,12 @@ private:
 class DFF {
 public:
   // INPUT in
-  inline bool in() { return getBit<0>(m_pins); }
+  inline bool in() const { return getBit<0>(m_pins); }
 
   inline void set_in(bool val) { setBit<0>(m_pins, val); }
 
   // OUTPUT out
-  inline bool out() { return getBit<1>(m_pins); }
+  inline bool out() const { return getBit<1>(m_pins); }
 
   DFF() { tock(); }
 
@@ -1347,14 +1347,14 @@ private:
 class Bit {
 public:
   // INPUT in, load
-  inline bool in() { return getBit<0>(m_pins); }
-  inline bool load() { return getBit<1>(m_pins); }
+  inline bool in() const { return getBit<0>(m_pins); }
+  inline bool load() const { return getBit<1>(m_pins); }
 
   inline void set_in(bool val) { setBit<0>(m_pins, val); }
   inline void set_load(bool val) { setBit<1>(m_pins, val); }
 
   // OUTPUT out
-  inline bool out() { return getBit<2>(m_pins); }
+  inline bool out() const { return getBit<2>(m_pins); }
 
   Bit() { tock(); }
 
@@ -1382,14 +1382,14 @@ private:
 class Register {
 public:
   // INPUT in[16], load
-  inline uint16_t in() { return m_in; }
-  inline bool load() { return getBit<0>(m_pins); }
+  inline uint16_t in() const { return m_in; }
+  inline bool load() const { return getBit<0>(m_pins); }
 
   inline void set_in(uint16_t val) { m_in = val; }
   inline void set_load(bool val) { setBit<0>(m_pins, val); }
 
   // OUTPUT out[16]
-  inline uint16_t out() { return m_out; }
+  inline uint16_t out() const { return m_out; }
 
   Register() { tock(); }
 
@@ -1470,4 +1470,61 @@ private:
   uint16_t m_out = 0;
 
   Bit m_bits[16];
+};
+
+class PC {
+public:
+  // INPUT in[16], load, inc, reset
+  inline uint16_t in() const { return m_in; }
+  inline bool load() const { return getBit<0>(m_pins); }
+  inline bool inc() const { return getBit<1>(m_pins); }
+  inline bool reset() const { return getBit<2>(m_pins); }
+
+  inline void set_in(uint16_t val) { m_in = val; }
+  inline void set_load(bool val) { setBit<0>(m_pins, val); }
+  inline void set_inc(bool val) { setBit<1>(m_pins, val); }
+  inline void set_reset(bool val) { setBit<2>(m_pins, val); }
+
+  // OUTPUT out[16]
+  inline uint16_t out() const { return m_out; }
+
+  PC() { tock(); }
+
+  inline void tock() {
+    m_inc.set_in(m_reg.out());
+    m_inc.computeOutput();
+
+    m_incMux.set_a(m_reg.out());
+    m_incMux.set_b(m_inc.out());
+    m_incMux.set_sel(inc());
+    m_incMux.computeOutput();
+
+    m_loadMux.set_a(m_incMux.out());
+    m_loadMux.set_b(in());
+    m_loadMux.set_sel(load());
+    m_loadMux.computeOutput();
+
+    m_resetMux.set_a(m_loadMux.out());
+    m_resetMux.set_b(0);
+    m_resetMux.set_sel(reset());
+    m_resetMux.computeOutput();
+
+    m_reg.set_in(m_resetMux.out());
+    m_reg.set_load(true);
+    m_reg.tock();
+
+    m_out = m_reg.out();
+  }
+
+private:
+  // { load, inc, reset }
+  uint8_t m_pins = 0;
+  uint16_t m_in = 0;
+  uint16_t m_out = 0;
+
+  Inc16 m_inc;
+  Mux16 m_incMux;
+  Mux16 m_loadMux;
+  Mux16 m_resetMux;
+  Register m_reg;
 };
