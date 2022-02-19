@@ -1084,6 +1084,58 @@ void test_ALU() {
   }
 }
 
+void test_DFF() {
+  DFF chip;
+
+  chip.set_in(false);
+  chip.tock();
+  expectEqual(chip.out(), false);
+
+  chip.set_in(true);
+  expectEqual(chip.out(), false);
+  chip.tock();
+  expectEqual(chip.out(), true);
+
+  chip.set_in(false);
+  expectEqual(chip.out(), true);
+  chip.tock();
+  expectEqual(chip.out(), false);
+}
+
+void test_Bit() {
+  Bit chip;
+
+  chip.set_in(false);
+  chip.set_load(true);
+  chip.tock();
+
+  expectEqual(chip.out(), false);
+
+  chip.set_in(true);
+  chip.set_load(false);
+  expectEqual(chip.out(), false);
+  chip.tock();
+  expectEqual(chip.out(), false);
+
+  chip.set_in(true);
+  chip.set_load(true);
+  expectEqual(chip.out(), false);
+  chip.tock();
+  expectEqual(chip.out(), true);
+
+  chip.set_in(false);
+  chip.set_load(false);
+  expectEqual(chip.out(), true);
+  chip.tock();
+  expectEqual(chip.out(), true);
+
+  chip.set_in(false);
+  chip.set_load(true);
+  expectEqual(chip.out(), true);
+  chip.tock();
+  expectEqual(chip.out(), false);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -1106,6 +1158,8 @@ int main() {
   test_Add16();
   test_Inc16();
   test_ALU();
+  test_DFF();
+  test_Bit();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1127,7 +1181,9 @@ int main() {
             << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
             << "size of Add16: "  << sizeof(Add16) << '\n'
             << "size of Inc16: "  << sizeof(Inc16) << '\n'
-            << "size of ALU: "  << sizeof(ALU) << '\n';
+            << "size of ALU: "  << sizeof(ALU) << '\n'
+            << "size of DFF: "  << sizeof(DFF) << '\n'
+            << "size of Bit: "  << sizeof(Bit) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'

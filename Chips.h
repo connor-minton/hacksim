@@ -1320,3 +1320,61 @@ private:
   inline void set_zr(bool val) { setBit<6>(m_pins, val); }
   inline void set_ng(bool val) { setBit<7>(m_pins, val); }
 };
+
+class DFF {
+public:
+  // INPUT in
+  inline bool in() { return getBit<0>(m_pins); }
+
+  inline void set_in(bool val) { setBit<0>(m_pins, val); }
+
+  // OUTPUT out
+  inline bool out() { return getBit<1>(m_pins); }
+
+  DFF() { tock(); }
+
+  inline void tock() {
+    set_out(in());
+  }
+
+private:
+  // { in, out }
+  uint8_t m_pins = 0;
+
+  inline void set_out(bool val) { setBit<1>(m_pins, val); }
+};
+
+class Bit {
+public:
+  // INPUT in, load
+  inline bool in() { return getBit<0>(m_pins); }
+  inline bool load() { return getBit<1>(m_pins); }
+
+  inline void set_in(bool val) { setBit<0>(m_pins, val); }
+  inline void set_load(bool val) { setBit<1>(m_pins, val); }
+
+  // OUTPUT out
+  inline bool out() { return getBit<2>(m_pins); }
+
+  Bit() { tock(); }
+
+  inline void tock() {
+    m_mux.set_a(m_dff.out());
+    m_mux.set_b(in());
+    m_mux.set_sel(load());
+    m_mux.computeOutput();
+
+    m_dff.set_in(m_mux.out());
+    m_dff.tock();
+    set_out(m_dff.out());
+  }
+
+private:
+  // { in, load, out }
+  uint8_t m_pins = 0;
+
+  Mux m_mux;
+  DFF m_dff;
+
+  inline void set_out(bool val) { setBit<2>(m_pins, val); }
+};
