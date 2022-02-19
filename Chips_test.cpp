@@ -610,6 +610,94 @@ void test_DMux8Way() {
   expectEqual(chip.h(), true);
 }
 
+void test_HalfAdder() {
+  HalfAdder chip;
+
+  chip.set_a(false);
+  chip.set_b(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(true);
+  chip.set_b(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(false);
+  chip.set_b(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(true);
+  chip.set_b(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), true);
+}
+
+void test_FullAdder() {
+  FullAdder chip;
+
+  chip.set_a(false);
+  chip.set_b(false);
+  chip.set_c(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(true);
+  chip.set_b(false);
+  chip.set_c(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(false);
+  chip.set_b(true);
+  chip.set_c(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(true);
+  chip.set_b(true);
+  chip.set_c(false);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), true);
+
+  chip.set_a(false);
+  chip.set_b(false);
+  chip.set_c(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), false);
+
+  chip.set_a(true);
+  chip.set_b(false);
+  chip.set_c(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), true);
+
+  chip.set_a(false);
+  chip.set_b(true);
+  chip.set_c(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), false);
+  expectEqual(chip.carry(), true);
+
+  chip.set_a(true);
+  chip.set_b(true);
+  chip.set_c(true);
+  chip.computeOutput();
+  expectEqual(chip.sum(), true);
+  expectEqual(chip.carry(), true);
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -627,6 +715,8 @@ int main() {
   test_Mux8Way16();
   test_DMux4Way();
   test_DMux8Way();
+  test_HalfAdder();
+  test_FullAdder();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -643,7 +733,9 @@ int main() {
             << "size of Mux4Way16: " << sizeof(Mux4Way16) << '\n'
             << "size of Mux8Way16: " << sizeof(Mux8Way16) << '\n'
             << "size of DMux4Way: "  << sizeof(DMux4Way) << '\n'
-            << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n';
+            << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n'
+            << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
+            << "size of FullAdder: "  << sizeof(FullAdder) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
