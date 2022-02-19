@@ -729,6 +729,361 @@ void test_Inc16() {
   }
 }
 
+void test_ALU_zero(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(false);
+  chip.set_zy(true);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(0);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_one(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(1);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_negone(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(true);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(0xffff);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_x(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(false);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_y(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(false);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_notx(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(false);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(~x);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_noty(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(false);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(~y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_negx(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(-x);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_negy(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(-y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xplus1(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(true);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = x + 1;
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_yplus1(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = y + 1;
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xminus1(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(true);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x - 1);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_yminus1(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(true);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(y - 1);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xplusy(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x + y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xminusy(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x - y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_yminusx(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(false);
+  chip.set_ny(true);
+  chip.set_f(true);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(y - x);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xandy(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(false);
+  chip.set_zy(false);
+  chip.set_ny(false);
+  chip.set_f(false);
+  chip.set_no(false);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x & y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU_xory(ALU& chip, uint16_t x, uint16_t y) {
+  chip.set_x(x);
+  chip.set_y(y);
+  chip.set_zx(false);
+  chip.set_nx(true);
+  chip.set_zy(false);
+  chip.set_ny(true);
+  chip.set_f(false);
+  chip.set_no(true);
+  chip.computeOutput();
+
+  uint16_t result = (uint16_t)(x | y);
+
+  expectEqual(chip.out(), result);
+  expectEqual(chip.zr(), result == 0);
+  expectEqual(chip.ng(), getBit<15>(result));
+}
+
+void test_ALU() {
+  ALU chip;
+
+  std::vector<uint16_t> x =
+    { 0x1234, 0x0000, 0xe0e0, 0xabcd,
+      0x4312, 0x0001, 0x00aa, 0xffff };
+
+  for (int i = 0; i < x.size()-1; i++) {
+    for (int j = i+1; j < x.size(); j++) {
+      test_ALU_zero(chip, x[i], x[j]);
+      test_ALU_one(chip, x[i], x[j]);
+      test_ALU_negone(chip, x[i], x[j]);
+      test_ALU_x(chip, x[i], x[j]);
+      test_ALU_y(chip, x[i], x[j]);
+      test_ALU_notx(chip, x[i], x[j]);
+      test_ALU_noty(chip, x[i], x[j]);
+      test_ALU_negx(chip, x[i], x[j]);
+      test_ALU_negy(chip, x[i], x[j]);
+      test_ALU_xplus1(chip, x[i], x[j]);
+      test_ALU_yplus1(chip, x[i], x[j]);
+      test_ALU_xminus1(chip, x[i], x[j]);
+      test_ALU_yminus1(chip, x[i], x[j]);
+      test_ALU_xplusy(chip, x[i], x[j]);
+      test_ALU_xminusy(chip, x[i], x[j]);
+      test_ALU_yminusx(chip, x[i], x[j]);
+      test_ALU_xandy(chip, x[i], x[j]);
+      test_ALU_xory(chip, x[i], x[j]);
+    }
+  }
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -750,6 +1105,7 @@ int main() {
   test_FullAdder();
   test_Add16();
   test_Inc16();
+  test_ALU();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -770,7 +1126,8 @@ int main() {
             << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
             << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
             << "size of Add16: "  << sizeof(Add16) << '\n'
-            << "size of Inc16: "  << sizeof(Inc16) << '\n';
+            << "size of Inc16: "  << sizeof(Inc16) << '\n'
+            << "size of ALU: "  << sizeof(ALU) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
