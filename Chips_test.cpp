@@ -1230,25 +1230,85 @@ void test_RAM8() {
   RAM8 chip;
 
   chip.set_load(false);
-  chip.set_address(4);
-  chip.tock();
-  expectEqual(chip.out(), (uint16_t)0);
+  chip.set_in(0x1234);
+  for (int i = 0; i < 8; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
 
   chip.set_load(true);
-  chip.set_address(4);
+  for (int i = 0; i < 8; i++) {
+    chip.set_address(i);
+    chip.set_in(i*2);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+  }
+
+  chip.set_load(false);
+  for (int i = 0; i < 8; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+  }
+
+  chip.set_load(true);
+  for (int i = 0; i < 8; i++) {
+    chip.set_address(i);
+    chip.set_in(0);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
+
+  chip.set_load(false);
   chip.set_in(0x1234);
-  chip.tock();
-  expectEqual(chip.out(), (uint16_t)0x1234);
+  for (int i = 0; i < 8; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
+}
+
+void test_RAM64() {
+  RAM64 chip;
+  chip.set_load(false);
+  chip.set_in(0);
+
+  for (int i = 0; i < 64; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
+
+  chip.set_load(true);
+  for (int i = 0; i < 64; i++) {
+    chip.set_address(i);
+    chip.set_in(i * 2);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+  }
 
   chip.set_load(false);
-  chip.set_address(3);
-  chip.tock();
-  expectEqual(chip.out(), (uint16_t)0x0);
+  for (int i = 0; i < 64; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+  }
+
+  chip.set_load(true);
+  for (int i = 0; i < 64; i++) {
+    chip.set_address(i);
+    chip.set_in(0);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
 
   chip.set_load(false);
-  chip.set_address(4);
-  chip.tock();
-  expectEqual(chip.out(), (uint16_t)0x1234);
+  for (int i = 0; i < 64; i++) {
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+  }
 }
 
 int main() {
@@ -1278,6 +1338,7 @@ int main() {
   test_Register();
   test_PC();
   test_RAM8();
+  test_RAM64();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1304,7 +1365,8 @@ int main() {
             << "size of Bit: "  << sizeof(Bit) << '\n'
             << "size of Register: "  << sizeof(Register) << '\n'
             << "size of PC: "  << sizeof(PC) << '\n'
-            << "size of RAM8: "  << sizeof(RAM8) << '\n';
+            << "size of RAM8: "  << sizeof(RAM8) << '\n'
+            << "size of RAM64: "  << sizeof(RAM64) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'

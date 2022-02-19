@@ -3,7 +3,7 @@ CXX_FLAGS = --std=c++17 -g
 all: hacksim Chips_test
 
 clean:
-	rm -f *.o hacksim
+	rm -f *.o hacksim Chips_test
 
 hacksim: Main.o
 	g++ $(CXX_FLAGS) Main.o -o hacksim
