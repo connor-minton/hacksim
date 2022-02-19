@@ -698,6 +698,23 @@ void test_FullAdder() {
   expectEqual(chip.carry(), true);
 }
 
+void test_Add16() {
+  Add16 chip;
+
+  std::vector<uint16_t> x =
+    { 0x1234, 0x0000, 0xe0e0, 0xabcd,
+      0x4312, 0x0001, 0x00aa, 0xffff };
+
+  for (int i = 0; i < x.size()-1; i++) {
+    for (int j = i+1; j < x.size(); j++) {
+      chip.set_a(x[i]);
+      chip.set_b(x[j]);
+      chip.computeOutput();
+      expectEqual(chip.out(), (uint16_t)(x[i] + x[j]));
+    }
+  }
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -717,6 +734,7 @@ int main() {
   test_DMux8Way();
   test_HalfAdder();
   test_FullAdder();
+  test_Add16();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -735,7 +753,8 @@ int main() {
             << "size of DMux4Way: "  << sizeof(DMux4Way) << '\n'
             << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n'
             << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
-            << "size of FullAdder: "  << sizeof(FullAdder) << '\n';
+            << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
+            << "size of Add16: "  << sizeof(Add16) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
