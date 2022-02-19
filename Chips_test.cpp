@@ -715,6 +715,20 @@ void test_Add16() {
   }
 }
 
+void test_Inc16() {
+  Inc16 chip;
+
+  std::vector<uint16_t> x =
+    { 0x1234, 0x0000, 0xe0e0, 0xabcd,
+      0x4312, 0x0001, 0x00aa, 0xffff };
+
+  for (int i = 0; i < x.size()-1; i++) {
+    chip.set_in(x[i]);
+    chip.computeOutput();
+    expectEqual(chip.out(), (uint16_t)(x[i] + 1));
+  }
+}
+
 int main() {
   test_Nand();
   test_Not();
@@ -735,6 +749,7 @@ int main() {
   test_HalfAdder();
   test_FullAdder();
   test_Add16();
+  test_Inc16();
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -754,7 +769,8 @@ int main() {
             << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n'
             << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
             << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
-            << "size of Add16: "  << sizeof(Add16) << '\n';
+            << "size of Add16: "  << sizeof(Add16) << '\n'
+            << "size of Inc16: "  << sizeof(Inc16) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
