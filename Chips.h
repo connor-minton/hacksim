@@ -658,26 +658,31 @@ private:
 
 class Or8Way {
 public:
-  bool in[8];
-  bool out;
+  // INPUT in[8]
+  inline uint8_t in() { return m_in; }
 
-  Or8Way() : in{0} { computeOutput(); }
+  inline void set_in(uint8_t val) { m_in = val; }
+
+  // OUTPUT out
+  inline bool out() { return getBit<0>(m_pins); }
+
+  Or8Way() { computeOutput(); }
 
   inline void computeOutput() {
-    m_or01.set_a(in[0]);
-    m_or01.set_b(in[1]);
+    m_or01.set_a(getBit<0>(m_in));
+    m_or01.set_b(getBit<1>(m_in));
     m_or01.computeOutput();
 
-    m_or23.set_a(in[2]);
-    m_or23.set_b(in[3]);
+    m_or23.set_a(getBit<2>(m_in));
+    m_or23.set_b(getBit<3>(m_in));
     m_or23.computeOutput();
 
-    m_or45.set_a(in[4]);
-    m_or45.set_b(in[5]);
+    m_or45.set_a(getBit<4>(m_in));
+    m_or45.set_b(getBit<5>(m_in));
     m_or45.computeOutput();
 
-    m_or67.set_a(in[6]);
-    m_or67.set_b(in[7]);
+    m_or67.set_a(getBit<6>(m_in));
+    m_or67.set_b(getBit<7>(m_in));
     m_or67.computeOutput();
 
     m_or0123.set_a(m_or01.out());
@@ -692,10 +697,14 @@ public:
     m_orOut.set_b(m_or4567.out());
     m_orOut.computeOutput();
 
-    out = m_orOut.out();
+    set_out(m_orOut.out());
   }
 
 private:
+  // { out }
+  uint8_t m_pins = 0;
+  uint8_t m_in = 0;
+
   Or m_or01;
   Or m_or23;
   Or m_or45;
@@ -705,6 +714,8 @@ private:
   Or m_or4567;
 
   Or m_orOut;
+
+  inline void set_out(bool val) { setBit<0>(m_pins, val); }
 };
 
 class Mux4Way16 {
@@ -836,100 +847,116 @@ private:
 
 class DMux4Way {
 public:
-  bool in;
-  bool sel[2];
-  bool a;
-  bool b;
-  bool c;
-  bool d;
+  // INPUT in, sel[2]
+  inline bool in() { return getBit<0>(m_pins); }
+  inline uint8_t sel() { return m_pins & 0x6; }
 
-  DMux4Way() : in(false), sel{0} { computeOutput(); }
+  inline void set_in(bool val) { setBit<0>(m_pins, val); }
+  inline void set_sel(uint8_t val) {
+    m_pins = (m_pins & 0xf8) | ((val & 0x3) << 1) | (m_pins & 1);
+  }
+
+  // OUTPUT a, b, c, d
+  inline bool a() { return getBit<3>(m_pins); }
+  inline bool b() { return getBit<4>(m_pins); }
+  inline bool c() { return getBit<5>(m_pins); }
+  inline bool d() { return getBit<6>(m_pins); }
+
+  DMux4Way() { computeOutput(); }
 
   inline void computeOutput() {
-    m_dm1.set_in(in);
-    m_dm1.set_sel(sel[1]);
+    m_dm1.set_in(in());
+    m_dm1.set_sel(getBit<2>(m_pins));
     m_dm1.computeOutput();
 
     m_dm2.set_in(m_dm1.a());
-    m_dm2.set_sel(sel[0]);
+    m_dm2.set_sel(getBit<1>(m_pins));
     m_dm2.computeOutput();
 
     m_dm3.set_in(m_dm1.b());
-    m_dm3.set_sel(sel[0]);
+    m_dm3.set_sel(getBit<1>(m_pins));
     m_dm3.computeOutput();
 
-    a = m_dm2.a();
-    b = m_dm2.b();
-    c = m_dm3.a();
-    d = m_dm3.b();
+    set_a(m_dm2.a());
+    set_b(m_dm2.b());
+    set_c(m_dm3.a());
+    set_d(m_dm3.b());
   }
 
 private:
+  // { in, sel[0..1], a, b, c, d }
+  uint8_t m_pins = 0;
+
   DMux m_dm1;
   DMux m_dm2;
   DMux m_dm3;
+
+  inline void set_a(bool val) { setBit<3>(m_pins, val); }
+  inline void set_b(bool val) { setBit<4>(m_pins, val); }
+  inline void set_c(bool val) { setBit<5>(m_pins, val); }
+  inline void set_d(bool val) { setBit<6>(m_pins, val); }
 };
 
 class DMux8Way {
 public:
   DMux8Way() { computeOutput(); }
 
-  // INPUT
-  inline bool in() { return pins[0]; }
-  inline bool sel(int i) { return pins[1+i]; }
+  // INPUT in, sel[3]
+  inline bool in() { return getBit<0>(m_pins); }
+  inline uint8_t sel() { return (m_pins & 0xe) >> 1; }
 
-  inline void set_in(bool val)         { pins[0] = val; }
-  inline void set_sel(int i, bool val) { pins[1+i] = val; }
+  inline void set_in(bool val) { setBit<0>(m_pins, val); }
+  inline void set_sel(uint8_t val) {
+    m_pins = (m_pins & 0xfff0) | ((val & 0x7) << 1) | (m_pins & 0x1);
+  }
 
-  // OUTPUT
-  inline bool a() { return pins[4]; }
-  inline bool b() { return pins[5]; }
-  inline bool c() { return pins[6]; }
-  inline bool d() { return pins[7]; }
-  inline bool e() { return pins[8]; }
-  inline bool f() { return pins[9]; }
-  inline bool g() { return pins[10]; }
-  inline bool h() { return pins[11]; }
+  // OUTPUT a, b, c, d, e, f, g, h
+  inline bool a() { return getBit<4>(m_pins); }
+  inline bool b() { return getBit<5>(m_pins); }
+  inline bool c() { return getBit<6>(m_pins); }
+  inline bool d() { return getBit<7>(m_pins); }
+  inline bool e() { return getBit<8>(m_pins); }
+  inline bool f() { return getBit<9>(m_pins); }
+  inline bool g() { return getBit<10>(m_pins); }
+  inline bool h() { return getBit<11>(m_pins); }
 
   inline void computeOutput() {
     m_mux.set_in(in());
-    m_mux.set_sel(sel(2));
+    m_mux.set_sel(getBit<3>(m_pins));
     m_mux.computeOutput();
 
-    m_mux4abcd.in = m_mux.a();
-    m_mux4abcd.sel[0] = sel(0);
-    m_mux4abcd.sel[1] = sel(1);
+    m_mux4abcd.set_in(m_mux.a());
+    m_mux4abcd.set_sel(sel() & 0x3);
     m_mux4abcd.computeOutput();
 
-    m_mux4efgh.in = m_mux.b();
-    m_mux4efgh.sel[0] = sel(0);
-    m_mux4efgh.sel[1] = sel(1);
+    m_mux4efgh.set_in(m_mux.b());
+    m_mux4efgh.set_sel(sel() & 0x3);
     m_mux4efgh.computeOutput();
 
-    set_a(m_mux4abcd.a);
-    set_b(m_mux4abcd.b);
-    set_c(m_mux4abcd.c);
-    set_d(m_mux4abcd.d);
-    set_e(m_mux4efgh.a);
-    set_f(m_mux4efgh.b);
-    set_g(m_mux4efgh.c);
-    set_h(m_mux4efgh.d);
+    set_a(m_mux4abcd.a());
+    set_b(m_mux4abcd.b());
+    set_c(m_mux4abcd.c());
+    set_d(m_mux4abcd.d());
+    set_e(m_mux4efgh.a());
+    set_f(m_mux4efgh.b());
+    set_g(m_mux4efgh.c());
+    set_h(m_mux4efgh.d());
   }
 
 private:
   // { in, sel[0..2], a, b, ..., g, h }
-  std::bitset<12> pins;
+  uint16_t m_pins;
 
   DMux m_mux;
   DMux4Way m_mux4abcd;
   DMux4Way m_mux4efgh;
 
-  inline void set_a(bool val) { pins[4] = val; }
-  inline void set_b(bool val) { pins[5] = val; }
-  inline void set_c(bool val) { pins[6] = val; }
-  inline void set_d(bool val) { pins[7] = val; }
-  inline void set_e(bool val) { pins[8] = val; }
-  inline void set_f(bool val) { pins[9] = val; }
-  inline void set_g(bool val) { pins[10] = val; }
-  inline void set_h(bool val) { pins[11] = val; }
+  inline void set_a(bool val) { setBit<4>(m_pins, val); }
+  inline void set_b(bool val) { setBit<5>(m_pins, val); }
+  inline void set_c(bool val) { setBit<6>(m_pins, val); }
+  inline void set_d(bool val) { setBit<7>(m_pins, val); }
+  inline void set_e(bool val) { setBit<8>(m_pins, val); }
+  inline void set_f(bool val) { setBit<9>(m_pins, val); }
+  inline void set_g(bool val) { setBit<10>(m_pins, val); }
+  inline void set_h(bool val) { setBit<11>(m_pins, val); }
 };

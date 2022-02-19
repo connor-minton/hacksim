@@ -256,34 +256,26 @@ void test_Mux16() {
 
 void test_Or8Way() {
   Or8Way chip;
-  std::vector<bool> in1 = {0,0,0,0, 0,0,0,0};
-  std::vector<bool> in2 = {0,1,0,0, 0,0,0,0};
-  std::vector<bool> in3 = {1,0,0,1, 1,0,1,0};
-  std::vector<bool> in4 = {1,1,1,1, 1,1,1,1};
+  uint8_t a = 0x00;
+  uint8_t b = 0x60;
+  uint8_t c = 0x9a;
+  uint8_t d = 0xff;
 
-  for (int i = 0; i < 16; i++) {
-    chip.in[i] = in1[i];
-  }
+  chip.set_in(a);
   chip.computeOutput();
-  expectEqual(chip.out, false);
+  expectEqual(chip.out(), false);
 
-  for (int i = 0; i < 16; i++) {
-    chip.in[i] = in2[i];
-  }
+  chip.set_in(b);
   chip.computeOutput();
-  expectEqual(chip.out, true);
+  expectEqual(chip.out(), true);
 
-  for (int i = 0; i < 16; i++) {
-    chip.in[i] = in3[i];
-  }
+  chip.set_in(c);
   chip.computeOutput();
-  expectEqual(chip.out, true);
+  expectEqual(chip.out(), true);
 
-  for (int i = 0; i < 16; i++) {
-    chip.in[i] = in4[i];
-  }
+  chip.set_in(d);
   chip.computeOutput();
-  expectEqual(chip.out, true);
+  expectEqual(chip.out(), true);
 }
 
 void test_Mux4Way16() {
@@ -373,73 +365,65 @@ void test_Mux8Way16() {
 void test_DMux4Way() {
   DMux4Way chip;
 
-  chip.in = false;
+  chip.set_in(false);
 
-  chip.sel[0] = false;
-  chip.sel[1] = false;
+  chip.set_sel(0);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = true;
-  chip.sel[1] = false;
+  chip.set_sel(1);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = false;
-  chip.sel[1] = true;
+  chip.set_sel(2);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = true;
-  chip.sel[1] = true;
+  chip.set_sel(3);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.in = true;
+  chip.set_in(true);
 
-  chip.sel[0] = false;
-  chip.sel[1] = false;
+  chip.set_sel(0);
   chip.computeOutput();
-  expectEqual(chip.a, true);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), true);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = true;
-  chip.sel[1] = false;
+  chip.set_sel(1);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, true);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), true);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = false;
-  chip.sel[1] = true;
+  chip.set_sel(2);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, true);
-  expectEqual(chip.d, false);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), true);
+  expectEqual(chip.d(), false);
 
-  chip.sel[0] = true;
-  chip.sel[1] = true;
+  chip.set_sel(3);
   chip.computeOutput();
-  expectEqual(chip.a, false);
-  expectEqual(chip.b, false);
-  expectEqual(chip.c, false);
-  expectEqual(chip.d, true);
+  expectEqual(chip.a(), false);
+  expectEqual(chip.b(), false);
+  expectEqual(chip.c(), false);
+  expectEqual(chip.d(), true);
 }
 
 void test_DMux8Way() {
@@ -447,9 +431,7 @@ void test_DMux8Way() {
 
   chip.set_in(false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, false);
-  chip.set_sel(2, false);
+  chip.set_sel(0);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -460,9 +442,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, false);
-  chip.set_sel(2, false);
+  chip.set_sel(1);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -473,9 +453,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, true);
-  chip.set_sel(2, false);
+  chip.set_sel(2);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -486,9 +464,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, true);
-  chip.set_sel(2, false);
+  chip.set_sel(3);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -499,9 +475,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, false);
-  chip.set_sel(2, true);
+  chip.set_sel(4);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -512,9 +486,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, false);
-  chip.set_sel(2, true);
+  chip.set_sel(5);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -525,9 +497,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, true);
-  chip.set_sel(2, true);
+  chip.set_sel(6);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -538,9 +508,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, true);
-  chip.set_sel(2, true);
+  chip.set_sel(7);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -553,9 +521,7 @@ void test_DMux8Way() {
 
   chip.set_in(true);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, false);
-  chip.set_sel(2, false);
+  chip.set_sel(0);
   chip.computeOutput();
   expectEqual(chip.a(), true);
   expectEqual(chip.b(), false);
@@ -566,9 +532,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, false);
-  chip.set_sel(2, false);
+  chip.set_sel(1);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), true);
@@ -579,9 +543,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, true);
-  chip.set_sel(2, false);
+  chip.set_sel(2);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -592,9 +554,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, true);
-  chip.set_sel(2, false);
+  chip.set_sel(3);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -605,9 +565,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, false);
-  chip.set_sel(2, true);
+  chip.set_sel(4);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -618,9 +576,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, false);
-  chip.set_sel(2, true);
+  chip.set_sel(5);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -631,9 +587,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), false);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, false);
-  chip.set_sel(1, true);
-  chip.set_sel(2, true);
+  chip.set_sel(6);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
@@ -644,9 +598,7 @@ void test_DMux8Way() {
   expectEqual(chip.g(), true);
   expectEqual(chip.h(), false);
 
-  chip.set_sel(0, true);
-  chip.set_sel(1, true);
-  chip.set_sel(2, true);
+  chip.set_sel(7);
   chip.computeOutput();
   expectEqual(chip.a(), false);
   expectEqual(chip.b(), false);
