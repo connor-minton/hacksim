@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "Chips.h"
+#include "ShallowChips.h"
 
 int testNum = 1;
 int successCt = 0;
@@ -1321,6 +1322,7 @@ int main() {
   test("RAM512", [](){ test_RAMn<RAM512>(512); });
   test("RAM4K", [](){ test_RAMn<RAM4K>(4096); });
   test("RAM16K", [](){ test_RAMn<RAM16K>(16384); });
+  test("shallow::Screen", [](){ test_RAMn<shallow::Screen>(8192); });
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'

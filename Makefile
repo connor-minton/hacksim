@@ -8,8 +8,8 @@ clean:
 hacksim: Main.o
 	g++ $(CXX_FLAGS) Main.o -o hacksim
 
-Main.o: Main.cpp Chips.h
+Main.o: Main.cpp Chips.h ShallowChips.h
 	g++ $(CXX_FLAGS) -c Main.cpp -o Main.o
 
-Chips_test: Chips_test.cpp Chips.h
+Chips_test: Chips_test.cpp Chips.h ShallowChips.h
 	g++ $(CXX_FLAGS) Chips_test.cpp -o Chips_test

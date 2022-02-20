@@ -1,24 +1,6 @@
 #pragma once
 
-#include <cstring>
-#include <bitset>
-#include <cassert>
-
-// Returns true if there was a change to `bits` and false if no change
-template<uint8_t N, typename T>
-static inline bool setBit(T& bits, bool value) {
-  constexpr uint64_t mask = (1 << N);
-  T old = bits;
-  if (value) bits |= mask;
-  else       bits &= ~mask;
-  return old != bits;
-}
-
-template<uint8_t N, typename T>
-static inline bool getBit(T bits) {
-  constexpr uint64_t mask = (1 << N);
-  return (bits & mask) != 0;
-}
+#include "Bits.h"
 
 class Nand {
 public:
@@ -1886,4 +1868,27 @@ private:
   DMux4Way m_dmux;
   Mux4Way16 m_mux;
   RAM4K m_rams[4];
+};
+
+class Memory {
+public:
+  // IN in[16], load, address[15]
+  inline uint16_t in() const { return m_in; }
+  inline bool load() const { return getBit<0>(m_pins); }
+  inline uint16_t address() const { return (m_pins & 0xfffe) >> 1; }
+
+  inline void set_in(uint16_t val) { m_in = val; }
+  inline void set_load(bool val) { setBit<0>(m_pins, val); }
+  inline void set_address(uint16_t val) {
+    m_pins = ((val & 0x7fff) << 1) | (m_pins & 0x1);
+  }
+
+  // OUT out[16]
+  inline uint16_t out() const { return m_out; }
+
+private:
+  // { load, address[0..14] }
+  uint16_t m_pins = 0;
+  uint16_t m_in = 0;
+  uint16_t m_out = 0;
 };
