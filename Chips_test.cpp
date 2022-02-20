@@ -1230,46 +1230,48 @@ void test_PC() {
 
 template<typename RAM_T>
 void test_RAMn(int n) {
-  RAM_T chip;
+  RAM_T* chip = new RAM_T();
 
-  chip.set_load(false);
-  chip.set_in(0x1234);
+  chip->set_load(false);
+  chip->set_in(0x1234);
   for (int i = 0; i < n; i++) {
-    chip.set_address(i);
-    chip.tock();
-    expectEqual(chip.out(), (uint16_t)0);
+    chip->set_address(i);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)0);
   }
 
-  chip.set_load(true);
+  chip->set_load(true);
   for (int i = 0; i < n; i++) {
-    chip.set_address(i);
-    chip.set_in(i*2);
-    chip.tock();
-    expectEqual(chip.out(), (uint16_t)(i*2));
+    chip->set_address(i);
+    chip->set_in(i*2);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)(i*2));
   }
 
-  chip.set_load(false);
+  chip->set_load(false);
   for (int i = 0; i < n; i++) {
-    chip.set_address(i);
-    chip.tock();
-    expectEqual(chip.out(), (uint16_t)(i*2));
+    chip->set_address(i);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)(i*2));
   }
 
-  chip.set_load(true);
+  chip->set_load(true);
   for (int i = 0; i < n; i++) {
-    chip.set_address(i);
-    chip.set_in(0);
-    chip.tock();
-    expectEqual(chip.out(), (uint16_t)0);
+    chip->set_address(i);
+    chip->set_in(0);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)0);
   }
 
-  chip.set_load(false);
-  chip.set_in(0x1234);
+  chip->set_load(false);
+  chip->set_in(0x1234);
   for (int i = 0; i < n; i++) {
-    chip.set_address(i);
-    chip.tock();
-    expectEqual(chip.out(), (uint16_t)0);
+    chip->set_address(i);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)0);
   }
+
+  delete chip;
 }
 
 void test(std::string name, void (*func)()) {
@@ -1317,6 +1319,7 @@ int main() {
   test("RAM8", [](){ test_RAMn<RAM8>(8); });
   test("RAM64", [](){ test_RAMn<RAM64>(64); });
   test("RAM512", [](){ test_RAMn<RAM512>(512); });
+  test("RAM4K", [](){ test_RAMn<RAM4K>(4096); });
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1345,7 +1348,8 @@ int main() {
             << "size of PC: "  << sizeof(PC) << '\n'
             << "size of RAM8: "  << sizeof(RAM8) << '\n'
             << "size of RAM64: "  << sizeof(RAM64) << '\n'
-            << "size of RAM512: "  << sizeof(RAM512) << '\n';
+            << "size of RAM512: "  << sizeof(RAM512) << '\n'
+            << "size of RAM4K: "  << sizeof(RAM4K) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
