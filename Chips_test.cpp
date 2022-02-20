@@ -1275,6 +1275,125 @@ void test_RAMn(int n) {
   delete chip;
 }
 
+void test_Memory() {
+  uint16_t kbd = 0;
+  Memory* chip = new Memory(&kbd);
+
+  // test lower memory
+  chip->set_load(false);
+  chip->set_in(0x1234);
+  chip->set_address(0x0000);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)0);
+
+  chip->set_load(true);
+
+  chip->set_in(1);
+  chip->set_address(0x1234);
+  chip->tock();
+  chip->set_in(2);
+  chip->set_address(0x2345);
+  chip->tock();
+  chip->set_in(3);
+  chip->set_address(0x3456);
+  chip->tock();
+  chip->set_in(4);
+  chip->set_address(0x3fff);
+  chip->tock();
+
+  chip->set_load(false);
+
+  chip->set_address(0x1234);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)1);
+  chip->set_address(0x2345);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)2);
+  chip->set_address(0x3456);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)3);
+  chip->set_address(0x3fff);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)4);
+
+  // check that the screen is still zeroed out
+  chip->set_load(false);
+  for (int i = Memory::SCREEN; i < Memory::KBD; i++) {
+    chip->set_address(i);
+    chip->tock();
+    expectEqual(chip->out(), (uint16_t)0);
+  }
+
+  // test screen memory
+  chip->set_load(true);
+
+  chip->set_in(1);
+  chip->set_address(0x4234);
+  chip->tock();
+  chip->set_in(2);
+  chip->set_address(0x4444);
+  chip->tock();
+  chip->set_in(3);
+  chip->set_address(0x5555);
+  chip->tock();
+  chip->set_in(4);
+  chip->set_address(0x5fff);
+  chip->tock();
+
+  chip->set_load(false);
+
+  chip->set_address(0x4234);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)1);
+  chip->set_address(0x4444);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)2);
+  chip->set_address(0x5555);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)3);
+  chip->set_address(0x5fff);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)4);
+
+  // test keyboard
+  chip->set_load(false);
+  chip->set_in(0x1234);
+  chip->set_address(Memory::KBD);
+  chip->tock();
+  expectEqual(kbd, (uint16_t)0);
+  expectEqual(chip->out(), (uint16_t)0);
+
+  // should not be able to set keyboard from chip
+  chip->set_load(true);
+  chip->tock();
+  expectEqual(kbd, (uint16_t)0);
+  expectEqual(chip->out(), (uint16_t)0);
+
+  // change in kbd should be reflected through Memory::out()
+  chip->set_load(false);
+  kbd = 0x41;
+  chip->tock();
+  expectEqual(chip->out(), kbd);
+
+  // check lower memory hasn't changed
+  chip->set_load(false);
+
+  chip->set_address(0x1234);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)1);
+  chip->set_address(0x2345);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)2);
+  chip->set_address(0x3456);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)3);
+  chip->set_address(0x3fff);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)4);
+
+  delete chip;
+}
+
 void test(std::string name, void (*func)()) {
   std::chrono::high_resolution_clock clk;
   std::cout << name << "...";
@@ -1323,6 +1442,7 @@ int main() {
   test("RAM4K", [](){ test_RAMn<RAM4K>(4096); });
   test("RAM16K", [](){ test_RAMn<RAM16K>(16384); });
   test("shallow::Screen", [](){ test_RAMn<shallow::Screen>(8192); });
+  test("Memory", test_Memory);
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1353,7 +1473,8 @@ int main() {
             << "size of RAM64: "  << sizeof(RAM64) << '\n'
             << "size of RAM512: "  << sizeof(RAM512) << '\n'
             << "size of RAM4K: "  << sizeof(RAM4K) << '\n'
-            << "size of RAM16K: "  << sizeof(RAM16K) << '\n';
+            << "size of RAM16K: "  << sizeof(RAM16K) << '\n'
+            << "size of Memory: "  << sizeof(Memory) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(7) << failedCt << '\n'

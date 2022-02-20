@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Bits.h"
+#include "ShallowChips.h"
 
 class Nand {
 public:
@@ -1872,6 +1873,9 @@ private:
 
 class Memory {
 public:
+  static const uint16_t SCREEN = 0x4000;
+  static const uint16_t KBD = 0x6000;
+
   // IN in[16], load, address[15]
   inline uint16_t in() const { return m_in; }
   inline bool load() const { return getBit<0>(m_pins); }
@@ -1886,9 +1890,56 @@ public:
   // OUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  Memory(uint16_t* kbd) : m_kbd(kbd) { }
+
+  inline void tock() {
+    m_demuxRAM.set_in(load());
+    m_demuxRAM.set_sel(getBit<14>(address()));
+    m_demuxRAM.computeOutput();
+
+    m_demuxScreenKbd.set_in(m_demuxRAM.b());
+    m_demuxScreenKbd.set_sel(getBit<13>(address()));
+    m_demuxScreenKbd.computeOutput();
+
+    m_ram.set_in(in());
+    m_ram.set_load(m_demuxRAM.a());
+    m_ram.set_address(address() & 0x3fff);
+
+    // optimization: tock ram ONLY if it is being accessed
+    if (!getBit<14>(address()))
+      m_ram.tock();
+
+    // screen is a shallow chip, doesn't need optimization
+    m_screen.set_in(in());
+    m_screen.set_load(m_demuxScreenKbd.a());
+    m_screen.set_address(address() & 0x1fff);
+    m_screen.tock();
+
+    m_muxScreenKbdOut.set_sel(getBit<13>(address()));
+    m_muxScreenKbdOut.set_a(m_screen.out());
+    m_muxScreenKbdOut.set_b(*m_kbd);
+    m_muxScreenKbdOut.computeOutput();
+
+    m_muxOut.set_sel(getBit<14>(address()));
+    m_muxOut.set_a(m_ram.out());
+    m_muxOut.set_b(m_muxScreenKbdOut.out());
+    m_muxOut.computeOutput();
+
+    m_out = m_muxOut.out();
+  }
+
 private:
   // { load, address[0..14] }
   uint16_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
+
+  uint16_t* m_kbd;
+
+  RAM16K m_ram;
+  shallow::Screen m_screen;
+  DMux m_demuxRAM;
+  DMux m_demuxScreenKbd;
+  Mux16 m_muxScreenKbdOut;
+  Mux16 m_muxOut;
 };
