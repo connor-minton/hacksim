@@ -52,6 +52,20 @@ void test_Nand() {
   expectEqual(n1.out(), false);
 }
 
+void test_Nand16() {
+  Nand16 chip;
+  uint16_t a = 0x2d17;
+  uint16_t b = 0xe8ad;
+
+  uint16_t out = ~(a & b);
+
+  chip.set_a(a);
+  chip.set_b(b);
+
+  chip.computeOutput();
+  expectEqual(chip.out(), out);
+}
+
 void test_Not() {
   Not n;
   n.set_in(true);
@@ -1412,6 +1426,7 @@ void test(std::string name, void (*func)()) {
 
 int main() {
   test("Nand", test_Nand);
+  test("Nand16", test_Nand16);
   test("Not", test_Not);
   test("And", test_And);
   test("Or", test_Or);

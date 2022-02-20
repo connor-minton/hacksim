@@ -28,6 +28,30 @@ private:
   inline void set_out(bool val) { setBit<2>(pins, val); }
 };
 
+class Nand16 {
+public:
+  // IN a[16], b[16]
+  inline uint16_t a() const { return m_a; }
+  inline uint16_t b() const { return m_b; }
+
+  inline void set_a(uint16_t val) { m_a = val; }
+  inline void set_b(uint16_t val) { m_b = val; }
+
+  // OUT out[16]
+  inline uint16_t out() const { return m_out; }
+
+  Nand16() { computeOutput(); }
+
+  inline void computeOutput() {
+    m_out = ~(a() & b());
+  }
+
+private:
+  uint16_t m_a = 0;
+  uint16_t m_b = 0;
+  uint16_t m_out = 0;
+};
+
 class Not {
 public:
   // INPUT
@@ -268,63 +292,17 @@ public:
   Not16() { computeOutput(); }
 
   inline void computeOutput() {
-    m_nots[0].set_in(getBit<0>(m_in));
-    m_nots[1].set_in(getBit<1>(m_in));
-    m_nots[2].set_in(getBit<2>(m_in));
-    m_nots[3].set_in(getBit<3>(m_in));
-    m_nots[4].set_in(getBit<4>(m_in));
-    m_nots[5].set_in(getBit<5>(m_in));
-    m_nots[6].set_in(getBit<6>(m_in));
-    m_nots[7].set_in(getBit<7>(m_in));
-    m_nots[8].set_in(getBit<8>(m_in));
-    m_nots[9].set_in(getBit<9>(m_in));
-    m_nots[10].set_in(getBit<10>(m_in));
-    m_nots[11].set_in(getBit<11>(m_in));
-    m_nots[12].set_in(getBit<12>(m_in));
-    m_nots[13].set_in(getBit<13>(m_in));
-    m_nots[14].set_in(getBit<14>(m_in));
-    m_nots[15].set_in(getBit<15>(m_in));
-
-    m_nots[0].computeOutput();
-    m_nots[1].computeOutput();
-    m_nots[2].computeOutput();
-    m_nots[3].computeOutput();
-    m_nots[4].computeOutput();
-    m_nots[5].computeOutput();
-    m_nots[6].computeOutput();
-    m_nots[7].computeOutput();
-    m_nots[8].computeOutput();
-    m_nots[9].computeOutput();
-    m_nots[10].computeOutput();
-    m_nots[11].computeOutput();
-    m_nots[12].computeOutput();
-    m_nots[13].computeOutput();
-    m_nots[14].computeOutput();
-    m_nots[15].computeOutput();
-
-    setBit<0>(m_out, m_nots[0].out());
-    setBit<1>(m_out, m_nots[1].out());
-    setBit<2>(m_out, m_nots[2].out());
-    setBit<3>(m_out, m_nots[3].out());
-    setBit<4>(m_out, m_nots[4].out());
-    setBit<5>(m_out, m_nots[5].out());
-    setBit<6>(m_out, m_nots[6].out());
-    setBit<7>(m_out, m_nots[7].out());
-    setBit<8>(m_out, m_nots[8].out());
-    setBit<9>(m_out, m_nots[9].out());
-    setBit<10>(m_out, m_nots[10].out());
-    setBit<11>(m_out, m_nots[11].out());
-    setBit<12>(m_out, m_nots[12].out());
-    setBit<13>(m_out, m_nots[13].out());
-    setBit<14>(m_out, m_nots[14].out());
-    setBit<15>(m_out, m_nots[15].out());
+    m_nand.set_a(in());
+    m_nand.set_b(in());
+    m_nand.computeOutput();
+    m_out = m_nand.out();
   }
 
 private:
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
-  Not m_nots[16];
+  Nand16 m_nand;
 };
 
 class And16 {
@@ -342,73 +320,12 @@ public:
   And16() { computeOutput(); }
 
   inline void computeOutput() {
-    m_ands[0].set_a( getBit<0>(m_a));
-    m_ands[1].set_a( getBit<1>(m_a));
-    m_ands[2].set_a( getBit<2>(m_a));
-    m_ands[3].set_a( getBit<3>(m_a));
-    m_ands[4].set_a( getBit<4>(m_a));
-    m_ands[5].set_a( getBit<5>(m_a));
-    m_ands[6].set_a( getBit<6>(m_a));
-    m_ands[7].set_a( getBit<7>(m_a));
-    m_ands[8].set_a( getBit<8>(m_a));
-    m_ands[9].set_a( getBit<9>(m_a));
-    m_ands[10].set_a(getBit<10>(m_a));
-    m_ands[11].set_a(getBit<11>(m_a));
-    m_ands[12].set_a(getBit<12>(m_a));
-    m_ands[13].set_a(getBit<13>(m_a));
-    m_ands[14].set_a(getBit<14>(m_a));
-    m_ands[15].set_a(getBit<15>(m_a));
-
-    m_ands[0].set_b( getBit<0>(m_b));
-    m_ands[1].set_b( getBit<1>(m_b));
-    m_ands[2].set_b( getBit<2>(m_b));
-    m_ands[3].set_b( getBit<3>(m_b));
-    m_ands[4].set_b( getBit<4>(m_b));
-    m_ands[5].set_b( getBit<5>(m_b));
-    m_ands[6].set_b( getBit<6>(m_b));
-    m_ands[7].set_b( getBit<7>(m_b));
-    m_ands[8].set_b( getBit<8>(m_b));
-    m_ands[9].set_b( getBit<9>(m_b));
-    m_ands[10].set_b(getBit<10>(m_b));
-    m_ands[11].set_b(getBit<11>(m_b));
-    m_ands[12].set_b(getBit<12>(m_b));
-    m_ands[13].set_b(getBit<13>(m_b));
-    m_ands[14].set_b(getBit<14>(m_b));
-    m_ands[15].set_b(getBit<15>(m_b));
-
-    m_ands[0].computeOutput();
-    m_ands[1].computeOutput();
-    m_ands[2].computeOutput();
-    m_ands[3].computeOutput();
-    m_ands[4].computeOutput();
-    m_ands[5].computeOutput();
-    m_ands[6].computeOutput();
-    m_ands[7].computeOutput();
-    m_ands[8].computeOutput();
-    m_ands[9].computeOutput();
-    m_ands[10].computeOutput();
-    m_ands[11].computeOutput();
-    m_ands[12].computeOutput();
-    m_ands[13].computeOutput();
-    m_ands[14].computeOutput();
-    m_ands[15].computeOutput();
-
-    setBit<0>(m_out, m_ands[0].out());
-    setBit<1>(m_out, m_ands[1].out());
-    setBit<2>(m_out, m_ands[2].out());
-    setBit<3>(m_out, m_ands[3].out());
-    setBit<4>(m_out, m_ands[4].out());
-    setBit<5>(m_out, m_ands[5].out());
-    setBit<6>(m_out, m_ands[6].out());
-    setBit<7>(m_out, m_ands[7].out());
-    setBit<8>(m_out, m_ands[8].out());
-    setBit<9>(m_out, m_ands[9].out());
-    setBit<10>(m_out, m_ands[10].out());
-    setBit<11>(m_out, m_ands[11].out());
-    setBit<12>(m_out, m_ands[12].out());
-    setBit<13>(m_out, m_ands[13].out());
-    setBit<14>(m_out, m_ands[14].out());
-    setBit<15>(m_out, m_ands[15].out());
+    m_nand.set_a(a());
+    m_nand.set_b(b());
+    m_nand.computeOutput();
+    m_not.set_in(m_nand.out());
+    m_not.computeOutput();
+    m_out = m_not.out();
   }
 
 private:
@@ -416,9 +333,8 @@ private:
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
-  And m_ands[16];
-
-  inline void set_out(uint16_t val) { m_out = val; }
+  Nand16 m_nand;
+  Not16 m_not;
 };
 
 class Or16 {
@@ -436,73 +352,16 @@ public:
   Or16() { computeOutput(); }
 
   inline void computeOutput() {
-    m_ors[0].set_a( getBit<0>(m_a));
-    m_ors[1].set_a( getBit<1>(m_a));
-    m_ors[2].set_a( getBit<2>(m_a));
-    m_ors[3].set_a( getBit<3>(m_a));
-    m_ors[4].set_a( getBit<4>(m_a));
-    m_ors[5].set_a( getBit<5>(m_a));
-    m_ors[6].set_a( getBit<6>(m_a));
-    m_ors[7].set_a( getBit<7>(m_a));
-    m_ors[8].set_a( getBit<8>(m_a));
-    m_ors[9].set_a( getBit<9>(m_a));
-    m_ors[10].set_a(getBit<10>(m_a));
-    m_ors[11].set_a(getBit<11>(m_a));
-    m_ors[12].set_a(getBit<12>(m_a));
-    m_ors[13].set_a(getBit<13>(m_a));
-    m_ors[14].set_a(getBit<14>(m_a));
-    m_ors[15].set_a(getBit<15>(m_a));
+    m_notA.set_in(a());
+    m_notA.computeOutput();
+    m_notB.set_in(b());
+    m_notB.computeOutput();
 
-    m_ors[0].set_b( getBit<0>(m_b));
-    m_ors[1].set_b( getBit<1>(m_b));
-    m_ors[2].set_b( getBit<2>(m_b));
-    m_ors[3].set_b( getBit<3>(m_b));
-    m_ors[4].set_b( getBit<4>(m_b));
-    m_ors[5].set_b( getBit<5>(m_b));
-    m_ors[6].set_b( getBit<6>(m_b));
-    m_ors[7].set_b( getBit<7>(m_b));
-    m_ors[8].set_b( getBit<8>(m_b));
-    m_ors[9].set_b( getBit<9>(m_b));
-    m_ors[10].set_b(getBit<10>(m_b));
-    m_ors[11].set_b(getBit<11>(m_b));
-    m_ors[12].set_b(getBit<12>(m_b));
-    m_ors[13].set_b(getBit<13>(m_b));
-    m_ors[14].set_b(getBit<14>(m_b));
-    m_ors[15].set_b(getBit<15>(m_b));
+    m_nand.set_a(m_notA.out());
+    m_nand.set_b(m_notB.out());
+    m_nand.computeOutput();
 
-    m_ors[0].computeOutput();
-    m_ors[1].computeOutput();
-    m_ors[2].computeOutput();
-    m_ors[3].computeOutput();
-    m_ors[4].computeOutput();
-    m_ors[5].computeOutput();
-    m_ors[6].computeOutput();
-    m_ors[7].computeOutput();
-    m_ors[8].computeOutput();
-    m_ors[9].computeOutput();
-    m_ors[10].computeOutput();
-    m_ors[11].computeOutput();
-    m_ors[12].computeOutput();
-    m_ors[13].computeOutput();
-    m_ors[14].computeOutput();
-    m_ors[15].computeOutput();
-
-    setBit<0>(m_out, m_ors[0].out());
-    setBit<1>(m_out, m_ors[1].out());
-    setBit<2>(m_out, m_ors[2].out());
-    setBit<3>(m_out, m_ors[3].out());
-    setBit<4>(m_out, m_ors[4].out());
-    setBit<5>(m_out, m_ors[5].out());
-    setBit<6>(m_out, m_ors[6].out());
-    setBit<7>(m_out, m_ors[7].out());
-    setBit<8>(m_out, m_ors[8].out());
-    setBit<9>(m_out, m_ors[9].out());
-    setBit<10>(m_out, m_ors[10].out());
-    setBit<11>(m_out, m_ors[11].out());
-    setBit<12>(m_out, m_ors[12].out());
-    setBit<13>(m_out, m_ors[13].out());
-    setBit<14>(m_out, m_ors[14].out());
-    setBit<15>(m_out, m_ors[15].out());
+    m_out = m_nand.out();
   }
 
 private:
@@ -510,7 +369,9 @@ private:
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
-  Or m_ors[16];
+  Not16 m_notA;
+  Not16 m_notB;
+  Nand16 m_nand;
 };
 
 class Mux16 {
@@ -530,90 +391,22 @@ public:
   Mux16() { computeOutput(); }
 
   inline void computeOutput() {
-    m_muxs[0].set_a( getBit<0>(m_a));
-    m_muxs[1].set_a( getBit<1>(m_a));
-    m_muxs[2].set_a( getBit<2>(m_a));
-    m_muxs[3].set_a( getBit<3>(m_a));
-    m_muxs[4].set_a( getBit<4>(m_a));
-    m_muxs[5].set_a( getBit<5>(m_a));
-    m_muxs[6].set_a( getBit<6>(m_a));
-    m_muxs[7].set_a( getBit<7>(m_a));
-    m_muxs[8].set_a( getBit<8>(m_a));
-    m_muxs[9].set_a( getBit<9>(m_a));
-    m_muxs[10].set_a(getBit<10>(m_a));
-    m_muxs[11].set_a(getBit<11>(m_a));
-    m_muxs[12].set_a(getBit<12>(m_a));
-    m_muxs[13].set_a(getBit<13>(m_a));
-    m_muxs[14].set_a(getBit<14>(m_a));
-    m_muxs[15].set_a(getBit<15>(m_a));
+    m_notSel.set_in(sel());
+    m_notSel.computeOutput();
 
-    m_muxs[0].set_b( getBit<0>(m_b));
-    m_muxs[1].set_b( getBit<1>(m_b));
-    m_muxs[2].set_b( getBit<2>(m_b));
-    m_muxs[3].set_b( getBit<3>(m_b));
-    m_muxs[4].set_b( getBit<4>(m_b));
-    m_muxs[5].set_b( getBit<5>(m_b));
-    m_muxs[6].set_b( getBit<6>(m_b));
-    m_muxs[7].set_b( getBit<7>(m_b));
-    m_muxs[8].set_b( getBit<8>(m_b));
-    m_muxs[9].set_b( getBit<9>(m_b));
-    m_muxs[10].set_b(getBit<10>(m_b));
-    m_muxs[11].set_b(getBit<11>(m_b));
-    m_muxs[12].set_b(getBit<12>(m_b));
-    m_muxs[13].set_b(getBit<13>(m_b));
-    m_muxs[14].set_b(getBit<14>(m_b));
-    m_muxs[15].set_b(getBit<15>(m_b));
+    m_aOut.set_a(a());
+    m_aOut.set_b(m_notSel.out() * 0xffff);
+    m_aOut.computeOutput();
 
-    m_muxs[0].set_sel(sel());
-    m_muxs[1].set_sel(sel());
-    m_muxs[2].set_sel(sel());
-    m_muxs[3].set_sel(sel());
-    m_muxs[4].set_sel(sel());
-    m_muxs[5].set_sel(sel());
-    m_muxs[6].set_sel(sel());
-    m_muxs[7].set_sel(sel());
-    m_muxs[8].set_sel(sel());
-    m_muxs[9].set_sel(sel());
-    m_muxs[10].set_sel(sel());
-    m_muxs[11].set_sel(sel());
-    m_muxs[12].set_sel(sel());
-    m_muxs[13].set_sel(sel());
-    m_muxs[14].set_sel(sel());
-    m_muxs[15].set_sel(sel());
+    m_bOut.set_a(b());
+    m_bOut.set_b(sel() * 0xffff);
+    m_bOut.computeOutput();
 
-    m_muxs[0].computeOutput();
-    m_muxs[1].computeOutput();
-    m_muxs[2].computeOutput();
-    m_muxs[3].computeOutput();
-    m_muxs[4].computeOutput();
-    m_muxs[5].computeOutput();
-    m_muxs[6].computeOutput();
-    m_muxs[7].computeOutput();
-    m_muxs[8].computeOutput();
-    m_muxs[9].computeOutput();
-    m_muxs[10].computeOutput();
-    m_muxs[11].computeOutput();
-    m_muxs[12].computeOutput();
-    m_muxs[13].computeOutput();
-    m_muxs[14].computeOutput();
-    m_muxs[15].computeOutput();
+    m_orOut.set_a(m_aOut.out());
+    m_orOut.set_b(m_bOut.out());
+    m_orOut.computeOutput();
 
-    setBit<0>(m_out, m_muxs[0].out());
-    setBit<1>(m_out, m_muxs[1].out());
-    setBit<2>(m_out, m_muxs[2].out());
-    setBit<3>(m_out, m_muxs[3].out());
-    setBit<4>(m_out, m_muxs[4].out());
-    setBit<5>(m_out, m_muxs[5].out());
-    setBit<6>(m_out, m_muxs[6].out());
-    setBit<7>(m_out, m_muxs[7].out());
-    setBit<8>(m_out, m_muxs[8].out());
-    setBit<9>(m_out, m_muxs[9].out());
-    setBit<10>(m_out, m_muxs[10].out());
-    setBit<11>(m_out, m_muxs[11].out());
-    setBit<12>(m_out, m_muxs[12].out());
-    setBit<13>(m_out, m_muxs[13].out());
-    setBit<14>(m_out, m_muxs[14].out());
-    setBit<15>(m_out, m_muxs[15].out());
+    m_out = m_orOut.out();
   }
 
 private:
@@ -624,7 +417,10 @@ private:
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
-  Mux m_muxs[16];
+  Not m_notSel;
+  And16 m_aOut;
+  And16 m_bOut;
+  Or16 m_orOut;
 };
 
 class Or8Way {
