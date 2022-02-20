@@ -1320,6 +1320,7 @@ int main() {
   test("RAM64", [](){ test_RAMn<RAM64>(64); });
   test("RAM512", [](){ test_RAMn<RAM512>(512); });
   test("RAM4K", [](){ test_RAMn<RAM4K>(4096); });
+  test("RAM16K", [](){ test_RAMn<RAM16K>(16384); });
 
   std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1349,11 +1350,12 @@ int main() {
             << "size of RAM8: "  << sizeof(RAM8) << '\n'
             << "size of RAM64: "  << sizeof(RAM64) << '\n'
             << "size of RAM512: "  << sizeof(RAM512) << '\n'
-            << "size of RAM4K: "  << sizeof(RAM4K) << '\n';
+            << "size of RAM4K: "  << sizeof(RAM4K) << '\n'
+            << "size of RAM16K: "  << sizeof(RAM16K) << '\n';
 
   std::cout << "===================================\n"
-            << "TESTS FAILED:    " << std::setw(5) << failedCt << '\n'
-            << "TESTS PERFORMED: " << std::setw(5) << (failedCt + successCt) << '\n'
+            << "TESTS FAILED:    " << std::setw(7) << failedCt << '\n'
+            << "TESTS PERFORMED: " << std::setw(7) << (failedCt + successCt) << '\n'
             << "===================================\n";
 }
 
