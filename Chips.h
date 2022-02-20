@@ -3,11 +3,14 @@
 #include <cstring>
 #include <bitset>
 
+// Returns true if there was a change to `bits` and false if no change
 template<uint8_t N, typename T>
-static inline void setBit(T& bits, bool value) {
+static inline bool setBit(T& bits, bool value) {
   constexpr uint64_t mask = (1 << N);
+  T old = bits;
   if (value) bits |= mask;
   else       bits &= ~mask;
+  return old != bits;
 }
 
 template<uint8_t N, typename T>
@@ -1568,14 +1571,8 @@ public:
     m_regs[6].set_load(m_dmux.g());
     m_regs[7].set_load(m_dmux.h());
 
-    m_regs[0].tock();
-    m_regs[1].tock();
-    m_regs[2].tock();
-    m_regs[3].tock();
-    m_regs[4].tock();
-    m_regs[5].tock();
-    m_regs[6].tock();
-    m_regs[7].tock();
+    // optimization: only tock() the selected register
+    m_regs[m_dmux.sel()].tock();
 
     m_mux.set_sel(address());
     m_mux.set_a(m_regs[0].out());
@@ -1592,7 +1589,7 @@ public:
   }
 
 private:
-  // { load, address[0..2] }
+  // { load, address[0..2], inDirty, loadDirty, addrDirty }
   uint8_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
@@ -1650,14 +1647,8 @@ public:
     m_rams[6].set_address(address() & 0x7);
     m_rams[7].set_address(address() & 0x7);
 
-    m_rams[0].tock();
-    m_rams[1].tock();
-    m_rams[2].tock();
-    m_rams[3].tock();
-    m_rams[4].tock();
-    m_rams[5].tock();
-    m_rams[6].tock();
-    m_rams[7].tock();
+    // optimization: only tock() the selected ram module
+    m_rams[m_dmux.sel()].tock();
 
     m_mux.set_sel((address() & 0x38) >> 3);
     m_mux.set_a(m_rams[0].out());
@@ -1674,8 +1665,8 @@ public:
   }
 
 private:
-  // { load, address[0..5] }
-  uint8_t m_pins = 0;
+  // { load, address[0..5], inDirty, loadDirty, addrDirty }
+  uint16_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
