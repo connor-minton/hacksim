@@ -1869,7 +1869,7 @@ public:
   inline uint16_t outM() const { return m_outM; }
   inline uint16_t addressM() const { return m_pins & 0x7fff; }
   inline bool writeM() const { return getBit<15>(m_pins); }
-  inline uint16_t pc() const { return m_pins & 0x7fff0000; }
+  inline uint16_t pc() const { return (m_pins & 0x7fff0000) >> 16; }
 
   inline void tock() {
     // ALU computations are instantaneous and happen first.
@@ -2017,7 +2017,7 @@ private:
     m_pins = (m_pins & 0xffff8000) | (val & 0x7fff);
   }
   inline void set_pc(uint16_t val) {
-    m_pins = (m_pins & 0x80000000) | ((val & 0x7fff) << 16) | (m_pins & 0xffff);
+    m_pins = (m_pins & 0x80000000) | ((uint32_t)(val & 0x7fff) << 16) | (m_pins & 0xffff);
   }
 };
 

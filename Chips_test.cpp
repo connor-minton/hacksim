@@ -12,8 +12,8 @@ int testNum = 1;
 int successCt = 0;
 int failedCt = 0;
 
-template <typename T>
-bool expectEqual(const T& actual, const T& theoretical);
+template <typename T, typename U>
+bool expectEqual(const T& actual, const U& theoretical);
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T> v) {
@@ -1525,10 +1525,33 @@ void test_Computer_Max() {
   computer->set_reset(true);
   computer->tock();
 
+  Memory& mem = computer->mem();
+  mem.poke(0, 3);
+  mem.poke(1, 5);
+
   computer->set_reset(false);
-  for (int i = 0; i < rom.size(); i++) {
+  int i = 0;
+  for (; i < 20; i++) {
     computer->tock();
   }
+
+  expectEqual(mem.peek(0), 3);
+  expectEqual(mem.peek(1), 5);
+  expectEqual(mem.peek(2), 5);
+
+  computer->set_reset(true);
+  computer->tock();
+
+  computer->set_reset(false);
+  mem.poke(0, 23456);
+  mem.poke(1, 12345);
+  for (; i < 40; i++) {
+    computer->tock();
+  }
+
+  expectEqual(mem.peek(0), 23456);
+  expectEqual(mem.peek(1), 12345);
+  expectEqual(mem.peek(2), 23456);
 }
 
 void test(std::string name, std::function<void()> func) {
@@ -1608,7 +1631,7 @@ int main() {
   test("Memory", test_Memory);
   test("shallow::ROM32K", test_ROM32K);
 
-  // test("Computer / Max", test_Computer_Max);
+  test("Computer / Max", test_Computer_Max);
 
   std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1649,8 +1672,8 @@ int main() {
             << "===================================\n";
 }
 
-template <typename T>
-bool expectEqual(const T& actual, const T& theoretical) {
+template <typename T, typename U>
+bool expectEqual(const T& actual, const U& theoretical) {
   bool result = true;
   if (theoretical != actual) {
     std::cout << "FAILED [" << testNum << "]: expected "
