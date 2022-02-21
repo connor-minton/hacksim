@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <functional>
 
 #include "Chips.h"
 #include "ShallowChips.h"
@@ -1244,54 +1245,67 @@ void test_PC() {
 }
 
 template<typename RAM_T>
-void test_RAMn(int n) {
-  RAM_T* chip = new RAM_T();
-
-  chip->set_load(false);
-  chip->set_in(0x1234);
+void test_RAMn(RAM_T& chip, int n) {
+  chip.set_load(false);
+  chip.set_in(0x1234);
   for (int i = 0; i < n; i++) {
-    chip->set_address(i);
-    chip->tock();
-    expectEqual(chip->out(), (uint16_t)0);
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+    expectEqual(chip.peek(i), (uint16_t)0);
   }
 
-  chip->set_load(true);
+  chip.set_load(true);
   for (int i = 0; i < n; i++) {
-    chip->set_address(i);
-    chip->set_in(i*2);
-    chip->tock();
-    expectEqual(chip->out(), (uint16_t)(i*2));
+    chip.set_address(i);
+    chip.set_in(i*2);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+    expectEqual(chip.peek(i), (uint16_t)(i*2));
   }
 
-  chip->set_load(false);
+  chip.set_load(false);
   for (int i = 0; i < n; i++) {
-    chip->set_address(i);
-    chip->tock();
-    expectEqual(chip->out(), (uint16_t)(i*2));
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+    expectEqual(chip.peek(i), (uint16_t)(i*2));
   }
 
-  chip->set_load(true);
+  chip.set_load(true);
   for (int i = 0; i < n; i++) {
-    chip->set_address(i);
-    chip->set_in(0);
-    chip->tock();
-    expectEqual(chip->out(), (uint16_t)0);
+    chip.set_address(i);
+    chip.set_in(0);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+    expectEqual(chip.peek(i), (uint16_t)(0));
   }
 
-  chip->set_load(false);
-  chip->set_in(0x1234);
+  chip.set_load(false);
+  chip.set_in(0x1234);
   for (int i = 0; i < n; i++) {
-    chip->set_address(i);
-    chip->tock();
-    expectEqual(chip->out(), (uint16_t)0);
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)0);
+    expectEqual(chip.peek(i), (uint16_t)(0));
   }
 
-  delete chip;
+  // test poke and peek
+  chip.set_load(false);
+  for (int i = 0; i < n; i++) {
+    chip.poke(i, i * 2);
+    expectEqual(chip.peek(i), (uint16_t)(i*2));
+    chip.set_address(i);
+    chip.tock();
+    expectEqual(chip.out(), (uint16_t)(i*2));
+  }
 }
 
 void test_Memory() {
   uint16_t kbd = 0;
-  Memory* chip = new Memory(&kbd);
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+
+  Memory* chip = new Memory(screen, &kbd);
 
   // test lower memory
   chip->set_load(false);
@@ -1299,6 +1313,7 @@ void test_Memory() {
   chip->set_address(0x0000);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)0);
+  expectEqual(chip->peek(0x0000), (uint16_t)0);
 
   chip->set_load(true);
 
@@ -1320,15 +1335,19 @@ void test_Memory() {
   chip->set_address(0x1234);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)1);
+  expectEqual(chip->peek(0x1234), (uint16_t)1);
   chip->set_address(0x2345);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)2);
+  expectEqual(chip->peek(0x2345), (uint16_t)2);
   chip->set_address(0x3456);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)3);
+  expectEqual(chip->peek(0x3456), (uint16_t)3);
   chip->set_address(0x3fff);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)4);
+  expectEqual(chip->peek(0x3fff), (uint16_t)4);
 
   // check that the screen is still zeroed out
   chip->set_load(false);
@@ -1336,6 +1355,7 @@ void test_Memory() {
     chip->set_address(i);
     chip->tock();
     expectEqual(chip->out(), (uint16_t)0);
+    expectEqual(chip->peek(i), (uint16_t)0);
   }
 
   // test screen memory
@@ -1359,15 +1379,19 @@ void test_Memory() {
   chip->set_address(0x4234);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)1);
+  expectEqual(chip->peek(0x4234), (uint16_t)1);
   chip->set_address(0x4444);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)2);
+  expectEqual(chip->peek(0x4444), (uint16_t)2);
   chip->set_address(0x5555);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)3);
+  expectEqual(chip->peek(0x5555), (uint16_t)3);
   chip->set_address(0x5fff);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)4);
+  expectEqual(chip->peek(0x5fff), (uint16_t)4);
 
   // test keyboard
   chip->set_load(false);
@@ -1376,18 +1400,21 @@ void test_Memory() {
   chip->tock();
   expectEqual(kbd, (uint16_t)0);
   expectEqual(chip->out(), (uint16_t)0);
+  expectEqual(chip->peek(Memory::KBD), (uint16_t)0);
 
   // should not be able to set keyboard from chip
   chip->set_load(true);
   chip->tock();
   expectEqual(kbd, (uint16_t)0);
   expectEqual(chip->out(), (uint16_t)0);
+  expectEqual(chip->peek(Memory::KBD), (uint16_t)0);
 
   // change in kbd should be reflected through Memory::out()
   chip->set_load(false);
   kbd = 0x41;
   chip->tock();
   expectEqual(chip->out(), kbd);
+  expectEqual(chip->peek(Memory::KBD), kbd);
 
   // check lower memory hasn't changed
   chip->set_load(false);
@@ -1395,15 +1422,58 @@ void test_Memory() {
   chip->set_address(0x1234);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)1);
+  expectEqual(chip->peek(0x1234), (uint16_t)1);
   chip->set_address(0x2345);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)2);
+  expectEqual(chip->peek(0x2345), (uint16_t)2);
   chip->set_address(0x3456);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)3);
+  expectEqual(chip->peek(0x3456), (uint16_t)3);
   chip->set_address(0x3fff);
   chip->tock();
   expectEqual(chip->out(), (uint16_t)4);
+  expectEqual(chip->peek(0x3fff), (uint16_t)4);
+
+  // test poke
+  chip->set_load(false);
+
+  chip->poke(0x1234, 10);
+  expectEqual(chip->peek(0x1234), (uint16_t)10);
+  chip->set_address(0x1234);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)10);
+
+  chip->poke(0x2345, 20);
+  expectEqual(chip->peek(0x2345), (uint16_t)20);
+  chip->set_address(0x2345);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)20);
+
+  chip->poke(0x3456, 30);
+  expectEqual(chip->peek(0x3456), (uint16_t)30);
+  chip->set_address(0x3456);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)30);
+
+  chip->poke(0x3fff, 40);
+  expectEqual(chip->peek(0x3fff), (uint16_t)40);
+  chip->set_address(0x3fff);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)40);
+
+  chip->poke(0x4fff, 50);
+  expectEqual(chip->peek(0x4fff), (uint16_t)50);
+  chip->set_address(0x4fff);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)50);
+
+  chip->poke(Memory::KBD, 60);
+  expectEqual(chip->peek(Memory::KBD), (uint16_t)60);
+  chip->set_address(Memory::KBD);
+  chip->tock();
+  expectEqual(chip->out(), (uint16_t)60);
 
   delete chip;
 }
@@ -1413,7 +1483,8 @@ void test_ROM32K() {
     0x1234, 0x2345, 0x3456, 0x4567
   };
 
-  shallow::ROM32K chip(instr);
+  shallow::ROM32K chip;
+  chip.set_rom(instr);
 
   for (int i = 0; i < instr.size(); i++) {
     chip.set_address(i);
@@ -1424,7 +1495,43 @@ void test_ROM32K() {
   expectEqual(chip.instruction(), (uint16_t)0);
 }
 
-void test(std::string name, void (*func)()) {
+void test_Computer_Max() {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  std::vector<uint16_t> rom = {
+    0x0000,
+    0xfc10,
+    0x0001,
+    0xf4d0,
+    0x000a,
+    0xe301,
+    0x0001,
+    0xfc10,
+    0x000c,
+    0xea87,
+    0x0000,
+    0xfc10,
+    0x0002,
+    0xe308,
+    0x000e,
+    0xea87
+  };
+
+  computer->set_rom(rom);
+
+  computer->set_reset(true);
+  computer->tock();
+
+  computer->set_reset(false);
+  for (int i = 0; i < rom.size(); i++) {
+    computer->tock();
+  }
+}
+
+void test(std::string name, std::function<void()> func) {
   std::chrono::high_resolution_clock clk;
   std::cout << name << "...";
   int old = failedCt;
@@ -1467,14 +1574,41 @@ int main() {
   test("Bit", test_Bit);
   test("Register", test_Register);
   test("PC", test_PC);
-  test("RAM8", [](){ test_RAMn<RAM8>(8); });
-  test("RAM64", [](){ test_RAMn<RAM64>(64); });
-  test("RAM512", [](){ test_RAMn<RAM512>(512); });
-  test("RAM4K", [](){ test_RAMn<RAM4K>(4096); });
-  test("RAM16K", [](){ test_RAMn<RAM16K>(16384); });
-  test("shallow::Screen", [](){ test_RAMn<shallow::Screen>(8192); });
+  test("RAM8", [](){
+    RAM8* chip = new RAM8();
+    test_RAMn<RAM8>(*chip, 8);
+    delete chip;
+  });
+  test("RAM64", [](){
+    RAM64* chip = new RAM64();
+    test_RAMn<RAM64>(*chip, 64);
+    delete chip;
+  });
+  test("RAM512", [](){
+    RAM512* chip = new RAM512();
+    test_RAMn<RAM512>(*chip, 512);
+    delete chip;
+  });
+  test("RAM4K", [](){
+    RAM4K* chip = new RAM4K();
+    test_RAMn<RAM4K>(*chip, 4096);
+    delete chip;
+  });
+  test("RAM16K", [](){
+    RAM16K* chip = new RAM16K();
+    test_RAMn<RAM16K>(*chip, 16384);
+    delete chip;
+  });
+  test("shallow::Screen", [](){
+    uint16_t buf[shallow::Screen::SCREEN_SIZE] = {0};
+    shallow::Screen* chip = new shallow::Screen(buf);
+    test_RAMn<shallow::Screen>(*chip, 8192);
+    delete chip;
+  });
   test("Memory", test_Memory);
   test("shallow::ROM32K", test_ROM32K);
+
+  // test("Computer / Max", test_Computer_Max);
 
   std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
@@ -1506,7 +1640,8 @@ int main() {
             << "size of RAM512: "  << sizeof(RAM512) << '\n'
             << "size of RAM4K: "  << sizeof(RAM4K) << '\n'
             << "size of RAM16K: "  << sizeof(RAM16K) << '\n'
-            << "size of Memory: "  << sizeof(Memory) << '\n';
+            << "size of Memory: "  << sizeof(Memory) << '\n'
+            << "size of Computer: "  << sizeof(Computer) << '\n';
 
   std::cout << "===================================\n"
             << "TESTS FAILED:    " << std::setw(7) << failedCt << '\n'

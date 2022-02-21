@@ -24,6 +24,17 @@ public:
   // OUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  Screen(uint16_t* buf) : m_screen(buf) { }
+
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) { return m_screen[offset & 0x1fff]; }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_screen[offset & 0x1fff] = val;
+  }
+
   inline void tock() {
     if (load()) {
       m_screen[address()] = m_in;
@@ -37,7 +48,7 @@ private:
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
-  uint16_t m_screen[SCREEN_SIZE] = {0};
+  uint16_t* m_screen;
 };
 
 class ROM32K {
@@ -54,8 +65,10 @@ public:
     return 0;
   }
 
-  ROM32K(std::vector<uint16_t> instructions)
-    : m_instructions(instructions) { }
+  inline std::vector<uint16_t> get_rom() const { return m_instructions; }
+
+  inline void set_rom(std::vector<uint16_t> instructions)
+    { m_instructions = instructions; }
 
 private:
   std::vector<uint16_t> m_instructions;

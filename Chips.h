@@ -1114,6 +1114,8 @@ public:
   // OUTPUT out
   inline bool out() const { return getBit<1>(m_pins); }
 
+  inline void poke(bool val) { set_out(val); }
+
   DFF() { tock(); }
 
   inline void tock() {
@@ -1138,6 +1140,10 @@ public:
 
   // OUTPUT out
   inline bool out() const { return getBit<2>(m_pins); }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // to `val`
+  inline void poke(bool val) { m_dff.poke(val); set_out(val); }
 
   Bit() { tock(); }
 
@@ -1173,6 +1179,44 @@ public:
 
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // to `val`
+  inline void poke(uint16_t val) {
+    m_bits[0].poke(getBit<0>(val));
+    m_bits[1].poke(getBit<1>(val));
+    m_bits[2].poke(getBit<2>(val));
+    m_bits[3].poke(getBit<3>(val));
+    m_bits[4].poke(getBit<4>(val));
+    m_bits[5].poke(getBit<5>(val));
+    m_bits[6].poke(getBit<6>(val));
+    m_bits[7].poke(getBit<7>(val));
+    m_bits[8].poke(getBit<8>(val));
+    m_bits[9].poke(getBit<9>(val));
+    m_bits[10].poke(getBit<10>(val));
+    m_bits[11].poke(getBit<11>(val));
+    m_bits[12].poke(getBit<12>(val));
+    m_bits[13].poke(getBit<13>(val));
+    m_bits[14].poke(getBit<14>(val));
+    m_bits[15].poke(getBit<15>(val));
+
+    setBit<0>(m_out, m_bits[0].out());
+    setBit<1>(m_out, m_bits[1].out());
+    setBit<2>(m_out, m_bits[2].out());
+    setBit<3>(m_out, m_bits[3].out());
+    setBit<4>(m_out, m_bits[4].out());
+    setBit<5>(m_out, m_bits[5].out());
+    setBit<6>(m_out, m_bits[6].out());
+    setBit<7>(m_out, m_bits[7].out());
+    setBit<8>(m_out, m_bits[8].out());
+    setBit<9>(m_out, m_bits[9].out());
+    setBit<10>(m_out, m_bits[10].out());
+    setBit<11>(m_out, m_bits[11].out());
+    setBit<12>(m_out, m_bits[12].out());
+    setBit<13>(m_out, m_bits[13].out());
+    setBit<14>(m_out, m_bits[14].out());
+    setBit<15>(m_out, m_bits[15].out());
+  }
 
   Register() { tock(); }
 
@@ -1328,6 +1372,17 @@ public:
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    return m_regs[offset & 0x7].out();
+  }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_regs[offset & 0x7].poke(val);
+  }
+
   inline void tock() {
     m_dmux.set_in(load());
     m_dmux.set_sel(address());
@@ -1394,6 +1449,17 @@ public:
 
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
+
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    return m_rams[(offset & 0x38) >> 3].peek(offset & 0x7);
+  }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_rams[(offset & 0x38) >> 3].poke(offset & 0x7, val);
+  }
 
   inline void tock() {
     m_dmux.set_in(load());
@@ -1471,6 +1537,17 @@ public:
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    return m_rams[(offset & 0x1c0) >> 6].peek(offset & 0x3f);
+  }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_rams[(offset & 0x1c0) >> 6].poke(offset & 0x3f, val);
+  }
+
   inline void tock() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x1c0) >> 6);
@@ -1546,6 +1623,17 @@ public:
 
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
+
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    return m_rams[(offset & 0xe00) >> 9].peek(offset & 0x1ff);
+  }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_rams[(offset & 0xe00) >> 9].poke(offset & 0x1ff, val);
+  }
 
   inline void tock() {
     m_dmux.set_in(load());
@@ -1623,6 +1711,17 @@ public:
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  // Bypass the clocking system to examine the value at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    return m_rams[(offset & 0x3000) >> 12].peek(offset & 0xfff);
+  }
+
+  // Bypass the clocking system to forcefully set the underlying value
+  // at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    m_rams[(offset & 0x3000) >> 12].poke(offset & 0xfff, val);
+  }
+
   inline void tock() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x3000) >> 12);
@@ -1686,7 +1785,22 @@ public:
   // OUT out[16]
   inline uint16_t out() const { return m_out; }
 
-  Memory(uint16_t* kbd) : m_kbd(kbd) { }
+  Memory(uint16_t* screen, uint16_t* kbd)
+    : m_screen(screen), m_kbd(kbd) { }
+
+  // Bypass the clocking system to examine memory at `offset`
+  inline uint16_t peek(uint16_t offset) {
+    if (offset < SCREEN) return m_ram.peek(offset);
+    if (offset < KBD)    return m_screen.peek(offset - KBD);
+    return *m_kbd;
+  }
+
+  // Bypass the clocking system to set memory at `offset` to `val`
+  inline void poke(uint16_t offset, uint16_t val) {
+    if (offset < SCREEN)   m_ram.poke(offset, val);
+    else if (offset < KBD) m_screen.poke(offset - KBD, val);
+    else                   *m_kbd = val;
+  }
 
   inline void tock() {
     m_demuxRAM.set_in(load());
@@ -1905,4 +2019,40 @@ private:
   inline void set_pc(uint16_t val) {
     m_pins = (m_pins & 0x80000000) | ((val & 0x7fff) << 16) | (m_pins & 0xffff);
   }
+};
+
+class Computer {
+public:
+  // IN reset
+  inline bool reset() const { return m_reset; }
+  inline void set_reset(bool val) { m_reset = val; }
+
+  Computer(uint16_t* screen, uint16_t* kbd)
+    : m_mem(screen, kbd) { }
+
+  inline void set_rom(const std::vector<uint16_t>& instructions)
+    { m_rom.set_rom(instructions); }
+
+  inline Memory& mem() { return m_mem; }
+
+  inline void tock() {
+    m_rom.set_address(m_cpu.pc());
+
+    m_mem.set_in(m_cpu.outM());
+    m_mem.set_load(m_cpu.writeM());
+    m_mem.set_address(m_cpu.addressM());
+    m_mem.tock();
+
+    m_cpu.set_reset(reset());
+    m_cpu.set_instruction(m_rom.instruction());
+    m_cpu.set_inM(m_mem.out());
+    m_cpu.tock();
+  }
+
+private:
+  bool m_reset = false;
+
+  shallow::ROM32K m_rom;
+  Memory          m_mem;
+  CPU             m_cpu;
 };
