@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Bits.h"
 
 namespace shallow {
@@ -36,6 +38,28 @@ private:
   uint16_t m_out = 0;
 
   uint16_t m_screen[SCREEN_SIZE] = {0};
+};
+
+class ROM32K {
+public:
+  // IN address[15]
+  inline uint16_t address() const { return m_address; }
+
+  inline void set_address(uint16_t val) { m_address = val & 0x7fff; }
+
+  // OUT out[16]
+  inline uint16_t instruction() const {
+    if (address() < m_instructions.size())
+      return m_instructions[address()];
+    return 0;
+  }
+
+  ROM32K(std::vector<uint16_t> instructions)
+    : m_instructions(instructions) { }
+
+private:
+  std::vector<uint16_t> m_instructions;
+  uint16_t m_address = 0;
 };
 
 }

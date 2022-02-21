@@ -1408,6 +1408,22 @@ void test_Memory() {
   delete chip;
 }
 
+void test_ROM32K() {
+  std::vector<uint16_t> instr = {
+    0x1234, 0x2345, 0x3456, 0x4567
+  };
+
+  shallow::ROM32K chip(instr);
+
+  for (int i = 0; i < instr.size(); i++) {
+    chip.set_address(i);
+    expectEqual(chip.instruction(), instr[i]);
+  }
+
+  chip.set_address(1000);
+  expectEqual(chip.instruction(), (uint16_t)0);
+}
+
 void test(std::string name, void (*func)()) {
   std::chrono::high_resolution_clock clk;
   std::cout << name << "...";
@@ -1458,8 +1474,9 @@ int main() {
   test("RAM16K", [](){ test_RAMn<RAM16K>(16384); });
   test("shallow::Screen", [](){ test_RAMn<shallow::Screen>(8192); });
   test("Memory", test_Memory);
+  test("shallow::ROM32K", test_ROM32K);
 
-  std::cout << "size of Nand: "      << sizeof(Nand) << '\n'
+  std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
             << "size of Not: "       << sizeof(Not) << '\n'
             << "size of Or: "        << sizeof(Or) << '\n'
