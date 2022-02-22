@@ -3,5 +3,5 @@
 #include "FileUtils.h"
 
 int main() {
-  readHackFile("asdf");
+  FileUtils::readHackFile("asdf");
 }

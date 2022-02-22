@@ -13,10 +13,10 @@ hacksim: Main.o
 Main.o: Main.cpp Chips.h ShallowChips.h
 	g++ $(CXX_FLAGS) -c Main.cpp -o Main.o
 
-Chips_test: Chips_test.cpp Chips.h ShallowChips.h FileUtils.h
+Chips_test: Chips_test.cpp Chips.h ShallowChips.h FileUtils.h Test.h
 	g++ $(CXX_FLAGS) Chips_test.cpp -o Chips_test
 
-FileUtils_test: FileUtils_test.cpp FileUtils.h
+FileUtils_test: FileUtils_test.cpp FileUtils.h Test.h
 	g++ $(CXX_FLAGS) FileUtils_test.cpp -o FileUtils_test
 
 FileUtils.h: Exceptions.h
