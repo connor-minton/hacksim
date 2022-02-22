@@ -2,10 +2,9 @@
 #include <iomanip>
 #include <vector>
 #include <string>
-#include <chrono>
-#include <functional>
 
 #include "Chips.h"
+#include "FileUtils.h"
 #include "ShallowChips.h"
 #include "Test.h"
 
@@ -1480,24 +1479,7 @@ void test_Computer_Max(TestContext& ctx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  std::vector<uint16_t> rom = {
-    0x0000,
-    0xfc10,
-    0x0001,
-    0xf4d0,
-    0x000a,
-    0xe301,
-    0x0001,
-    0xfc10,
-    0x000c,
-    0xea87,
-    0x0000,
-    0xfc10,
-    0x0002,
-    0xe308,
-    0x000e,
-    0xea87
-  };
+  auto rom = FileUtils::readHackFile("hack/Max.hack");
 
   computer->set_rom(rom);
 
