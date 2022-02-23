@@ -65,6 +65,12 @@ public:
     return 0;
   }
 
+  inline uint16_t instructionAt(uint16_t addr) const {
+    if (addr < m_instructions.size())
+      return m_instructions[addr];
+    return 0;
+  }
+
   inline std::vector<uint16_t> get_rom() const { return m_instructions; }
 
   inline void set_rom(std::vector<uint16_t> instructions)

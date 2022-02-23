@@ -1,4 +1,5 @@
 *.o
 hacksim
+dasm
 *_test
 notes/

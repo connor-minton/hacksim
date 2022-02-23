@@ -1,8 +1,8 @@
 CXX_FLAGS = --std=c++17 -g
 
-all: hacksim test
+all: hacksim test dasm
 
-test: Chips_test FileUtils_test
+test: Chips_test FileUtils_test Computer_test
 
 clean:
 	rm -f *.o hacksim Chips_test FileUtils_test
@@ -19,4 +19,12 @@ Chips_test: Chips_test.cpp Chips.h ShallowChips.h FileUtils.h Test.h
 FileUtils_test: FileUtils_test.cpp FileUtils.h Test.h
 	g++ $(CXX_FLAGS) FileUtils_test.cpp -o FileUtils_test
 
+Computer_test: Chips.h FileUtils.h Test.h
+	g++ $(CXX_FLAGS) Computer_test.cpp -o Computer_test
+
 FileUtils.h: Exceptions.h
+
+Chips.h: Bits.h ShallowChips.h FileUtils.h
+
+dasm: FileUtils.h Exceptions.h
+	g++ $(CXX_FLAGS) dasm.cpp -o dasm

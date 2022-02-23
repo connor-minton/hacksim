@@ -2,6 +2,7 @@
 
 #include "Bits.h"
 #include "ShallowChips.h"
+#include "FileUtils.h"
 
 class Nand {
 public:
@@ -1871,7 +1872,8 @@ public:
   inline bool writeM() const { return getBit<15>(m_pins); }
   inline uint16_t pc() const { return (m_pins & 0x7fff0000) >> 16; }
 
-  inline void tock() {
+  // Performs computations for combinational outputs (outM and writeM)
+  void tick() {
     // ALU computations are instantaneous and happen first.
     // On the very first clock cycle, the A-register and D-register
     // will already be set to 0 by the constructors, but the register
@@ -1910,7 +1912,10 @@ public:
 
     // OUT writeM
     set_writeM(m_writeM.out());
+  }
 
+  // Performs clocked flows (outputs addressM and pc)
+  inline void tock() {
     // Clocked circuits
 
     // D-register
@@ -2035,17 +2040,28 @@ public:
 
   inline Memory& mem() { return m_mem; }
 
+  uint16_t curInstruction() const;
+  uint16_t nextInstruction() const;
+
+  std::string curInstrDbg() const;
+  std::string nextInstrDbg() const;
+
+  uint16_t curPC() const;
+  uint16_t nextPC() const;
+
   inline void tock() {
     m_rom.set_address(m_cpu.pc());
+
+    m_cpu.set_reset(reset());
+    m_cpu.set_instruction(m_rom.instruction());
+    m_cpu.set_inM(m_mem.out());
+    m_cpu.tick();
 
     m_mem.set_in(m_cpu.outM());
     m_mem.set_load(m_cpu.writeM());
     m_mem.set_address(m_cpu.addressM());
     m_mem.tock();
 
-    m_cpu.set_reset(reset());
-    m_cpu.set_instruction(m_rom.instruction());
-    m_cpu.set_inM(m_mem.out());
     m_cpu.tock();
   }
 
@@ -2056,3 +2072,16 @@ private:
   Memory          m_mem;
   CPU             m_cpu;
 };
+
+uint16_t Computer::curInstruction() const { return m_rom.instruction(); }
+uint16_t Computer::nextInstruction() const
+  { return m_rom.instructionAt(m_cpu.pc()); }
+
+std::string Computer::curInstrDbg() const
+  { return FileUtils::disassemble(curInstruction()); }
+
+std::string Computer::nextInstrDbg() const
+  { return FileUtils::disassemble(nextInstruction()); }
+
+uint16_t Computer::curPC() const { return m_rom.address(); }
+uint16_t Computer::nextPC() const { return m_cpu.pc(); }
