@@ -1319,6 +1319,7 @@ void test_Memory(TestContext& ctx) {
   chip->set_load(false);
   chip->set_in(0x1234);
   chip->set_address(0x0000);
+  chip->tick();
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)0);
   ctx.expectEqual(chip->peek(0x0000), (uint16_t)0);
@@ -1327,32 +1328,48 @@ void test_Memory(TestContext& ctx) {
 
   chip->set_in(1);
   chip->set_address(0x1234);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(2);
   chip->set_address(0x2345);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(3);
   chip->set_address(0x3456);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(4);
   chip->set_address(0x3fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
 
   chip->set_load(false);
 
   chip->set_address(0x1234);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)1);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)1);
   ctx.expectEqual(chip->peek(0x1234), (uint16_t)1);
   chip->set_address(0x2345);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)2);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)2);
   ctx.expectEqual(chip->peek(0x2345), (uint16_t)2);
   chip->set_address(0x3456);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)3);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)3);
   ctx.expectEqual(chip->peek(0x3456), (uint16_t)3);
   chip->set_address(0x3fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)4);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)4);
   ctx.expectEqual(chip->peek(0x3fff), (uint16_t)4);
@@ -1361,6 +1378,7 @@ void test_Memory(TestContext& ctx) {
   chip->set_load(false);
   for (int i = Memory::SCREEN; i < Memory::KBD; i++) {
     chip->set_address(i);
+    chip->tick();
     chip->tock();
     ctx.expectEqual(chip->out(), (uint16_t)0);
     ctx.expectEqual(chip->peek(i), (uint16_t)0);
@@ -1371,32 +1389,48 @@ void test_Memory(TestContext& ctx) {
 
   chip->set_in(1);
   chip->set_address(0x4234);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(2);
   chip->set_address(0x4444);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(3);
   chip->set_address(0x5555);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   chip->set_in(4);
   chip->set_address(0x5fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
 
   chip->set_load(false);
 
   chip->set_address(0x4234);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)1);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)1);
   ctx.expectEqual(chip->peek(0x4234), (uint16_t)1);
   chip->set_address(0x4444);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)2);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)2);
   ctx.expectEqual(chip->peek(0x4444), (uint16_t)2);
   chip->set_address(0x5555);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)3);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)3);
   ctx.expectEqual(chip->peek(0x5555), (uint16_t)3);
   chip->set_address(0x5fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)4);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)4);
   ctx.expectEqual(chip->peek(0x5fff), (uint16_t)4);
@@ -1405,6 +1439,8 @@ void test_Memory(TestContext& ctx) {
   chip->set_load(false);
   chip->set_in(0x1234);
   chip->set_address(Memory::KBD);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)0);
   chip->tock();
   ctx.expectEqual(kbd, (uint16_t)0);
   ctx.expectEqual(chip->out(), (uint16_t)0);
@@ -1412,6 +1448,8 @@ void test_Memory(TestContext& ctx) {
 
   // should not be able to set keyboard from chip
   chip->set_load(true);
+  chip->tick();
+  ctx.expectEqual(kbd, (uint16_t)0);
   chip->tock();
   ctx.expectEqual(kbd, (uint16_t)0);
   ctx.expectEqual(chip->out(), (uint16_t)0);
@@ -1420,6 +1458,8 @@ void test_Memory(TestContext& ctx) {
   // change in kbd should be reflected through Memory::out()
   chip->set_load(false);
   kbd = 0x41;
+  chip->tick();
+  ctx.expectEqual(chip->out(), kbd);
   chip->tock();
   ctx.expectEqual(chip->out(), kbd);
   ctx.expectEqual(chip->peek(Memory::KBD), kbd);
@@ -1428,18 +1468,22 @@ void test_Memory(TestContext& ctx) {
   chip->set_load(false);
 
   chip->set_address(0x1234);
+  chip->tick();
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)1);
   ctx.expectEqual(chip->peek(0x1234), (uint16_t)1);
   chip->set_address(0x2345);
+  chip->tick();
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)2);
   ctx.expectEqual(chip->peek(0x2345), (uint16_t)2);
   chip->set_address(0x3456);
+  chip->tick();
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)3);
   ctx.expectEqual(chip->peek(0x3456), (uint16_t)3);
   chip->set_address(0x3fff);
+  chip->tick();
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)4);
   ctx.expectEqual(chip->peek(0x3fff), (uint16_t)4);
@@ -1450,36 +1494,48 @@ void test_Memory(TestContext& ctx) {
   chip->poke(0x1234, 10);
   ctx.expectEqual(chip->peek(0x1234), (uint16_t)10);
   chip->set_address(0x1234);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)10);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)10);
 
   chip->poke(0x2345, 20);
   ctx.expectEqual(chip->peek(0x2345), (uint16_t)20);
   chip->set_address(0x2345);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)20);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)20);
 
   chip->poke(0x3456, 30);
   ctx.expectEqual(chip->peek(0x3456), (uint16_t)30);
   chip->set_address(0x3456);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)30);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)30);
 
   chip->poke(0x3fff, 40);
   ctx.expectEqual(chip->peek(0x3fff), (uint16_t)40);
   chip->set_address(0x3fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)40);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)40);
 
   chip->poke(0x4fff, 50);
   ctx.expectEqual(chip->peek(0x4fff), (uint16_t)50);
   chip->set_address(0x4fff);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)50);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)50);
 
   chip->poke(Memory::KBD, 60);
   ctx.expectEqual(chip->peek(Memory::KBD), (uint16_t)60);
   chip->set_address(Memory::KBD);
+  chip->tick();
+  ctx.expectEqual(chip->out(), (uint16_t)60);
   chip->tock();
   ctx.expectEqual(chip->out(), (uint16_t)60);
 
@@ -1592,14 +1648,14 @@ int main() {
     test_RAMn<RAM16K>(ctx, *chip, 16384);
     delete chip;
   });
-  // ctx.test("shallow::Screen", [](auto& ctx){
-  //   uint16_t buf[shallow::Screen::SCREEN_SIZE] = {0};
-  //   shallow::Screen* chip = new shallow::Screen(buf);
-  //   test_RAMn<shallow::Screen>(ctx, *chip, 8192);
-  //   delete chip;
-  // });
-  // ctx.test("Memory", test_Memory);
-  // ctx.test("shallow::ROM32K", test_ROM32K);
+  ctx.test("shallow::Screen", [](auto& ctx){
+    uint16_t buf[shallow::Screen::SCREEN_SIZE] = {0};
+    shallow::Screen* chip = new shallow::Screen(buf);
+    test_RAMn<shallow::Screen>(ctx, *chip, 8192);
+    delete chip;
+  });
+  ctx.test("Memory", test_Memory);
+  ctx.test("shallow::ROM32K", test_ROM32K);
 
   // printSizes();
   std::cout << '\n';

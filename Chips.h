@@ -1913,7 +1913,7 @@ public:
     else                   *m_kbd = val;
   }
 
-  inline void tock() {
+  inline void tick() {
     m_demuxRAM.set_in(load());
     m_demuxRAM.set_sel(getBit<14>(address()));
     m_demuxRAM.computeOutput();
@@ -1926,14 +1926,35 @@ public:
     m_ram.set_load(m_demuxRAM.a());
     m_ram.set_address(address() & 0x3fff);
 
-    // optimization: tock ram ONLY if it is being accessed
+    // optimization: tick ram ONLY if it is being accessed
     if (!getBit<14>(address()))
-      m_ram.tock();
+      m_ram.tick();
 
     // screen is a shallow chip, doesn't need optimization
     m_screen.set_in(in());
     m_screen.set_load(m_demuxScreenKbd.a());
     m_screen.set_address(address() & 0x1fff);
+    m_screen.tick();
+
+    m_muxScreenKbdOut.set_sel(getBit<13>(address()));
+    m_muxScreenKbdOut.set_a(m_screen.out());
+    m_muxScreenKbdOut.set_b(*m_kbd);
+    m_muxScreenKbdOut.computeOutput();
+
+    m_muxOut.set_sel(getBit<14>(address()));
+    m_muxOut.set_a(m_ram.out());
+    m_muxOut.set_b(m_muxScreenKbdOut.out());
+    m_muxOut.computeOutput();
+
+    m_out = m_muxOut.out();
+  }
+
+  inline void tock() {
+    // optimization: tock ram ONLY if it is being accessed
+    if (!getBit<14>(address()))
+      m_ram.tock();
+
+    // screen is a shallow chip, doesn't need optimization
     m_screen.tock();
 
     m_muxScreenKbdOut.set_sel(getBit<13>(address()));
