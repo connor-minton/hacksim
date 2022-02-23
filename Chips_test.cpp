@@ -1513,6 +1513,36 @@ void test_Computer_Max(TestContext& ctx) {
   ctx.expectEqual(mem.peek(0), 23456);
   ctx.expectEqual(mem.peek(1), 12345);
   ctx.expectEqual(mem.peek(2), 23456);
+
+  delete computer;
+}
+
+void test_Computer_Add(TestContext& ctx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("hack/Add.hack");
+
+  computer->set_rom(rom);
+
+  computer->set_reset(true);
+  computer->tock();
+  computer->set_reset(false);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 0);
+
+  for (int i = 0; i < 7; i++) {
+    computer->tock();
+  }
+
+  ctx.expectEqual(mem.peek(0), 5);
+  ctx.expectEqual(mem.peek(1), 0);
+  ctx.expectEqual(mem.peek(2), 0);
+
+  delete computer;
 }
 
 int main() {
@@ -1579,6 +1609,7 @@ int main() {
   ctx.test("shallow::ROM32K", test_ROM32K);
 
   ctx.test("Computer / Max", test_Computer_Max);
+  ctx.test("Computer / Add", test_Computer_Add);
 
   std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
             << "size of And: "       << sizeof(And) << '\n'
