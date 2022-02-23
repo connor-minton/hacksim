@@ -8,7 +8,7 @@ void test_Computer_Max(TestContext& ctx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("hack/Max.hack");
+  auto rom = FileUtils::readHackFile("test_programs/asm/Max.hack");
 
   computer->set_rom(rom);
 
@@ -51,7 +51,7 @@ void test_Computer_Add(TestContext& ctx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("hack/Add.hack");
+  auto rom = FileUtils::readHackFile("test_programs/asm/Add.hack");
 
   computer->set_rom(rom);
 
@@ -79,7 +79,7 @@ void test_Computer_TickTock(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("hack/TickTock.hack");
+  auto rom = FileUtils::readHackFile("test_programs/asm/TickTock.hack");
 
   computer->set_rom(rom);
 
@@ -107,7 +107,7 @@ void test_Computer_Rect(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("hack/Rect.hack");
+  auto rom = FileUtils::readHackFile("test_programs/asm/Rect.hack");
 
   computer->set_rom(rom);
 
