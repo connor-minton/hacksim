@@ -132,13 +132,48 @@ void test_Computer_Rect(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_BasicTest(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/BasicTest.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+  mem.poke(1, 300);
+  mem.poke(2, 400);
+  mem.poke(3, 3000);
+  mem.poke(4, 3010);
+
+  for (int i = 0; i < 600; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual(mem.peek(256), 472);
+  cx.expectEqual(mem.peek(300), 10);
+  cx.expectEqual(mem.peek(401), 21);
+  cx.expectEqual(mem.peek(402), 22);
+  cx.expectEqual(mem.peek(3006), 36);
+  cx.expectEqual(mem.peek(3012), 42);
+  cx.expectEqual(mem.peek(3015), 45);
+  cx.expectEqual(mem.peek(11), 510);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
-  cx.test("Computer / Max", test_Computer_Max);
-  cx.test("Computer / Add", test_Computer_Add);
-  cx.test("Computer / TickTock", test_Computer_TickTock);
-  cx.test("Computer / Rect", test_Computer_Rect);
+  cx.test("Computer / asm / Max", test_Computer_Max);
+  cx.test("Computer / asm / Add", test_Computer_Add);
+  cx.test("Computer / asm / TickTock", test_Computer_TickTock);
+  cx.test("Computer / asm / Rect", test_Computer_Rect);
+
+  cx.test("Computer / vm / BasicTest", test_Computer_BasicTest);
 
   std::cout << '\n';
 
