@@ -19,7 +19,7 @@ Chips_test: Chips_test.cpp Chips.h ShallowChips.h FileUtils.h Test.h
 FileUtils_test: FileUtils_test.cpp FileUtils.h Test.h
 	g++ $(CXX_FLAGS) FileUtils_test.cpp -o FileUtils_test
 
-Computer_test: Chips.h FileUtils.h Test.h
+Computer_test: Computer_test.cpp Chips.h FileUtils.h Test.h
 	g++ $(CXX_FLAGS) Computer_test.cpp -o Computer_test
 
 FileUtils.h: Exceptions.h

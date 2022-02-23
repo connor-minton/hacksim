@@ -1,7 +1,7 @@
 @50
 D=A
 @100
-M=D
+M=D   // RAM[100] should be 50
 A=M   // A should be 50
 D=A+1   // D should be 51
 @0

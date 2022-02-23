@@ -2043,11 +2043,6 @@ public:
 
     // OUT writeM
     set_writeM(m_writeM.out());
-  }
-
-  // Performs clocked flows (outputs addressM and pc)
-  inline void tock() {
-    // Clocked circuits
 
     // D-register
     m_regDLoad.set_a(getBit<4>(instruction()));
@@ -2056,7 +2051,6 @@ public:
     m_regD.set_load(m_regDLoad.out());
     m_regD.set_in(m_alu.out());
     m_regD.tick();
-    m_regD.tock();
 
     // PC
     m_notNG.set_in(m_alu.ng());
@@ -2092,10 +2086,6 @@ public:
     m_pc.set_inc(m_pcInc.out());
     m_pc.set_in(m_regA.out());
     m_pc.tick();
-    m_pc.tock();
-
-    // OUT pc
-    set_pc(m_pc.out());
 
     // A-register
     m_isAInstruction.set_in(getBit<15>(instruction()));
@@ -2110,7 +2100,16 @@ public:
     m_regALoad.computeOutput();
     m_regA.set_load(m_regALoad.out());
     m_regA.tick();
+  }
+
+  // Performs clocked flows (outputs addressM and pc)
+  inline void tock() {
     m_regA.tock();
+    m_regD.tock();
+    m_pc.tock();
+
+    // OUT pc
+    set_pc(m_pc.out());
 
     // OUT addressM[15]
     set_addressM(m_regA.out());
@@ -2186,16 +2185,20 @@ public:
   inline void tock() {
     m_rom.set_address(m_cpu.pc());
 
+    m_mem.set_address(m_cpu.addressM());
+    m_mem.tick();
+
     m_cpu.set_reset(reset());
     m_cpu.set_instruction(m_rom.instruction());
     m_cpu.set_inM(m_mem.out());
     m_cpu.tick();
 
+    // outM and writeM are updated by the CPU tick()
     m_mem.set_in(m_cpu.outM());
     m_mem.set_load(m_cpu.writeM());
-    m_mem.set_address(m_cpu.addressM());
-    m_mem.tock();
+    m_mem.tick();
 
+    m_mem.tock();
     m_cpu.tock();
   }
 
