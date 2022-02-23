@@ -1148,13 +1148,16 @@ public:
 
   Bit() { tock(); }
 
-  inline void tock() {
+  inline void tick() {
     m_mux.set_a(m_dff.out());
     m_mux.set_b(in());
     m_mux.set_sel(load());
     m_mux.computeOutput();
 
     m_dff.set_in(m_mux.out());
+  }
+
+  inline void tock() {
     m_dff.tock();
     set_out(m_dff.out());
   }
@@ -1221,7 +1224,7 @@ public:
 
   Register() { tock(); }
 
-  inline void tock() {
+  inline void tick() {
     m_bits[0].set_in(getBit<0>(m_in));
     m_bits[1].set_in(getBit<1>(m_in));
     m_bits[2].set_in(getBit<2>(m_in));
@@ -1256,6 +1259,25 @@ public:
     m_bits[14].set_load(load());
     m_bits[15].set_load(load());
 
+    m_bits[0].tick();
+    m_bits[1].tick();
+    m_bits[2].tick();
+    m_bits[3].tick();
+    m_bits[4].tick();
+    m_bits[5].tick();
+    m_bits[6].tick();
+    m_bits[7].tick();
+    m_bits[8].tick();
+    m_bits[9].tick();
+    m_bits[10].tick();
+    m_bits[11].tick();
+    m_bits[12].tick();
+    m_bits[13].tick();
+    m_bits[14].tick();
+    m_bits[15].tick();
+  }
+
+  inline void tock() {
     m_bits[0].tock();
     m_bits[1].tock();
     m_bits[2].tock();
@@ -1316,9 +1338,9 @@ public:
   // OUTPUT out[16]
   inline uint16_t out() const { return m_out; }
 
-  PC() { tock(); }
+  PC() { m_reg.set_load(true); }
 
-  inline void tock() {
+  inline void tick() {
     m_inc.set_in(m_reg.out());
     m_inc.computeOutput();
 
@@ -1338,9 +1360,11 @@ public:
     m_resetMux.computeOutput();
 
     m_reg.set_in(m_resetMux.out());
-    m_reg.set_load(true);
-    m_reg.tock();
+    m_reg.tick();
+  }
 
+  inline void tock() {
+    m_reg.tock();
     m_out = m_reg.out();
   }
 
@@ -1384,7 +1408,7 @@ public:
     m_regs[offset & 0x7].poke(val);
   }
 
-  inline void tock() {
+  inline void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel(address());
     m_dmux.computeOutput();
@@ -1407,9 +1431,27 @@ public:
     m_regs[6].set_load(m_dmux.g());
     m_regs[7].set_load(m_dmux.h());
 
-    // optimization: only tock() the selected register
+    // optimization: only tick-tock the selected register
+    m_regs[m_dmux.sel()].tick();
+
+    m_mux.set_sel(address());
+    m_mux.set_a(m_regs[0].out());
+    m_mux.set_b(m_regs[1].out());
+    m_mux.set_c(m_regs[2].out());
+    m_mux.set_d(m_regs[3].out());
+    m_mux.set_e(m_regs[4].out());
+    m_mux.set_f(m_regs[5].out());
+    m_mux.set_g(m_regs[6].out());
+    m_mux.set_h(m_regs[7].out());
+    m_mux.computeOutput();
+
+    m_out = m_mux.out();
+  }
+
+  inline void tock() {
     m_regs[m_dmux.sel()].tock();
 
+    // duplicate logic from tick, but necessary after tocking the reg
     m_mux.set_sel(address());
     m_mux.set_a(m_regs[0].out());
     m_mux.set_b(m_regs[1].out());
@@ -1462,7 +1504,7 @@ public:
     m_rams[(offset & 0x38) >> 3].poke(offset & 0x7, val);
   }
 
-  inline void tock() {
+  inline void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x38) >> 3);
     m_dmux.computeOutput();
@@ -1494,6 +1536,24 @@ public:
     m_rams[6].set_address(address() & 0x7);
     m_rams[7].set_address(address() & 0x7);
 
+    // optimization: only tick() the selected ram module
+    m_rams[m_dmux.sel()].tick();
+
+    m_mux.set_sel((address() & 0x38) >> 3);
+    m_mux.set_a(m_rams[0].out());
+    m_mux.set_b(m_rams[1].out());
+    m_mux.set_c(m_rams[2].out());
+    m_mux.set_d(m_rams[3].out());
+    m_mux.set_e(m_rams[4].out());
+    m_mux.set_f(m_rams[5].out());
+    m_mux.set_g(m_rams[6].out());
+    m_mux.set_h(m_rams[7].out());
+    m_mux.computeOutput();
+
+    m_out = m_mux.out();
+  }
+
+  inline void tock() {
     // optimization: only tock() the selected ram module
     m_rams[m_dmux.sel()].tock();
 
@@ -1549,7 +1609,7 @@ public:
     m_rams[(offset & 0x1c0) >> 6].poke(offset & 0x3f, val);
   }
 
-  inline void tock() {
+  inline void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x1c0) >> 6);
     m_dmux.computeOutput();
@@ -1581,6 +1641,24 @@ public:
     m_rams[6].set_address(address() & 0x3f);
     m_rams[7].set_address(address() & 0x3f);
 
+    // optimization: only tick() the selected ram module
+    m_rams[m_dmux.sel()].tick();
+
+    m_mux.set_sel((address() & 0x1c0) >> 6);
+    m_mux.set_a(m_rams[0].out());
+    m_mux.set_b(m_rams[1].out());
+    m_mux.set_c(m_rams[2].out());
+    m_mux.set_d(m_rams[3].out());
+    m_mux.set_e(m_rams[4].out());
+    m_mux.set_f(m_rams[5].out());
+    m_mux.set_g(m_rams[6].out());
+    m_mux.set_h(m_rams[7].out());
+    m_mux.computeOutput();
+
+    m_out = m_mux.out();
+  }
+
+  inline void tock() {
     // optimization: only tock() the selected ram module
     m_rams[m_dmux.sel()].tock();
 
@@ -1636,7 +1714,7 @@ public:
     m_rams[(offset & 0xe00) >> 9].poke(offset & 0x1ff, val);
   }
 
-  inline void tock() {
+  inline void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0xe00) >> 9);
     m_dmux.computeOutput();
@@ -1668,6 +1746,24 @@ public:
     m_rams[6].set_address(address() & 0x1ff);
     m_rams[7].set_address(address() & 0x1ff);
 
+    // optimization: only tick() the selected ram module
+    m_rams[m_dmux.sel()].tick();
+
+    m_mux.set_sel((address() & 0xe00) >> 9);
+    m_mux.set_a(m_rams[0].out());
+    m_mux.set_b(m_rams[1].out());
+    m_mux.set_c(m_rams[2].out());
+    m_mux.set_d(m_rams[3].out());
+    m_mux.set_e(m_rams[4].out());
+    m_mux.set_f(m_rams[5].out());
+    m_mux.set_g(m_rams[6].out());
+    m_mux.set_h(m_rams[7].out());
+    m_mux.computeOutput();
+
+    m_out = m_mux.out();
+  }
+
+  inline void tock() {
     // optimization: only tock() the selected ram module
     m_rams[m_dmux.sel()].tock();
 
@@ -1723,7 +1819,7 @@ public:
     m_rams[(offset & 0x3000) >> 12].poke(offset & 0xfff, val);
   }
 
-  inline void tock() {
+  inline void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x3000) >> 12);
     m_dmux.computeOutput();
@@ -1743,6 +1839,20 @@ public:
     m_rams[2].set_address(address() & 0xfff);
     m_rams[3].set_address(address() & 0xfff);
 
+    // optimization: only tick() the selected ram module
+    m_rams[m_dmux.sel()].tick();
+
+    m_mux.set_sel((address() & 0x3000) >> 12);
+    m_mux.set_a(m_rams[0].out());
+    m_mux.set_b(m_rams[1].out());
+    m_mux.set_c(m_rams[2].out());
+    m_mux.set_d(m_rams[3].out());
+    m_mux.computeOutput();
+
+    m_out = m_mux.out();
+  }
+
+  inline void tock() {
     // optimization: only tock() the selected ram module
     m_rams[m_dmux.sel()].tock();
 
@@ -1924,6 +2034,7 @@ public:
     m_regDLoad.computeOutput();
     m_regD.set_load(m_regDLoad.out());
     m_regD.set_in(m_alu.out());
+    m_regD.tick();
     m_regD.tock();
 
     // PC
@@ -1959,6 +2070,7 @@ public:
     m_pc.set_reset(reset());
     m_pc.set_inc(m_pcInc.out());
     m_pc.set_in(m_regA.out());
+    m_pc.tick();
     m_pc.tock();
 
     // OUT pc
@@ -1976,6 +2088,7 @@ public:
     m_regALoad.set_b(m_isAInstruction.out());
     m_regALoad.computeOutput();
     m_regA.set_load(m_regALoad.out());
+    m_regA.tick();
     m_regA.tock();
 
     // OUT addressM[15]

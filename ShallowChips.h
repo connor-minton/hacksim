@@ -35,6 +35,7 @@ public:
     m_screen[offset & 0x1fff] = val;
   }
 
+  inline void tick() { }
   inline void tock() {
     if (load()) {
       m_screen[address()] = m_in;

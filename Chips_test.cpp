@@ -1102,30 +1102,35 @@ void test_Bit(TestContext& ctx) {
 
   chip.set_in(false);
   chip.set_load(true);
+  chip.tick();
   chip.tock();
 
   ctx.expectEqual(chip.out(), false);
 
   chip.set_in(true);
   chip.set_load(false);
+  chip.tick();
   ctx.expectEqual(chip.out(), false);
   chip.tock();
   ctx.expectEqual(chip.out(), false);
 
   chip.set_in(true);
   chip.set_load(true);
+  chip.tick();
   ctx.expectEqual(chip.out(), false);
   chip.tock();
   ctx.expectEqual(chip.out(), true);
 
   chip.set_in(false);
   chip.set_load(false);
+  chip.tick();
   ctx.expectEqual(chip.out(), true);
   chip.tock();
   ctx.expectEqual(chip.out(), true);
 
   chip.set_in(false);
   chip.set_load(true);
+  chip.tick();
   ctx.expectEqual(chip.out(), true);
   chip.tock();
   ctx.expectEqual(chip.out(), false);
@@ -1136,32 +1141,38 @@ void test_Register(TestContext& ctx) {
 
   chip.set_in(0x0000);
   chip.set_load(true);
+  chip.tick();
   chip.tock();
 
   ctx.expectEqual(chip.out(), (uint16_t)0x0000);
 
   chip.set_load(false);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x0000);
 
   chip.set_in(0x1234);
   chip.set_load(false);
   ctx.expectEqual(chip.out(), (uint16_t)0x0000);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x0000);
 
   chip.set_load(true);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x1234);
 
   chip.set_load(false);
   chip.set_in(0);
   ctx.expectEqual(chip.out(), (uint16_t)0x1234);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x1234);
 
   chip.set_load(true);
   ctx.expectEqual(chip.out(), (uint16_t)0x1234);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x0000);
 }
@@ -1175,6 +1186,7 @@ void test_PC(TestContext& ctx) {
   chip.set_reset(false);
   chip.set_inc(false);
   chip.set_in(0x30);
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0);
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
@@ -1182,6 +1194,7 @@ void test_PC(TestContext& ctx) {
   chip.set_load(true);
   chip.set_reset(true);
   chip.set_inc(true);
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0);
@@ -1189,6 +1202,7 @@ void test_PC(TestContext& ctx) {
   chip.set_load(true);
   chip.set_reset(false);
   chip.set_inc(true);
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0);
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
@@ -1196,6 +1210,7 @@ void test_PC(TestContext& ctx) {
   chip.set_load(false);
   chip.set_reset(false);
   chip.set_inc(false);
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
@@ -1203,20 +1218,27 @@ void test_PC(TestContext& ctx) {
   chip.set_load(false);
   chip.set_reset(false);
   chip.set_inc(true);
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x30);
   chip.tock();
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x31);
   chip.tock();
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x32);
   chip.tock();
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x33);
   chip.tock();
+  chip.tick();
   ctx.expectEqual(chip.out(), (uint16_t)0x34);
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x35);
   chip.set_inc(false);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x35);
+  chip.tick();
   chip.tock();
   ctx.expectEqual(chip.out(), (uint16_t)0x35);
 }
@@ -1227,6 +1249,7 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
   chip.set_in(0x1234);
   for (int i = 0; i < n; i++) {
     chip.set_address(i);
+    chip.tick();
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)0);
     ctx.expectEqual(chip.peek(i), (uint16_t)0);
@@ -1236,6 +1259,8 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
   for (int i = 0; i < n; i++) {
     chip.set_address(i);
     chip.set_in(i*2);
+    chip.tick();
+    ctx.expectEqual(chip.out(), (uint16_t)0);
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)(i*2));
     ctx.expectEqual(chip.peek(i), (uint16_t)(i*2));
@@ -1244,6 +1269,7 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
   chip.set_load(false);
   for (int i = 0; i < n; i++) {
     chip.set_address(i);
+    chip.tick();
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)(i*2));
     ctx.expectEqual(chip.peek(i), (uint16_t)(i*2));
@@ -1253,6 +1279,8 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
   for (int i = 0; i < n; i++) {
     chip.set_address(i);
     chip.set_in(0);
+    chip.tick();
+    ctx.expectEqual(chip.out(), (uint16_t)(i*2));
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)0);
     ctx.expectEqual(chip.peek(i), (uint16_t)(0));
@@ -1262,6 +1290,7 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
   chip.set_in(0x1234);
   for (int i = 0; i < n; i++) {
     chip.set_address(i);
+    chip.tick();
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)0);
     ctx.expectEqual(chip.peek(i), (uint16_t)(0));
@@ -1273,6 +1302,8 @@ void test_RAMn(TestContext& ctx, RAM_T& chip, int n) {
     chip.poke(i, i * 2);
     ctx.expectEqual(chip.peek(i), (uint16_t)(i*2));
     chip.set_address(i);
+    chip.tick();
+    ctx.expectEqual(chip.out(), (uint16_t)(i*2));
     chip.tock();
     ctx.expectEqual(chip.out(), (uint16_t)(i*2));
   }
@@ -1472,6 +1503,41 @@ void test_ROM32K(TestContext& ctx) {
   ctx.expectEqual(chip.instruction(), (uint16_t)0);
 }
 
+void printSizes() {
+  std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
+            << "size of And: "       << sizeof(And) << '\n'
+            << "size of Not: "       << sizeof(Not) << '\n'
+            << "size of Or: "        << sizeof(Or) << '\n'
+            << "size of Xor: "       << sizeof(Xor) << '\n'
+            << "size of Mux: "       << sizeof(Mux) << '\n'
+            << "size of DMux: "      << sizeof(DMux) << '\n'
+            << "size of Not16: "     << sizeof(Not16) << '\n'
+            << "size of And16: "     << sizeof(And16) << '\n'
+            << "size of Or16: "      << sizeof(Or16) << '\n'
+            << "size of Mux16: "     << sizeof(Mux16) << '\n'
+            << "size of Or8Way: "    << sizeof(Or8Way) << '\n'
+            << "size of Mux4Way16: " << sizeof(Mux4Way16) << '\n'
+            << "size of Mux8Way16: " << sizeof(Mux8Way16) << '\n'
+            << "size of DMux4Way: "  << sizeof(DMux4Way) << '\n'
+            << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n'
+            << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
+            << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
+            << "size of Add16: "  << sizeof(Add16) << '\n'
+            << "size of Inc16: "  << sizeof(Inc16) << '\n'
+            << "size of ALU: "  << sizeof(ALU) << '\n'
+            << "size of DFF: "  << sizeof(DFF) << '\n'
+            << "size of Bit: "  << sizeof(Bit) << '\n'
+            << "size of Register: "  << sizeof(Register) << '\n'
+            << "size of PC: "  << sizeof(PC) << '\n'
+            << "size of RAM8: "  << sizeof(RAM8) << '\n'
+            << "size of RAM64: "  << sizeof(RAM64) << '\n'
+            << "size of RAM512: "  << sizeof(RAM512) << '\n'
+            << "size of RAM4K: "  << sizeof(RAM4K) << '\n'
+            << "size of RAM16K: "  << sizeof(RAM16K) << '\n'
+            << "size of Memory: "  << sizeof(Memory) << '\n'
+            << "size of Computer: "  << sizeof(Computer) << '\n';
+}
+
 int main() {
   TestContext ctx;
 
@@ -1526,47 +1592,16 @@ int main() {
     test_RAMn<RAM16K>(ctx, *chip, 16384);
     delete chip;
   });
-  ctx.test("shallow::Screen", [](auto& ctx){
-    uint16_t buf[shallow::Screen::SCREEN_SIZE] = {0};
-    shallow::Screen* chip = new shallow::Screen(buf);
-    test_RAMn<shallow::Screen>(ctx, *chip, 8192);
-    delete chip;
-  });
-  ctx.test("Memory", test_Memory);
-  ctx.test("shallow::ROM32K", test_ROM32K);
+  // ctx.test("shallow::Screen", [](auto& ctx){
+  //   uint16_t buf[shallow::Screen::SCREEN_SIZE] = {0};
+  //   shallow::Screen* chip = new shallow::Screen(buf);
+  //   test_RAMn<shallow::Screen>(ctx, *chip, 8192);
+  //   delete chip;
+  // });
+  // ctx.test("Memory", test_Memory);
+  // ctx.test("shallow::ROM32K", test_ROM32K);
 
-  std::cout << "\nsize of Nand: "      << sizeof(Nand) << '\n'
-            << "size of And: "       << sizeof(And) << '\n'
-            << "size of Not: "       << sizeof(Not) << '\n'
-            << "size of Or: "        << sizeof(Or) << '\n'
-            << "size of Xor: "       << sizeof(Xor) << '\n'
-            << "size of Mux: "       << sizeof(Mux) << '\n'
-            << "size of DMux: "      << sizeof(DMux) << '\n'
-            << "size of Not16: "     << sizeof(Not16) << '\n'
-            << "size of And16: "     << sizeof(And16) << '\n'
-            << "size of Or16: "      << sizeof(Or16) << '\n'
-            << "size of Mux16: "     << sizeof(Mux16) << '\n'
-            << "size of Or8Way: "    << sizeof(Or8Way) << '\n'
-            << "size of Mux4Way16: " << sizeof(Mux4Way16) << '\n'
-            << "size of Mux8Way16: " << sizeof(Mux8Way16) << '\n'
-            << "size of DMux4Way: "  << sizeof(DMux4Way) << '\n'
-            << "size of DMux8Way: "  << sizeof(DMux8Way) << '\n'
-            << "size of HalfAdder: "  << sizeof(HalfAdder) << '\n'
-            << "size of FullAdder: "  << sizeof(FullAdder) << '\n'
-            << "size of Add16: "  << sizeof(Add16) << '\n'
-            << "size of Inc16: "  << sizeof(Inc16) << '\n'
-            << "size of ALU: "  << sizeof(ALU) << '\n'
-            << "size of DFF: "  << sizeof(DFF) << '\n'
-            << "size of Bit: "  << sizeof(Bit) << '\n'
-            << "size of Register: "  << sizeof(Register) << '\n'
-            << "size of PC: "  << sizeof(PC) << '\n'
-            << "size of RAM8: "  << sizeof(RAM8) << '\n'
-            << "size of RAM64: "  << sizeof(RAM64) << '\n'
-            << "size of RAM512: "  << sizeof(RAM512) << '\n'
-            << "size of RAM4K: "  << sizeof(RAM4K) << '\n'
-            << "size of RAM16K: "  << sizeof(RAM16K) << '\n'
-            << "size of Memory: "  << sizeof(Memory) << '\n'
-            << "size of Computer: "  << sizeof(Computer) << '\n';
-
+  // printSizes();
+  std::cout << '\n';
   ctx.printResults();
 }

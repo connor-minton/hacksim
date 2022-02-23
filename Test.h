@@ -19,6 +19,8 @@ private:
   int testNum = 1;
   int successCt = 0;
   int failedCt = 0;
+
+  int currentTestFailed = 0;
 };
 
 template <typename T>
@@ -30,10 +32,13 @@ template <typename T, typename U>
 bool TestContext::expectEqual(const T& actual, const U& theoretical) {
   bool result = true;
   if (theoretical != actual) {
-    std::cout << "FAILED [" << testNum << "]: expected "
-              << theoretical << ", got " << actual << '\n';
+    if (currentTestFailed < 6) {
+      std::cout << "FAILED [" << testNum << "]: expected "
+                << theoretical << ", got " << actual << '\n';
+    }
     result = false;
     failedCt++;
+    currentTestFailed++;
   }
   else {
     successCt++;
@@ -43,14 +48,18 @@ bool TestContext::expectEqual(const T& actual, const U& theoretical) {
 }
 
 void TestContext::test(std::string name, std::function<void(TestContext&)> func) {
+  currentTestFailed = 0;
   std::chrono::high_resolution_clock clk;
   std::cout << name << "...";
-  int old = failedCt;
   auto t1 = clk.now();
   func(*this);
   auto t2 = clk.now();
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-  if (old == failedCt) {
+  if (currentTestFailed > 5) {
+    std::cout << "[" << (currentTestFailed-5) << " other failures omitted]\n";
+  }
+
+  if (currentTestFailed == 0) {
     std::cout << " PASS (" << ms.count() << " ms)\n";
   }
   else {
