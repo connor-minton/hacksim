@@ -395,6 +395,32 @@ void test_Computer_StaticsTest(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_BasicLoop(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/BasicLoop/BasicLoop.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+  mem.poke(1, 300);
+  mem.poke(2, 400);
+  mem.poke(400, 3);
+
+  for (int i = 0; i < 600; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(0), 257);
+  cx.expectEqual((int16_t)mem.peek(256), 6);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -412,6 +438,7 @@ int main() {
   cx.test("Computer / vm / NestedCall", test_Computer_NestedCall);
   cx.test("Computer / vm / SimpleFunction", test_Computer_SimpleFunction);
   cx.test("Computer / vm / StaticsTest", test_Computer_StaticsTest);
+  cx.test("Computer / vm / BasicLoop", test_Computer_BasicLoop);
 
   std::cout << '\n';
 
