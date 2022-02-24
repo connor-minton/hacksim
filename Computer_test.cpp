@@ -290,6 +290,49 @@ void test_Computer_FibonacciElement(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_NestedCall(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/NestedCall/NestedCall.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 261);
+  mem.poke(1, 261);
+  mem.poke(2, 256);
+  mem.poke(3, -3);
+  mem.poke(4, -4);
+  mem.poke(5, -1);
+  mem.poke(6, -1);
+  mem.poke(256, 1234);
+  mem.poke(257, -1);
+  mem.poke(258, -2);
+  mem.poke(259, -3);
+  mem.poke(260, -4);
+
+  for (int i = 261; i < 300; i++) {
+    mem.poke(i, -1);
+  }
+
+  for (int i = 0; i < 4000; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(0), 261);
+  cx.expectEqual((int16_t)mem.peek(1), 261);
+  cx.expectEqual((int16_t)mem.peek(2), 256);
+  cx.expectEqual((int16_t)mem.peek(3), 4000);
+  cx.expectEqual((int16_t)mem.peek(4), 5000);
+  cx.expectEqual((int16_t)mem.peek(5), 135);
+  cx.expectEqual((int16_t)mem.peek(6), 246);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -304,6 +347,7 @@ int main() {
   cx.test("Computer / vm / SimpleAdd", test_Computer_SimpleAdd);
   cx.test("Computer / vm / StackTest", test_Computer_StackTest);
   cx.test("Computer / vm / FibonacciElement", test_Computer_FibonacciElement);
+  cx.test("Computer / vm / NestedCall", test_Computer_NestedCall);
 
   std::cout << '\n';
 
