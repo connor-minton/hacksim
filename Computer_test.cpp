@@ -268,6 +268,28 @@ void test_Computer_StackTest(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_FibonacciElement(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/FibonacciElement/FibonacciElement.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+
+  for (int i = 0; i < 6000; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(0), 262);
+  cx.expectEqual((int16_t)mem.peek(261), 3);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -281,6 +303,7 @@ int main() {
   cx.test("Computer / vm / StaticTest", test_Computer_StaticTest);
   cx.test("Computer / vm / SimpleAdd", test_Computer_SimpleAdd);
   cx.test("Computer / vm / StackTest", test_Computer_StackTest);
+  cx.test("Computer / vm / FibonacciElement", test_Computer_FibonacciElement);
 
   std::cout << '\n';
 
