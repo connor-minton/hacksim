@@ -191,6 +191,28 @@ void test_Computer_PointerTest(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_StaticTest(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/StaticTest.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+
+  for (int i = 0; i < 200; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual(mem.peek(256), 1110);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -201,6 +223,7 @@ int main() {
 
   cx.test("Computer / vm / BasicTest", test_Computer_BasicTest);
   cx.test("Computer / vm / PointerTest", test_Computer_PointerTest);
+  cx.test("Computer / vm / StaticTest", test_Computer_StaticTest);
 
   std::cout << '\n';
 
