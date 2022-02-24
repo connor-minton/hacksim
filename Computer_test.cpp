@@ -236,6 +236,38 @@ void test_Computer_SimpleAdd(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_StackTest(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/StackTest.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+
+  for (int i = 0; i < 1000; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(0), 266);
+  cx.expectEqual((int16_t)mem.peek(256), -1);
+  cx.expectEqual((int16_t)mem.peek(257), 0);
+  cx.expectEqual((int16_t)mem.peek(258), 0);
+  cx.expectEqual((int16_t)mem.peek(259), 0);
+  cx.expectEqual((int16_t)mem.peek(260), -1);
+  cx.expectEqual((int16_t)mem.peek(261), 0);
+  cx.expectEqual((int16_t)mem.peek(262), -1);
+  cx.expectEqual((int16_t)mem.peek(263), 0);
+  cx.expectEqual((int16_t)mem.peek(264), 0);
+  cx.expectEqual((int16_t)mem.peek(265), -91);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -248,6 +280,7 @@ int main() {
   cx.test("Computer / vm / PointerTest", test_Computer_PointerTest);
   cx.test("Computer / vm / StaticTest", test_Computer_StaticTest);
   cx.test("Computer / vm / SimpleAdd", test_Computer_SimpleAdd);
+  cx.test("Computer / vm / StackTest", test_Computer_StackTest);
 
   std::cout << '\n';
 
