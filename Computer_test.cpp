@@ -371,6 +371,30 @@ void test_Computer_SimpleFunction(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_StaticsTest(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/StaticsTest/StaticsTest.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+
+  for (int i = 0; i < 2500; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(0), 263);
+  cx.expectEqual((int16_t)mem.peek(261), -2);
+  cx.expectEqual((int16_t)mem.peek(262), 8);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -387,6 +411,7 @@ int main() {
   cx.test("Computer / vm / FibonacciElement", test_Computer_FibonacciElement);
   cx.test("Computer / vm / NestedCall", test_Computer_NestedCall);
   cx.test("Computer / vm / SimpleFunction", test_Computer_SimpleFunction);
+  cx.test("Computer / vm / StaticsTest", test_Computer_StaticsTest);
 
   std::cout << '\n';
 
