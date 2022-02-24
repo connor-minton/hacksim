@@ -421,6 +421,37 @@ void test_Computer_BasicLoop(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_FibonacciSeries(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
+  uint16_t kbd = 0;
+
+  Computer* computer = new Computer(screen, &kbd);
+
+  auto rom = FileUtils::readHackFile("test_programs/vm/FibonacciSeries/FibonacciSeries.hack");
+
+  computer->set_rom(rom);
+
+  Memory& mem = computer->mem();
+  mem.poke(0, 256);
+  mem.poke(1, 300);
+  mem.poke(2, 400);
+  mem.poke(400, 7);
+  mem.poke(401, 3000);
+
+  for (int i = 0; i < 1100; i++) {
+    computer->tock();
+  }
+
+  cx.expectEqual((int16_t)mem.peek(3000), 0);
+  cx.expectEqual((int16_t)mem.peek(3001), 1);
+  cx.expectEqual((int16_t)mem.peek(3002), 1);
+  cx.expectEqual((int16_t)mem.peek(3003), 2);
+  cx.expectEqual((int16_t)mem.peek(3004), 3);
+  cx.expectEqual((int16_t)mem.peek(3005), 5);
+
+  delete computer;
+}
+
 int main() {
   TestContext cx;
 
@@ -439,6 +470,7 @@ int main() {
   cx.test("Computer / vm / SimpleFunction", test_Computer_SimpleFunction);
   cx.test("Computer / vm / StaticsTest", test_Computer_StaticsTest);
   cx.test("Computer / vm / BasicLoop", test_Computer_BasicLoop);
+  cx.test("Computer / vm / FibonacciSeries", test_Computer_FibonacciSeries);
 
   std::cout << '\n';
 
