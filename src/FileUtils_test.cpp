@@ -12,7 +12,7 @@ void test_readHackFile(TestContext& cx) {
     0x0002, 0xe308, 0x000e, 0xea87
   };
 
-  auto actualRom = FileUtils::readHackFile("hack/Max.hack");
+  auto actualRom = FileUtils::readHackFile("../test_programs/asm/Max.hack");
 
   cx.expectEqual(actualRom, maxRom);
 }

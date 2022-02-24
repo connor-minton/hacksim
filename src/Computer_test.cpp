@@ -8,7 +8,7 @@ void test_Computer_Max(TestContext& ctx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/asm/Max.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/asm/Max.hack");
 
   computer->set_rom(rom);
 
@@ -51,7 +51,7 @@ void test_Computer_Add(TestContext& ctx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/asm/Add.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/asm/Add.hack");
 
   computer->set_rom(rom);
 
@@ -79,7 +79,7 @@ void test_Computer_TickTock(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/asm/TickTock.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/asm/TickTock.hack");
 
   computer->set_rom(rom);
 
@@ -107,7 +107,7 @@ void test_Computer_Rect(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/asm/Rect.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/asm/Rect.hack");
 
   computer->set_rom(rom);
 
@@ -138,7 +138,7 @@ void test_Computer_BasicTest(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/BasicTest/BasicTest.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/BasicTest/BasicTest.hack");
 
   computer->set_rom(rom);
 
@@ -171,7 +171,7 @@ void test_Computer_PointerTest(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/PointerTest/PointerTest.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/PointerTest/PointerTest.hack");
 
   computer->set_rom(rom);
 
@@ -197,7 +197,7 @@ void test_Computer_StaticTest(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/StaticTest/StaticTest.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/StaticTest/StaticTest.hack");
 
   computer->set_rom(rom);
 
@@ -219,7 +219,7 @@ void test_Computer_SimpleAdd(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/SimpleAdd/SimpleAdd.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/SimpleAdd/SimpleAdd.hack");
 
   computer->set_rom(rom);
 
@@ -242,7 +242,7 @@ void test_Computer_StackTest(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/StackTest/StackTest.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/StackTest/StackTest.hack");
 
   computer->set_rom(rom);
 
@@ -274,7 +274,7 @@ void test_Computer_FibonacciElement(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/FibonacciElement/FibonacciElement.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/FibonacciElement/FibonacciElement.hack");
 
   computer->set_rom(rom);
 
@@ -296,7 +296,7 @@ void test_Computer_NestedCall(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/NestedCall/NestedCall.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/NestedCall/NestedCall.hack");
 
   computer->set_rom(rom);
 
@@ -339,7 +339,7 @@ void test_Computer_SimpleFunction(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/SimpleFunction/SimpleFunction.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/SimpleFunction/SimpleFunction.hack");
 
   computer->set_rom(rom);
 
@@ -377,7 +377,7 @@ void test_Computer_StaticsTest(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/StaticsTest/StaticsTest.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/StaticsTest/StaticsTest.hack");
 
   computer->set_rom(rom);
 
@@ -401,7 +401,7 @@ void test_Computer_BasicLoop(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/BasicLoop/BasicLoop.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/BasicLoop/BasicLoop.hack");
 
   computer->set_rom(rom);
 
@@ -427,7 +427,7 @@ void test_Computer_FibonacciSeries(TestContext& cx) {
 
   Computer* computer = new Computer(screen, &kbd);
 
-  auto rom = FileUtils::readHackFile("test_programs/vm/FibonacciSeries/FibonacciSeries.hack");
+  auto rom = FileUtils::readHackFile("../test_programs/vm/FibonacciSeries/FibonacciSeries.hack");
 
   computer->set_rom(rom);
 
