@@ -5,7 +5,7 @@ all: hacksim test dasm
 test: Chips_test FileUtils_test Computer_test
 
 clean:
-	rm -f *.o hacksim Chips_test FileUtils_test
+	rm -f *.o hacksim Chips_test FileUtils_test Computer_test
 
 hacksim: Main.o
 	g++ $(CXX_FLAGS) Main.o -o hacksim
@@ -22,7 +22,7 @@ FileUtils_test: FileUtils_test.cpp FileUtils.h Test.h
 Computer_test: Computer_test.cpp Chips.h FileUtils.h Test.h
 	g++ $(CXX_FLAGS) Computer_test.cpp -o Computer_test
 
-FileUtils.h: Exceptions.h
+FileUtils.h: Exceptions.h Bits.h
 
 Chips.h: Bits.h ShallowChips.h FileUtils.h
 
