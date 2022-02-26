@@ -61,6 +61,7 @@ private:
   void Resize();
 
   void FillScreen();
+  void UpdateScreen();
 };
 
 void MainWindow::CalculateLayout() {
@@ -70,6 +71,14 @@ void MainWindow::FillScreen() {
   for (uint32_t i = 0; i < 256; i++) {
     for (uint32_t j = 0; j < 512; j++) {
       m_screenMem[i*512 + j] = (i << 16) | (i << 8) | i;
+    }
+  }
+}
+
+void MainWindow::UpdateScreen() {
+  for (uint32_t i = 0; i < 256; i++) {
+    for (uint32_t j = 0; j < 512; j++) {
+      m_screenMem[i*512 + j] = (i << 16) | (i << 8) | 255;
     }
   }
 }
@@ -123,6 +132,12 @@ HRESULT MainWindow::CreateGraphicsResources() {
     auto bmSize = D2D1::SizeU(512, 256);
 
     hr = m_renderTarget->CreateBitmap(bmSize, m_screenMem, bmSize.width*4, bmProps, &m_screenBitmap);
+
+    if (FAILED(hr)) return hr;
+
+    UpdateScreen();
+    auto destRect = D2D1::RectU(411, 155, 511, 255);
+    hr = m_screenBitmap->CopyFromMemory(&destRect, m_screenMem + (512*155 + 411), 512 * 4);
   }
 
   return hr;

@@ -4,10 +4,6 @@
 
 #include "MainWindow.h"
 
-/**
- * DirectX tutorial program from Microsoft documentation
- */
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   MainWindow win;
 

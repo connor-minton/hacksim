@@ -151,7 +151,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BaseWindow.h" />
+    <ClInclude Include="..\src\ExampleThread.h" />
     <ClInclude Include="..\src\MainWindow.h" />
+    <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\WinUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
