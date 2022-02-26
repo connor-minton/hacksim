@@ -10,15 +10,17 @@
 #include "BaseWindow.h"
 #include "WinUtils.h"
 
-/**
- * DirectX Tutorial from Microsoft documentation
- */
-
 class MainWindow : public BaseWindow<MainWindow> {
 public:
   MainWindow() 
-    : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr)
-  { }
+    : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr),
+      m_screenBitmap(nullptr)
+  {
+    m_screenMem = new uint32_t[512 * 256];
+    FillScreen();
+  }
+
+  ~MainWindow() { delete[] m_screenMem; }
 
   BOOL Create(PCWSTR lpWindowName, DWORD dwStyle)
   { 
@@ -47,6 +49,9 @@ private:
   ID2D1Factory *m_factory;
   ID2D1HwndRenderTarget *m_renderTarget;
   ID2D1SolidColorBrush *m_brush;
+  ID2D1Bitmap *m_screenBitmap;
+
+  uint32_t *m_screenMem = nullptr;
 
   void CalculateLayout();
   HRESULT CreateGraphicsResources();
@@ -54,9 +59,19 @@ private:
   void OnPaint();
   void OnCreate();
   void Resize();
+
+  void FillScreen();
 };
 
 void MainWindow::CalculateLayout() {
+}
+
+void MainWindow::FillScreen() {
+  for (uint32_t i = 0; i < 256; i++) {
+    for (uint32_t j = 0; j < 512; j++) {
+      m_screenMem[i*512 + j] = (i << 16) | (i << 8) | i;
+    }
+  }
 }
 
 void MainWindow::OnCreate() {
@@ -95,14 +110,19 @@ HRESULT MainWindow::CreateGraphicsResources() {
       D2D1::HwndRenderTargetProperties(m_hwnd, size),
       &m_renderTarget);
 
-    if (SUCCEEDED(hr)) {
-      const D2D1_COLOR_F color = D2D1::ColorF(1.0f, 1.0f, 0);
-      hr = m_renderTarget->CreateSolidColorBrush(color, &m_brush);
+    if (FAILED(hr)) return hr;
 
-      if (SUCCEEDED(hr)) {
-        CalculateLayout();
-      }
-    }
+    const D2D1_COLOR_F color = D2D1::ColorF(1.0f, 1.0f, 0);
+    hr = m_renderTarget->CreateSolidColorBrush(color, &m_brush);
+
+    if (FAILED(hr)) return hr;
+
+    auto bmProps = D2D1::BitmapProperties();
+    bmProps.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE);
+
+    auto bmSize = D2D1::SizeU(512, 256);
+
+    hr = m_renderTarget->CreateBitmap(bmSize, m_screenMem, bmSize.width*4, bmProps, &m_screenBitmap);
   }
 
   return hr;
@@ -116,12 +136,17 @@ void MainWindow::DiscardGraphicsResources() {
 void MainWindow::OnPaint() {
   HRESULT hr = CreateGraphicsResources();
   if (SUCCEEDED(hr)) {
+    RECT rc;
+    GetClientRect(m_hwnd, &rc);
+    auto destRect = D2D1::RectF(rc.left, rc.top, rc.right, rc.bottom);
+
     PAINTSTRUCT ps;
     BeginPaint(m_hwnd, &ps);
 
     m_renderTarget->BeginDraw();
 
-    m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::LightGray));
+    m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+    m_renderTarget->DrawBitmap(m_screenBitmap, destRect);
 
     hr = m_renderTarget->EndDraw();
     if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET) {
