@@ -9,15 +9,16 @@
 
 #include "BaseWindow.h"
 #include "WinUtils.h"
+#include "BitmapManager.h"
 
 class MainWindow : public BaseWindow<MainWindow> {
 public:
-  MainWindow() 
+  MainWindow(BitmapManager & bm) 
     : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr),
-      m_screenBitmap(nullptr)
+      m_screenBitmap(nullptr), m_bm(bm)
   {
     m_screenMem = new uint32_t[512 * 256];
-    FillScreen();
+    InitializeScreen();
   }
 
   ~MainWindow() { delete[] m_screenMem; }
@@ -45,13 +46,19 @@ public:
   PCWSTR ClassName() const { return L"Circle Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+  ID2D1Bitmap* GetScreenBitmap() { return m_screenBitmap; }
+
 private:
   ID2D1Factory *m_factory;
   ID2D1HwndRenderTarget *m_renderTarget;
   ID2D1SolidColorBrush *m_brush;
   ID2D1Bitmap *m_screenBitmap;
 
+  BitmapManager & m_bm;
+
   uint32_t *m_screenMem = nullptr;
+
+  bool m_drawnGradient = false;
 
   void CalculateLayout();
   HRESULT CreateGraphicsResources();
@@ -60,11 +67,18 @@ private:
   void OnCreate();
   void Resize();
 
+  void InitializeScreen();
   void FillScreen();
   void UpdateScreen();
 };
 
 void MainWindow::CalculateLayout() {
+}
+
+void MainWindow::InitializeScreen() {
+  for (uint32_t i = 0; i < 256 * 512; i++) {
+    m_screenMem[i] = 0x00ffffff;
+  }
 }
 
 void MainWindow::FillScreen() {
@@ -133,11 +147,11 @@ HRESULT MainWindow::CreateGraphicsResources() {
 
     hr = m_renderTarget->CreateBitmap(bmSize, m_screenMem, bmSize.width*4, bmProps, &m_screenBitmap);
 
-    if (FAILED(hr)) return hr;
+    //if (FAILED(hr)) return hr;
 
-    UpdateScreen();
-    auto destRect = D2D1::RectU(411, 155, 511, 255);
-    hr = m_screenBitmap->CopyFromMemory(&destRect, m_screenMem + (512*155 + 411), 512 * 4);
+    //UpdateScreen();
+    //auto destRect = D2D1::RectU(411, 155, 511, 255);
+    //hr = m_screenBitmap->CopyFromMemory(&destRect, m_screenMem + (512*155 + 411), 512 * 4);
   }
 
   return hr;
@@ -154,6 +168,16 @@ void MainWindow::OnPaint() {
     RECT rc;
     GetClientRect(m_hwnd, &rc);
     auto destRect = D2D1::RectF(rc.left, rc.top, rc.right, rc.bottom);
+
+    if (m_bm.doGradient && !m_drawnGradient) {
+      FillScreen();
+
+      auto destRectBitmap = D2D1::RectU(0, 0, 512, 256);
+      hr = m_screenBitmap->CopyFromMemory(&destRectBitmap, m_screenMem, 512 * 4);
+      if (FAILED(hr)) return;
+
+      m_drawnGradient = true;
+    }
 
     PAINTSTRUCT ps;
     BeginPaint(m_hwnd, &ps);

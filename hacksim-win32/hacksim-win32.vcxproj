@@ -151,7 +151,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BaseWindow.h" />
-    <ClInclude Include="..\src\ExampleThread.h" />
+    <ClInclude Include="..\src\BitmapManager.h" />
+    <ClInclude Include="..\src\Bits.h" />
+    <ClInclude Include="..\src\Chips.h" />
+    <ClInclude Include="..\src\Exceptions.h" />
+    <ClInclude Include="..\src\FileUtils.h" />
+    <ClInclude Include="..\src\ShallowChips.h" />
+    <ClInclude Include="..\src\SimulatorThread.h" />
     <ClInclude Include="..\src\MainWindow.h" />
     <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\WinUtils.h" />
