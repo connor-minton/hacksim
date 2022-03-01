@@ -58,7 +58,7 @@ private:
 
   uint32_t *m_screenMem = nullptr;
 
-  bool m_drawnGradient = false;
+  bool m_drawnResults = false;
 
   void CalculateLayout();
   HRESULT CreateGraphicsResources();
@@ -169,14 +169,14 @@ void MainWindow::OnPaint() {
     GetClientRect(m_hwnd, &rc);
     auto destRect = D2D1::RectF(rc.left, rc.top, rc.right, rc.bottom);
 
-    if (m_bm.doGradient && !m_drawnGradient) {
-      FillScreen();
+    if (m_bm.drawResults && !m_drawnResults) {
+      m_bm.FillBitmap(m_screenMem);
 
       auto destRectBitmap = D2D1::RectU(0, 0, 512, 256);
       hr = m_screenBitmap->CopyFromMemory(&destRectBitmap, m_screenMem, 512 * 4);
       if (FAILED(hr)) return;
 
-      m_drawnGradient = true;
+      m_drawnResults = true;
     }
 
     PAINTSTRUCT ps;

@@ -7,10 +7,19 @@
 #include "MainWindow.h"
 #include "SimulatorThread.h"
 #include "BitmapManager.h"
+#include "FileUtils.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   BitmapManager bm;
   MainWindow win(bm);
+  std::vector<uint16_t> rom;
+  try {
+    rom = FileUtils::readHackFile("../test_programs/asm/Rect.hack");
+  }
+  catch (std::exception& e) {
+    std::cerr << "error: " << e.what() << '\n';
+    ExitProcess(1);
+  }
 
   if (!win.Create(L"Hacksim", WS_MINIMIZEBOX | WS_SYSMENU)) {
     return 0;
@@ -18,7 +27,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 
   ShowWindow(win.Window(), nCmdShow);
 
-  std::vector<uint16_t> rom;
   SimulatorThread simThread(rom, bm, win.Window());
 
   try {

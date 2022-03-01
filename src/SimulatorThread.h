@@ -17,6 +17,11 @@ public:
     : Thread<SimulatorThread>(), m_rom(rom), m_bm(bm), m_hwnd(hwnd)
   { }
 
+  ~SimulatorThread() {
+    delete m_computer;
+    delete[] m_screenMem;
+  }
+
   static DWORD WINAPI Run(void* data);
 
 private:
@@ -30,10 +35,18 @@ private:
 
 DWORD WINAPI SimulatorThread::Run(void* data) {
   SimulatorThread* td = (SimulatorThread*)data;
-  //td->m_screenMem = new uint16_t[shallow::Screen::SCREEN_SIZE];
-  //td->m_computer = new Computer(td->m_screenMem, &td->m_kbd);
-  Sleep(5000);
-  td->m_bm.doGradient = true;
+  td->m_screenMem = new uint16_t[shallow::Screen::SCREEN_SIZE];
+  for (int i = 0; i < shallow::Screen::SCREEN_SIZE; i++) {
+    td->m_screenMem[i] = 0;
+  }
+  td->m_computer = new Computer(td->m_screenMem, &td->m_kbd);
+  td->m_computer->set_rom(td->m_rom);
+  td->m_bm.SetScreenMem(td->m_screenMem);
+  td->m_computer->mem().poke(0, 4);
+  for (int i = 0; i < 63; i++) {
+    td->m_computer->tock();
+  }
+  td->m_bm.drawResults = true;
   InvalidateRect(td->m_hwnd, NULL, TRUE);
   td->m_result = 0;
   return 0;
