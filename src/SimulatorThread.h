@@ -42,8 +42,7 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   td->m_computer = new Computer(td->m_screenMem, &td->m_kbd);
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
-  td->m_computer->mem().poke(0, 4);
-  for (int i = 0; i < 63; i++) {
+  while (td->m_computer->nextPC() != 21514) {
     td->m_computer->tock();
   }
   td->m_bm.drawResults = true;
