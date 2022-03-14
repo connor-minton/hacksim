@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <mutex>
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -19,6 +20,7 @@ public:
   {
     m_screenMem = new uint32_t[512 * 256];
     InitializeScreen();
+    m_bm.SetDestMem(m_screenMem);
   }
 
   ~MainWindow() { delete[] m_screenMem; }
@@ -146,12 +148,6 @@ HRESULT MainWindow::CreateGraphicsResources() {
     auto bmSize = D2D1::SizeU(512, 256);
 
     hr = m_renderTarget->CreateBitmap(bmSize, m_screenMem, bmSize.width*4, bmProps, &m_screenBitmap);
-
-    //if (FAILED(hr)) return hr;
-
-    //UpdateScreen();
-    //auto destRect = D2D1::RectU(411, 155, 511, 255);
-    //hr = m_screenBitmap->CopyFromMemory(&destRect, m_screenMem + (512*155 + 411), 512 * 4);
   }
 
   return hr;
@@ -168,15 +164,21 @@ void MainWindow::OnPaint() {
     RECT rc;
     GetClientRect(m_hwnd, &rc);
     auto destRect = D2D1::RectF(rc.left, rc.top, rc.right, rc.bottom);
+    bool updateThisTime = false;
 
-    if (m_bm.drawResults && !m_drawnResults) {
-      m_bm.FillBitmap(m_screenMem);
+    {
+      std::lock_guard<std::mutex> lck(m_bm.mtx());
+      if (m_bm.drawResults) {
+        updateThisTime = true;
+        m_bm.UpdateBitmap();
+        m_bm.drawResults = false;
+      }
+    }
 
+    if (updateThisTime) {
       auto destRectBitmap = D2D1::RectU(0, 0, 512, 256);
       hr = m_screenBitmap->CopyFromMemory(&destRectBitmap, m_screenMem, 512 * 4);
       if (FAILED(hr)) return;
-
-      m_drawnResults = true;
     }
 
     PAINTSTRUCT ps;

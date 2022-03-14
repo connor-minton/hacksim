@@ -14,7 +14,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   MainWindow win(bm);
   std::vector<uint16_t> rom;
   try {
-    rom = FileUtils::readHackFile("../test_programs/jack/ScreenTest/ScreenTest.hack");
+    rom = FileUtils::readHackFile("../test_programs/asm/Animation.hack");
   }
   catch (std::exception& e) {
     std::cerr << "error: " << e.what() << '\n';
@@ -45,7 +45,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     DispatchMessage(&msg);
   }
 
-  WaitForSingleObject(simThread, INFINITE);
-
+  simThread.Terminate();
   return 0;
 }

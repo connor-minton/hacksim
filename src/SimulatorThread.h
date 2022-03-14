@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include <Windows.h>
 
@@ -42,11 +43,19 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   td->m_computer = new Computer(td->m_screenMem, &td->m_kbd);
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
+  uint32_t renderCycles = 0;
   while (td->m_computer->nextPC() != 21514) {
     td->m_computer->tock();
+    if (renderCycles >= 420) { // idk
+      std::lock_guard<std::mutex> lck(td->m_bm.mtx());
+      td->m_bm.drawResults = true;
+      InvalidateRect(td->m_hwnd, NULL, TRUE);
+      renderCycles = 0;
+    }
+    else {
+      renderCycles++;
+    }
   }
-  td->m_bm.drawResults = true;
-  InvalidateRect(td->m_hwnd, NULL, TRUE);
   td->m_result = 0;
   return 0;
 }

@@ -9,6 +9,7 @@ template <typename T>
 class Thread {
 public:
   void Create();
+  void Terminate();
 
   DWORD GetTID() const { return m_tid; }
   HANDLE GetHandle() const { return m_handle; }
@@ -42,6 +43,12 @@ void Thread<T>::Create() {
   }
 }
 
+template <typename T>
+void Thread<T>::Terminate() {
+  if (m_handle) {
+    TerminateThread(m_handle, 0);
+  }
+}
 
 template <typename T>
 Thread<T>::~Thread() {
