@@ -37,6 +37,7 @@ public:
   }
 
   BaseWindow() : m_hwnd(NULL) { }
+  virtual ~BaseWindow() { }
 
   BOOL Create(
     PCWSTR lpWindowName,

@@ -4,7 +4,8 @@
 
 class Error : public std::exception {
 public:
-  Error() : std::exception() { }
+  Error() : std::exception(), m_err("An unexpected error has occurred.")
+  { }
 
   Error(const Error& other) : std::exception(other), m_err(other.m_err)
   { }

@@ -14,7 +14,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   MainWindow win(bm);
   std::vector<uint16_t> rom;
   try {
-    rom = FileUtils::readHackFile("../test_programs/asm/Animation.hack");
+    std::wstring inputROMFile = win.OpenROMDialog();
+    rom = FileUtils::readHackFile(inputROMFile);
   }
   catch (std::exception& e) {
     win.ShowError(e.what());

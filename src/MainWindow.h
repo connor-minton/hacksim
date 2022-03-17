@@ -6,11 +6,13 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <d2d1.h>
+#include <ShObjIdl.h>
 #pragma comment(lib, "d2d1")
 
 #include "BaseWindow.h"
 #include "WinUtils.h"
 #include "BitmapManager.h"
+#include "Exceptions.h"
 
 class MainWindow : public BaseWindow<MainWindow> {
 public:
@@ -18,12 +20,20 @@ public:
     : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr),
       m_screenBitmap(nullptr), m_bm(bm)
   {
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (FAILED(hr)) {
+      throw Error("Could not initialize COM.");
+    }
+
     m_screenMem = new uint32_t[512 * 256];
     InitializeScreen();
     m_bm.SetDestMem(m_screenMem);
   }
 
-  ~MainWindow() { delete[] m_screenMem; }
+  ~MainWindow() {
+    CoUninitialize();
+    delete[] m_screenMem;
+  }
 
   BOOL Create(PCWSTR lpWindowName, DWORD dwStyle)
   { 
@@ -49,6 +59,8 @@ public:
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
   ID2D1Bitmap* GetScreenBitmap() { return m_screenBitmap; }
+
+  std::wstring OpenROMDialog();
 
 private:
   ID2D1Factory *m_factory;
@@ -238,4 +250,61 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   }
 
   return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+}
+
+std::wstring MainWindow::OpenROMDialog() {
+  std::wstring out;
+
+  IFileOpenDialog* dialog = nullptr;
+  IShellItem* shItem = nullptr;
+  wchar_t* filepath = nullptr;
+
+  try {
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
+      IID_IFileOpenDialog, (void**) &dialog);
+
+    if (FAILED(hr)) {
+      throw Error("There was a COM error.");
+    }
+
+    COMDLG_FILTERSPEC fileFilters[] = {
+      { L"Hack ROM File", L"*.hack" }
+    };
+
+    hr = dialog->SetFileTypes(1, fileFilters);
+
+    if (FAILED(hr)) {
+      throw Error("There was a COM error.");
+    }
+
+    hr = dialog->Show(m_hwnd);
+
+    if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+      throw Error("No file selected.");
+    }
+
+    if (FAILED(hr)) {
+      throw Error("There was a COM error.");
+    }
+
+    hr = dialog->GetResult(&shItem);
+
+    if (FAILED(hr)) {
+      throw Error("There was a COM error.");
+    }
+
+    hr = shItem->GetDisplayName(SIGDN_FILESYSPATH, &filepath);
+    out = filepath;
+  }
+  catch (std::exception& e) {
+    SafeCoTaskMemFree(&filepath);
+    SafeRelease(&shItem);
+    SafeRelease(&dialog);
+    throw;
+  }
+
+  SafeCoTaskMemFree(&filepath);
+  SafeRelease(&shItem);
+  SafeRelease(&dialog);
+  return out;
 }

@@ -7,10 +7,12 @@
 
 #include "Exceptions.h"
 #include "Bits.h"
+#include "StringUtils.h"
 
 class FileUtils {
 public:
   static std::vector<uint16_t> readHackFile(const std::string& filename);
+  static std::vector<uint16_t> readHackFile(const std::wstring& filename);
   static std::string disassemble(uint16_t instr);
 
 private:
@@ -21,11 +23,15 @@ private:
 
 std::vector<uint16_t>
 FileUtils::readHackFile(const std::string& filename) {
+  return readHackFile(StringUtils::asciiToUTF16(filename));
+}
+
+std::vector<uint16_t> 
+FileUtils::readHackFile(const std::wstring& filename) {
   std::ifstream fin(filename);
 
   if (!fin) {
-    std::string err = "Could not open file '" + filename + "' for input";
-    throw Error(err.c_str());
+    throw Error("Could not open file for input");
   }
 
   std::vector<uint16_t> rom;
@@ -37,7 +43,7 @@ FileUtils::readHackFile(const std::string& filename) {
     }
     for (char c : word) {
       if (c != '0' && c != '1') {
-        throw Error("There is an instruction without only zeros and ones");
+        throw Error("There is an instruction with characters other than '0' and '1'");
       }
     }
 
