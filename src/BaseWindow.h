@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 /**
- * BaseWindow class from the Microsoft documentation
+ * BaseWindow class adapted from the Microsoft documentation
  *
  * https://docs.microsoft.com/en-us/windows/win32/learnwin32/managing-application-state-
  */
@@ -71,10 +71,14 @@ public:
     return static_cast<float>(pixels) / m_dpiScale;
   }
 
+  void ShowError(std::string err) {
+    MessageBoxA(m_hwnd, err.c_str(), "Error", MB_OK | MB_ICONERROR);
+  }
+
 protected:
   virtual PCWSTR ClassName() const = 0;
   virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
-  HWND m_hwnd;
+  HWND m_hwnd = NULL;
   float m_dpiScale = 1.0f;
 };

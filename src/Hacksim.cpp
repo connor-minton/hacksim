@@ -17,7 +17,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     rom = FileUtils::readHackFile("../test_programs/asm/Animation.hack");
   }
   catch (std::exception& e) {
-    std::cerr << "error: " << e.what() << '\n';
+    win.ShowError(e.what());
     ExitProcess(1);
   }
 
@@ -33,7 +33,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     simThread.Create();
   }
   catch (std::exception& e) {
-    std::cerr << "Simulator thread could not be created: " << e.what() << '\n';
+    win.ShowError("Simulator thread could not be created: " + std::string(e.what()));
     ExitProcess(1);
   }
 
