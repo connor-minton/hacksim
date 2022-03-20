@@ -8,10 +8,12 @@
 #include "SimulatorThread.h"
 #include "BitmapManager.h"
 #include "FileUtils.h"
+#include "KeyboardManager.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   BitmapManager bm;
-  MainWindow win(bm);
+  KeyboardManager km;
+  MainWindow win(bm, km);
   std::vector<uint16_t> rom;
   try {
     std::wstring inputROMFile = win.OpenROMDialog();
@@ -28,7 +30,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 
   ShowWindow(win.Window(), nCmdShow);
 
-  SimulatorThread simThread(rom, bm, win.Window());
+  SimulatorThread simThread(rom, bm, km, win.Window());
 
   try {
     simThread.Create();

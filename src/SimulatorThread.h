@@ -11,11 +11,12 @@
 #include "Chips.h"
 #include "ShallowChips.h"
 #include "BitmapManager.h"
+#include "KeyboardManager.h"
 
 class SimulatorThread : public Thread<SimulatorThread> {
 public:
-  SimulatorThread(std::vector<uint16_t> rom, BitmapManager & bm, HWND hwnd) 
-    : Thread<SimulatorThread>(), m_rom(rom), m_bm(bm), m_hwnd(hwnd)
+  SimulatorThread(std::vector<uint16_t> rom, BitmapManager & bm, KeyboardManager & km, HWND hwnd) 
+    : Thread<SimulatorThread>(), m_rom(rom), m_bm(bm), m_km(km), m_hwnd(hwnd)
   { }
 
   ~SimulatorThread() {
@@ -31,6 +32,7 @@ private:
   uint16_t m_kbd = 0;
   std::vector<uint16_t> m_rom;
   BitmapManager & m_bm;
+  KeyboardManager & m_km;
   HWND m_hwnd;
 };
 
@@ -44,10 +46,11 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
   uint32_t renderCycles = 0;
-  while (td->m_computer->nextPC() != 21514) {
+  while (td->m_computer->nextPC() != 31643) {
+    td->m_kbd = td->m_km.GetScanCode();
     td->m_computer->tock();
     if (renderCycles >= 420) { // idk
-      std::lock_guard<std::mutex> lck(td->m_bm.mtx());
+      std::lock_guard lck(td->m_bm.mtx());
       td->m_bm.drawResults = true;
       InvalidateRect(td->m_hwnd, NULL, TRUE);
       renderCycles = 0;

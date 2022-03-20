@@ -156,6 +156,7 @@
     <ClInclude Include="..\src\Chips.h" />
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FileUtils.h" />
+    <ClInclude Include="..\src\KeyboardManager.h" />
     <ClInclude Include="..\src\ShallowChips.h" />
     <ClInclude Include="..\src\SimulatorThread.h" />
     <ClInclude Include="..\src\MainWindow.h" />

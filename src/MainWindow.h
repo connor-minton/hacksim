@@ -13,12 +13,13 @@
 #include "WinUtils.h"
 #include "BitmapManager.h"
 #include "Exceptions.h"
+#include "KeyboardManager.h"
 
 class MainWindow : public BaseWindow<MainWindow> {
 public:
-  MainWindow(BitmapManager & bm) 
+  MainWindow(BitmapManager & bm, KeyboardManager & km) 
     : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr),
-      m_screenBitmap(nullptr), m_bm(bm)
+      m_screenBitmap(nullptr), m_bm(bm), m_km(km)
   {
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(hr)) {
@@ -69,6 +70,7 @@ private:
   ID2D1Bitmap *m_screenBitmap;
 
   BitmapManager & m_bm;
+  KeyboardManager & m_km;
 
   uint32_t *m_screenMem = nullptr;
 
@@ -247,6 +249,12 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   case WM_SIZE:
     Resize();
     return 0;
+
+  case WM_KEYDOWN:
+    return m_km.OnKeyDown(wParam, lParam);
+
+  case WM_KEYUP:
+    return m_km.OnKeyUp(wParam, lParam);
   }
 
   return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
