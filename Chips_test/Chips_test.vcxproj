@@ -141,14 +141,51 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Chips_test.cpp" />
+    <ClCompile Include="..\src\FileUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Add16.h" />
+    <ClInclude Include="..\src\ALU.h" />
+    <ClInclude Include="..\src\And.h" />
+    <ClInclude Include="..\src\And16.h" />
+    <ClInclude Include="..\src\Bit.h" />
     <ClInclude Include="..\src\Bits.h" />
     <ClInclude Include="..\src\Chips.h" />
+    <ClInclude Include="..\src\Computer.h" />
+    <ClInclude Include="..\src\CPU.h" />
+    <ClInclude Include="..\src\DFF.h" />
+    <ClInclude Include="..\src\DMux.h" />
+    <ClInclude Include="..\src\DMux4Way.h" />
+    <ClInclude Include="..\src\DMux8Way.h" />
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FileUtils.h" />
+    <ClInclude Include="..\src\FullAdder.h" />
+    <ClInclude Include="..\src\HalfAdder.h" />
+    <ClInclude Include="..\src\Inc16.h" />
+    <ClInclude Include="..\src\Memory.h" />
+    <ClInclude Include="..\src\Mux.h" />
+    <ClInclude Include="..\src\Mux16.h" />
+    <ClInclude Include="..\src\Mux4Way16.h" />
+    <ClInclude Include="..\src\Mux8Way16.h" />
+    <ClInclude Include="..\src\Nand.h" />
+    <ClInclude Include="..\src\Nand16.h" />
+    <ClInclude Include="..\src\Not.h" />
+    <ClInclude Include="..\src\Not16.h" />
+    <ClInclude Include="..\src\Or.h" />
+    <ClInclude Include="..\src\Or16.h" />
+    <ClInclude Include="..\src\Or8Way.h" />
+    <ClInclude Include="..\src\PC.h" />
+    <ClInclude Include="..\src\RAM16K.h" />
+    <ClInclude Include="..\src\RAM4K.h" />
+    <ClInclude Include="..\src\RAM512.h" />
+    <ClInclude Include="..\src\RAM64.h" />
+    <ClInclude Include="..\src\RAM8.h" />
+    <ClInclude Include="..\src\Register.h" />
+    <ClInclude Include="..\src\ROM32K.h" />
+    <ClInclude Include="..\src\Screen.h" />
     <ClInclude Include="..\src\ShallowChips.h" />
     <ClInclude Include="..\src\Test.h" />
+    <ClInclude Include="..\src\Xor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Chips">
+      <UniqueIdentifier>{563e96c9-5f87-444f-b631-d6947c2492c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Bits.h">
@@ -33,9 +36,120 @@
     <ClInclude Include="..\src\Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Add16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ALU.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\And.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\And16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bit.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Computer.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CPU.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DFF.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DMux.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DMux4Way.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DMux8Way.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FullAdder.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HalfAdder.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Inc16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Memory.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mux.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mux4Way16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mux8Way16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mux16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Nand.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Nand16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Not.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Not16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Or.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Or8Way.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Or16.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PC.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RAM4K.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RAM8.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RAM16K.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RAM64.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RAM512.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Register.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ROM32K.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Screen.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Xor.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Computer_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FileUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

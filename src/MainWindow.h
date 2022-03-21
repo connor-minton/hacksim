@@ -17,49 +17,22 @@
 
 class MainWindow : public BaseWindow<MainWindow> {
 public:
-  MainWindow(BitmapManager & bm, KeyboardManager & km) 
-    : m_factory(nullptr), m_renderTarget(nullptr), m_brush(nullptr),
-      m_screenBitmap(nullptr), m_bm(bm), m_km(km)
-  {
-    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (FAILED(hr)) {
-      throw Error("Could not initialize COM.");
-    }
-
-    m_screenMem = new uint32_t[512 * 256];
-    InitializeScreen();
-    m_bm.SetDestMem(m_screenMem);
-  }
+  MainWindow(BitmapManager & bm, KeyboardManager & km);
 
   ~MainWindow() {
     CoUninitialize();
     delete[] m_screenMem;
   }
 
-  BOOL Create(PCWSTR lpWindowName, DWORD dwStyle)
-  { 
-    RECT windowRect;
-    windowRect.top = 100;
-    windowRect.left = 100;
-    windowRect.right = 612;
-    windowRect.bottom = 356;
+  PCWSTR ClassName() const 
+    { return L"Circle Window Class"; }
 
-    if (!AdjustWindowRectEx(&windowRect, dwStyle, FALSE, 0)) {
-      OutputDebugString(L"ADJUST RETURNED FALSE\n");
-    }
+  ID2D1Bitmap* GetScreenBitmap() const
+    { return m_screenBitmap; }
 
-    int width = windowRect.right - windowRect.left;
-    int height = windowRect.bottom - windowRect.top;
+  BOOL Create(PCWSTR lpWindowName, DWORD dwStyle);
 
-    return BaseWindow<MainWindow>::Create(
-      lpWindowName, dwStyle, 0, CW_USEDEFAULT, CW_USEDEFAULT,
-      width, height);
-  }
-
-  PCWSTR ClassName() const { return L"Circle Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-  ID2D1Bitmap* GetScreenBitmap() { return m_screenBitmap; }
 
   std::wstring OpenROMDialog();
 
@@ -76,7 +49,6 @@ private:
 
   bool m_drawnResults = false;
 
-  void CalculateLayout();
   HRESULT CreateGraphicsResources();
   void DiscardGraphicsResources();
   void OnPaint();
@@ -88,7 +60,41 @@ private:
   void UpdateScreen();
 };
 
-void MainWindow::CalculateLayout() {
+MainWindow::MainWindow(BitmapManager & bm, KeyboardManager & km) 
+  : m_factory(nullptr),
+    m_renderTarget(nullptr),
+    m_brush(nullptr),
+    m_screenBitmap(nullptr), 
+    m_bm(bm), 
+    m_km(km)
+{
+  HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+  if (FAILED(hr)) {
+    throw Error("Could not initialize COM.");
+  }
+
+  m_screenMem = new uint32_t[512 * 256];
+  InitializeScreen();
+  m_bm.SetDestMem(m_screenMem);
+}
+
+BOOL MainWindow::Create(PCWSTR lpWindowName, DWORD dwStyle) { 
+  RECT windowRect;
+  windowRect.top = 100;
+  windowRect.left = 100;
+  windowRect.right = 612;
+  windowRect.bottom = 356;
+
+  if (!AdjustWindowRectEx(&windowRect, dwStyle, FALSE, 0)) {
+    OutputDebugString(L"ADJUST RETURNED FALSE\n");
+  }
+
+  int width = windowRect.right - windowRect.left;
+  int height = windowRect.bottom - windowRect.top;
+
+  return BaseWindow<MainWindow>::Create(
+    lpWindowName, dwStyle, 0, CW_USEDEFAULT, CW_USEDEFAULT,
+    width, height);
 }
 
 void MainWindow::InitializeScreen() {
@@ -220,7 +226,6 @@ void MainWindow::Resize() {
     D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
 
     m_renderTarget->Resize(size);
-    CalculateLayout();
     InvalidateRect(m_hwnd, NULL, FALSE);
   }
 }

@@ -20,8 +20,8 @@ public:
   ~Thread();
 
 protected:
-  DWORD m_tid;
-  HANDLE m_handle;
+  DWORD m_tid = 0;
+  HANDLE m_handle = nullptr;
   DWORD m_result = 0;
 
   static DWORD WINAPI Run(void* data) { return 0; }
