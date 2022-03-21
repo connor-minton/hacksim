@@ -38,6 +38,9 @@ FileUtils::readHackFile(const std::wstring& filename) {
   std::string word;
 
   while (fin >> word) {
+    if (rom.size() == 32768) {
+      throw Error("The input program is too large for the 32K ROM");
+    }
     if (word.size() != 16) {
       throw Error("Not all instructions are 16 bits in the input file");
     }
