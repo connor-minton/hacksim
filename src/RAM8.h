@@ -10,6 +10,18 @@
 
 class RAM8 : public ISequentialCircuit {
 public:
+  RAM8() {
+    for (int i = 0; i < 8; i++) {
+      m_regs[i] = new shallow::Register();
+    }
+  }
+
+  ~RAM8() {
+    for (int i = 0; i < 8; i++) {
+      delete m_regs[i];
+    }
+  }
+
   // INPUT in[16], load, address[3]
   inline uint16_t in() const { return m_in; }
   inline bool load() const { return getBit<0>(m_pins); }
@@ -26,13 +38,13 @@ public:
 
   // Bypass the clocking system to examine the value at `offset`
   inline uint16_t peek(uint16_t offset) {
-    return m_regs[offset & 0x7].out();
+    return m_regs[offset & 0x7]->out();
   }
 
   // Bypass the clocking system to forcefully set the underlying value
   // at `offset` to `val`
   inline void poke(uint16_t offset, uint16_t val) {
-    m_regs[offset & 0x7].poke(val);
+    m_regs[offset & 0x7]->poke(val);
   }
 
   inline void tick() {
@@ -40,54 +52,54 @@ public:
     m_dmux.set_sel(address());
     m_dmux.computeOutput();
 
-    m_regs[0].set_in(in());
-    m_regs[1].set_in(in());
-    m_regs[2].set_in(in());
-    m_regs[3].set_in(in());
-    m_regs[4].set_in(in());
-    m_regs[5].set_in(in());
-    m_regs[6].set_in(in());
-    m_regs[7].set_in(in());
+    m_regs[0]->set_in(in());
+    m_regs[1]->set_in(in());
+    m_regs[2]->set_in(in());
+    m_regs[3]->set_in(in());
+    m_regs[4]->set_in(in());
+    m_regs[5]->set_in(in());
+    m_regs[6]->set_in(in());
+    m_regs[7]->set_in(in());
 
-    m_regs[0].set_load(m_dmux.a());
-    m_regs[1].set_load(m_dmux.b());
-    m_regs[2].set_load(m_dmux.c());
-    m_regs[3].set_load(m_dmux.d());
-    m_regs[4].set_load(m_dmux.e());
-    m_regs[5].set_load(m_dmux.f());
-    m_regs[6].set_load(m_dmux.g());
-    m_regs[7].set_load(m_dmux.h());
+    m_regs[0]->set_load(m_dmux.a());
+    m_regs[1]->set_load(m_dmux.b());
+    m_regs[2]->set_load(m_dmux.c());
+    m_regs[3]->set_load(m_dmux.d());
+    m_regs[4]->set_load(m_dmux.e());
+    m_regs[5]->set_load(m_dmux.f());
+    m_regs[6]->set_load(m_dmux.g());
+    m_regs[7]->set_load(m_dmux.h());
 
     // optimization: only tick-tock the selected register
-    m_regs[m_dmux.sel()].tick();
+    m_regs[m_dmux.sel()]->tick();
 
     m_mux.set_sel(address());
-    m_mux.set_a(m_regs[0].out());
-    m_mux.set_b(m_regs[1].out());
-    m_mux.set_c(m_regs[2].out());
-    m_mux.set_d(m_regs[3].out());
-    m_mux.set_e(m_regs[4].out());
-    m_mux.set_f(m_regs[5].out());
-    m_mux.set_g(m_regs[6].out());
-    m_mux.set_h(m_regs[7].out());
+    m_mux.set_a(m_regs[0]->out());
+    m_mux.set_b(m_regs[1]->out());
+    m_mux.set_c(m_regs[2]->out());
+    m_mux.set_d(m_regs[3]->out());
+    m_mux.set_e(m_regs[4]->out());
+    m_mux.set_f(m_regs[5]->out());
+    m_mux.set_g(m_regs[6]->out());
+    m_mux.set_h(m_regs[7]->out());
     m_mux.computeOutput();
 
     m_out = m_mux.out();
   }
 
   inline void tock() {
-    m_regs[m_dmux.sel()].tock();
+    m_regs[m_dmux.sel()]->tock();
 
     // duplicate logic from tick, but necessary after tocking the reg
     m_mux.set_sel(address());
-    m_mux.set_a(m_regs[0].out());
-    m_mux.set_b(m_regs[1].out());
-    m_mux.set_c(m_regs[2].out());
-    m_mux.set_d(m_regs[3].out());
-    m_mux.set_e(m_regs[4].out());
-    m_mux.set_f(m_regs[5].out());
-    m_mux.set_g(m_regs[6].out());
-    m_mux.set_h(m_regs[7].out());
+    m_mux.set_a(m_regs[0]->out());
+    m_mux.set_b(m_regs[1]->out());
+    m_mux.set_c(m_regs[2]->out());
+    m_mux.set_d(m_regs[3]->out());
+    m_mux.set_e(m_regs[4]->out());
+    m_mux.set_f(m_regs[5]->out());
+    m_mux.set_g(m_regs[6]->out());
+    m_mux.set_h(m_regs[7]->out());
     m_mux.computeOutput();
 
     m_out = m_mux.out();
@@ -101,6 +113,6 @@ private:
 
   DMux8Way m_dmux;
   Mux8Way16 m_mux;
-  Register m_regs[8];
+  IRegister* m_regs[8] = {0};
 };
 

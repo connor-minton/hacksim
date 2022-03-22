@@ -6,7 +6,24 @@
 #include "ISequentialCircuit.h"
 #include "Bit.h"
 
-class Register : public ISequentialCircuit {
+class IRegister : public ISequentialCircuit {
+public:
+  // INPUT in[16], load
+  virtual uint16_t in() const = 0;
+  virtual bool load() const = 0;
+
+  virtual void set_in(uint16_t val) = 0;
+  virtual void set_load(bool val) = 0;
+
+  virtual void poke(uint16_t val) = 0;
+
+  // OUTPUT out[16]
+  virtual uint16_t out() const = 0;
+
+  virtual ~IRegister() { }
+};
+
+class Register : public IRegister {
 public:
   // INPUT in[16], load
   inline uint16_t in() const { return m_in; }
@@ -155,4 +172,36 @@ private:
 
   Bit m_bits[16];
 };
+
+namespace shallow {
+
+class Register : public IRegister {
+public:
+  // INPUT in[16], load
+  inline uint16_t in() const { return m_in; }
+  inline bool load() const { return m_load; }
+
+  inline void set_in(uint16_t val) { m_in = val; }
+  inline void set_load(bool val) { m_load = val; }
+
+  inline void poke(uint16_t val) { m_out = val; }
+
+  // OUTPUT out[16]
+  inline uint16_t out() const { return m_out; }
+
+  inline void tick() { }
+
+  inline void tock() {
+    if (m_load) {
+      m_out = m_in;
+    }
+  }
+
+private:
+  uint16_t m_in = 0;
+  uint16_t m_out = 0;
+  bool m_load = false;
+};
+
+}
 
