@@ -188,10 +188,10 @@ void MainWindow::OnPaint() {
 
     {
       std::lock_guard<std::mutex> lck(m_bm.mtx());
-      if (m_bm.drawResults) {
+      if (m_bm.Ready()) {
         updateThisTime = true;
         m_bm.UpdateBitmap();
-        m_bm.drawResults = false;
+        m_bm.TriggerRenderHandled();
       }
     }
 

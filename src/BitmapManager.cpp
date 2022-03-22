@@ -10,3 +10,13 @@ void BitmapManager::UpdateBitmap() {
     }
   }
 }
+
+void BitmapManager::TriggerRender(HWND hwnd) {
+  std::lock_guard scopeLock(m_mtx);
+  m_ready = true;
+  InvalidateRect(hwnd, NULL, TRUE);
+}
+
+void BitmapManager::TriggerRenderHandled() {
+  m_ready = false;
+}

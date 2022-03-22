@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <mutex>
+#include <chrono>
 
 #include <Windows.h>
 
@@ -32,12 +33,22 @@ public:
   static DWORD WINAPI Run(void* data);
 
 private:
+  using Clock = std::chrono::steady_clock;
+  using TimePoint = std::chrono::time_point<Clock>;
+
+  void outputScreen();
+
   Computer* m_computer = nullptr;
   uint16_t* m_screenMem = nullptr;
   uint16_t m_kbd = 0;
   std::vector<uint16_t> m_rom;
-  BitmapManager & m_bm;
   KeyboardManager & m_km;
   HWND m_hwnd;
+
+  // Screen rendering
+  const Clock::duration m_frameDuration =
+    std::chrono::microseconds(16667); // average of about 60 FPS
+  BitmapManager & m_bm;
+  TimePoint m_lastRender;
 };
 
