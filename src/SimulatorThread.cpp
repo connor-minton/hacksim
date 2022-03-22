@@ -16,6 +16,7 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   uint32_t renderCycles = 0;
   while (td->m_computer->nextPC() != 31643) {
     td->m_kbd = td->m_km.GetScanCode();
+    td->m_computer->tick();
     td->m_computer->tock();
     if (renderCycles >= 420) { // idk
       std::lock_guard lck(td->m_bm.mtx());

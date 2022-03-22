@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
+#include "ICombinationalCircuit.h"
 #include "Bits.h"
 
-class Nand {
+class Nand : public ICombinationalCircuit {
 public:
   // INPUT
   inline bool a() const { return getBit<0>(pins); }

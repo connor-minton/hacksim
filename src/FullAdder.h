@@ -3,11 +3,12 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Xor.h"
 #include "And.h"
 #include "Or.h"
 
-class FullAdder {
+class FullAdder : public ICombinationalCircuit {
 public:
   // INPUT a, b, c
   inline bool a() const { return getBit<0>(m_pins); }

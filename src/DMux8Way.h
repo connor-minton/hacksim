@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "DMux.h"
 #include "DMux4Way.h"
 
-class DMux8Way {
+class DMux8Way : public ICombinationalCircuit {
 public:
   DMux8Way() { computeOutput(); }
 

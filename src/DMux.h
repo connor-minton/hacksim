@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Not.h"
 #include "And.h"
 
-class DMux {
+class DMux : public ICombinationalCircuit {
 public:
   // INPUT
   inline bool in() const { return getBit<0>(pins); }

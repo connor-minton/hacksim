@@ -3,11 +3,12 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Not.h"
 #include "And16.h"
 #include "Or16.h"
 
-class Mux16 {
+class Mux16 : public ICombinationalCircuit {
 public:
   // INPUT
   inline uint16_t a() const { return m_a; }

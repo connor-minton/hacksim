@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
+#include "ICombinationalCircuit.h"
 #include "Add16.h"
 
-class Inc16 {
+class Inc16 : public ICombinationalCircuit {
 public:
   // INPUT in[16]
   inline uint16_t in() const { return m_in; }

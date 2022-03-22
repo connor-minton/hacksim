@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "Mux.h"
 #include "DFF.h"
 
-class Bit {
+class Bit : public ISequentialCircuit {
 public:
   // INPUT in, load
   inline bool in() const { return getBit<0>(m_pins); }

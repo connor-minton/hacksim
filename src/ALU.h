@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Mux16.h"
 #include "Not16.h"
 #include "And16.h"
@@ -10,7 +11,7 @@
 #include "Or8Way.h"
 #include "Or.h"
 
-class ALU {
+class ALU : public ICombinationalCircuit {
 public:
   // INPUT x[16], y[16],
   //       zx, // zero the x input

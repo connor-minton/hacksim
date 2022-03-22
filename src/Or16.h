@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
+#include "ICombinationalCircuit.h"
 #include "Not16.h"
 #include "Nand16.h"
 
-class Or16 {
+class Or16 : public ICombinationalCircuit {
 public:
   // INPUT
   inline uint16_t a() const { return m_a; }

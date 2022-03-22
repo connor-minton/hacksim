@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
+#include "ICombinationalCircuit.h"
 #include "Mux4Way16.h"
 #include "Mux16.h"
 
-class Mux8Way16 {
+class Mux8Way16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16], c[16], d[16],
   //       e[16], f[16], g[16], h[16], sel[3]

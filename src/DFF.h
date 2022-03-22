@@ -3,7 +3,9 @@
 #include <cstdint>
 #include "Bits.h"
 
-class DFF {
+#include "ISequentialCircuit.h"
+
+class DFF : public ISequentialCircuit {
 public:
   // INPUT in
   inline bool in() const { return getBit<0>(m_pins); }
@@ -16,6 +18,8 @@ public:
   inline void poke(bool val) { set_out(val); }
 
   DFF() { tock(); }
+
+  inline void tick() { }
 
   inline void tock() {
     set_out(in());

@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
+#include "ICombinationalCircuit.h"
 #include "Mux16.h"
 
-class Mux4Way16 {
+class Mux4Way16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16], c[16], d[16], sel[2]
   inline uint16_t a() const { return m_a; }

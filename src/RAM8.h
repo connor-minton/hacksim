@@ -3,11 +3,12 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "DMux8Way.h"
 #include "Mux8Way16.h"
 #include "Register.h"
 
-class RAM8 {
+class RAM8 : public ISequentialCircuit {
 public:
   // INPUT in[16], load, address[3]
   inline uint16_t in() const { return m_in; }

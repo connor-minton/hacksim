@@ -152,5 +152,11 @@
     <ClInclude Include="..\src\Xor.h">
       <Filter>Header Files\Chips</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ICombinationalCircuit.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ISequentialCircuit.h">
+      <Filter>Header Files\Chips</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "Register.h"
 #include "PC.h"
 #include "Not.h"
@@ -11,7 +12,7 @@
 #include "ALU.h"
 #include "Mux16.h"
 
-class CPU {
+class CPU : public ISequentialCircuit {
 public:
   // IN inM[16], instruction[16], reset
   inline uint16_t inM() const { return m_inM; }

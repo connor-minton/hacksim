@@ -3,12 +3,13 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "RAM16K.h"
 #include "Mux16.h"
 #include "DMux.h"
 #include "ShallowChips.h"
 
-class Memory {
+class Memory : public ISequentialCircuit {
 public:
   static const uint16_t SCREEN = 0x4000;
   static const uint16_t KBD = 0x6000;

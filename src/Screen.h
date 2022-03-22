@@ -3,9 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
+
 namespace shallow {
 
-class Screen {
+class Screen : public ISequentialCircuit {
 public:
   static const size_t SCREEN_SIZE = 8192;
 

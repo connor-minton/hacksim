@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-class Nand16 {
+#include "ICombinationalCircuit.h"
+
+class Nand16 : public ICombinationalCircuit {
 public:
   // IN a[16], b[16]
   inline uint16_t a() const { return m_a; }

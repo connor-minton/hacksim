@@ -161,7 +161,9 @@
     <ClInclude Include="..\src\FileUtils.h" />
     <ClInclude Include="..\src\FullAdder.h" />
     <ClInclude Include="..\src\HalfAdder.h" />
+    <ClInclude Include="..\src\ICombinationalCircuit.h" />
     <ClInclude Include="..\src\Inc16.h" />
+    <ClInclude Include="..\src\ISequentialCircuit.h" />
     <ClInclude Include="..\src\Memory.h" />
     <ClInclude Include="..\src\Mux.h" />
     <ClInclude Include="..\src\Mux16.h" />

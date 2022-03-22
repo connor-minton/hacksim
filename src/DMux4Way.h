@@ -3,9 +3,10 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "DMux.h"
 
-class DMux4Way {
+class DMux4Way : public ICombinationalCircuit {
 public:
   // INPUT in, sel[2]
   inline bool in() const { return getBit<0>(m_pins); }

@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "HalfAdder.h"
 #include "FullAdder.h"
 
-class Add16 {
+class Add16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16]
   inline uint16_t a() const { return m_a; }

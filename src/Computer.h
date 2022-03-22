@@ -1,15 +1,17 @@
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <vector>
 #include <string>
 #include "FileUtils.h"
 
+#include "ISequentialCircuit.h"
 #include "Memory.h"
 #include "CPU.h"
 #include "ShallowChips.h"
 
-class Computer {
+class Computer : public ISequentialCircuit {
 public:
   // IN reset
   inline bool reset() const { return m_reset; }
@@ -32,14 +34,18 @@ public:
   uint16_t curPC() const;
   uint16_t nextPC() const;
 
-  inline void tock() {
+  inline void tick() {
     m_rom.set_address(m_cpu.pc());
 
     m_mem.set_address(m_cpu.addressM());
     m_mem.tick();
 
-    m_cpu.set_reset(reset());
+    uint16_t memOut = m_mem.out();
+
+    // m_rom is a shallow chip, so it is not necessary to call
+    // m_rom.computeOutput() before observing its output instruction
     m_cpu.set_instruction(m_rom.instruction());
+    m_cpu.set_reset(reset());
     m_cpu.set_inM(m_mem.out());
     m_cpu.tick();
 
@@ -48,6 +54,15 @@ public:
     m_mem.set_load(m_cpu.writeM());
     m_mem.tick();
 
+    assert(m_mem.out() == memOut);
+    // If this assertion failed, it would mean that we would have to
+    // `tick` the CPU again, entering a feedback loop. If the Memory
+    // unit is implemented correctly, then m_mem.out() will be
+    // different only if m_mem.set_address() caused the selected
+    // memory register to be different before the tick.
+  }
+
+  inline void tock() {
     m_mem.tock();
     m_cpu.tock();
   }

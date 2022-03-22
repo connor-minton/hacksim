@@ -3,11 +3,12 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "Inc16.h"
 #include "Mux16.h"
 #include "Register.h"
 
-class PC {
+class PC : public ISequentialCircuit {
 public:
   // INPUT in[16], load, inc, reset
   inline uint16_t in() const { return m_in; }

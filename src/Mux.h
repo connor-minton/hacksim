@@ -3,11 +3,12 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Not.h"
 #include "And.h"
 #include "Or.h"
 
-class Mux {
+class Mux : public ICombinationalCircuit {
 public:
   // INPUT
   inline bool a() const { return getBit<0>(pins); }

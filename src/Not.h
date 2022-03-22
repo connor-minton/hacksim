@@ -4,9 +4,10 @@
 
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Nand.h"
 
-class Not {
+class Not : public ICombinationalCircuit {
 public:
   // INPUT
   inline bool in() const { return getBit<0>(pins); }

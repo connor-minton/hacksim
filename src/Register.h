@@ -3,9 +3,10 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ISequentialCircuit.h"
 #include "Bit.h"
 
-class Register {
+class Register : public ISequentialCircuit {
 public:
   // INPUT in[16], load
   inline uint16_t in() const { return m_in; }

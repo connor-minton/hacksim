@@ -13,6 +13,7 @@ void test_Computer_Max(TestContext& ctx) {
   computer->set_rom(rom);
 
   computer->set_reset(true);
+  computer->tick();
   computer->tock();
 
   Memory& mem = computer->mem();
@@ -21,6 +22,7 @@ void test_Computer_Max(TestContext& ctx) {
 
   computer->set_reset(false);
   for (int i = 0; i < 14; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -29,12 +31,14 @@ void test_Computer_Max(TestContext& ctx) {
   ctx.expectEqual(mem.peek(2), 5);
 
   computer->set_reset(true);
+  computer->tick();
   computer->tock();
 
   computer->set_reset(false);
   mem.poke(0, 23456);
   mem.poke(1, 12345);
   for (int i = 0; i < 10; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -56,6 +60,7 @@ void test_Computer_Add(TestContext& ctx) {
   computer->set_rom(rom);
 
   computer->set_reset(true);
+  computer->tick();
   computer->tock();
   computer->set_reset(false);
 
@@ -63,6 +68,7 @@ void test_Computer_Add(TestContext& ctx) {
   mem.poke(0, 0);
 
   for (int i = 0; i < 6; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -84,6 +90,7 @@ void test_Computer_TickTock(TestContext& cx) {
   computer->set_rom(rom);
 
   computer->set_reset(true);
+  computer->tick();
   computer->tock();
   computer->set_reset(false);
 
@@ -92,6 +99,7 @@ void test_Computer_TickTock(TestContext& cx) {
   mem.poke(100, 0);
 
   for (int i = 0; i < 8; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -115,6 +123,7 @@ void test_Computer_Rect(TestContext& cx) {
   mem.poke(0, 4); // 16 pixels wide, 4 pixels long
 
   for (int i = 0; i < 63; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -150,6 +159,7 @@ void test_Computer_BasicTest(TestContext& cx) {
   mem.poke(4, 3010);
 
   for (int i = 0; i < 600; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -179,6 +189,7 @@ void test_Computer_PointerTest(TestContext& cx) {
   mem.poke(0, 256);
 
   for (int i = 0; i < 450; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -205,6 +216,7 @@ void test_Computer_StaticTest(TestContext& cx) {
   mem.poke(0, 256);
 
   for (int i = 0; i < 200; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -227,6 +239,7 @@ void test_Computer_SimpleAdd(TestContext& cx) {
   mem.poke(0, 256);
 
   for (int i = 0; i < 60; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -250,6 +263,7 @@ void test_Computer_StackTest(TestContext& cx) {
   mem.poke(0, 256);
 
   for (int i = 0; i < 1000; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -281,6 +295,7 @@ void test_Computer_FibonacciElement(TestContext& cx) {
   Memory& mem = computer->mem();
 
   for (int i = 0; i < 6000; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -319,6 +334,7 @@ void test_Computer_NestedCall(TestContext& cx) {
   }
 
   for (int i = 0; i < 4000; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -358,6 +374,7 @@ void test_Computer_SimpleFunction(TestContext& cx) {
   mem.poke(316, 4010);
 
   for (int i = 0; i < 300; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -385,6 +402,7 @@ void test_Computer_StaticsTest(TestContext& cx) {
   mem.poke(0, 256);
 
   for (int i = 0; i < 2500; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -412,6 +430,7 @@ void test_Computer_BasicLoop(TestContext& cx) {
   mem.poke(400, 3);
 
   for (int i = 0; i < 600; i++) {
+    computer->tick();
     computer->tock();
   }
 
@@ -439,6 +458,7 @@ void test_Computer_FibonacciSeries(TestContext& cx) {
   mem.poke(401, 3000);
 
   for (int i = 0; i < 1100; i++) {
+    computer->tick();
     computer->tock();
   }
 

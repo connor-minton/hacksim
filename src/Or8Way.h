@@ -3,9 +3,10 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Or.h"
 
-class Or8Way {
+class Or8Way : public ICombinationalCircuit {
 public:
   // INPUT in[8]
   inline uint8_t in() const { return m_in; }

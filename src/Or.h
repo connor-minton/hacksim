@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Not.h"
 #include "Nand.h"
 
-class Or {
+class Or : public ICombinationalCircuit {
 public:
   // INPUT
   inline bool a() const { return getBit<0>(pins); }

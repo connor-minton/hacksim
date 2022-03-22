@@ -3,10 +3,11 @@
 #include <cstdint>
 #include "Bits.h"
 
+#include "ICombinationalCircuit.h"
 #include "Xor.h"
 #include "And.h"
 
-class HalfAdder {
+class HalfAdder : public ICombinationalCircuit {
 public:
   // INPUT a, b
   inline bool a() const { return getBit<0>(m_pins); }

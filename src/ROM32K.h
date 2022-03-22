@@ -3,9 +3,11 @@
 #include <cstdint>
 #include <vector>
 
+#include "ISequentialCircuit.h"
+
 namespace shallow {
 
-class ROM32K {
+class ROM32K : public ISequentialCircuit {
 public:
   // IN address[15]
   inline uint16_t address() const { return m_address; }
@@ -29,6 +31,9 @@ public:
 
   inline void set_rom(std::vector<uint16_t> instructions)
     { m_instructions = instructions; }
+
+  inline void tick() { }
+  inline void tock() { }
 
 private:
   std::vector<uint16_t> m_instructions;
