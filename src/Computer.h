@@ -127,7 +127,7 @@ namespace shallow {
 class Computer : public BaseComputer {
 public:
   Computer(uint16_t* screen, uint16_t* kbd)
-    : BaseComputer(new shallow::Memory(screen, kbd), new ::CPU())
+    : BaseComputer(new shallow::Memory(screen, kbd), new shallow::CPU())
   { }
 
   ~Computer() {
@@ -136,3 +136,4 @@ public:
 };
 
 }
+

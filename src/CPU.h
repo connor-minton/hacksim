@@ -214,19 +214,19 @@ public:
   }
 
   // IN inM[16], instruction[16], reset
-  virtual uint16_t inM() const = 0;
-  virtual uint16_t instruction() const = 0;
-  virtual bool reset() const = 0;
+  virtual uint16_t inM() const { return m_inM; }
+  virtual uint16_t instruction() const { return m_instruction; }
+  virtual bool reset() const { return m_reset; }
 
-  virtual void set_inM(uint16_t val) = 0;
-  virtual void set_instruction(uint16_t val) = 0;
-  virtual void set_reset(bool val) = 0;
+  virtual void set_inM(uint16_t val) { m_inM = val; }
+  virtual void set_instruction(uint16_t val) { m_instruction = val; }
+  virtual void set_reset(bool val) { m_reset = val; }
 
   // OUT outM[16], addressM[15], writeM, pc[15]
-  virtual uint16_t outM() const = 0;
-  virtual uint16_t addressM() const = 0;
-  virtual bool writeM() const = 0;
-  virtual uint16_t pc() const = 0;
+  virtual uint16_t outM() const { return m_outM; }
+  virtual uint16_t addressM() const { return m_addressM; }
+  virtual bool writeM() const { return m_writeM; }
+  virtual uint16_t pc() const { return m_pc.out(); }
 
   void tick() {
     tickALU();

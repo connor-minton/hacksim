@@ -234,7 +234,8 @@ public:
       m_out = m_x | m_y;
       break;
     default:
-      throw Error("Unknown C-instruction computation code: " + std::to_string(compCode));
+      if (getBit<15>(m_instr))
+        throw Error("Unknown C-instruction computation code: " + std::to_string(compCode));
     }
 
     m_zr = m_out == 0;

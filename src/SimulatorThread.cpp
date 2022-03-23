@@ -14,7 +14,7 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   td->m_computer = new shallow::Computer(td->m_screenMem, &td->m_kbd);
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
-  while (td->m_computer->nextPC() != 31643) {
+  while (true) {
     td->m_kbd = td->m_km.GetScanCode();
     td->m_computer->tick();
     td->m_computer->tock();
