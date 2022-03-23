@@ -11,7 +11,7 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   for (int i = 0; i < shallow::Screen::SCREEN_SIZE; i++) {
     td->m_screenMem[i] = 0;
   }
-  td->m_computer = new shallow::Computer(td->m_screenMem, &td->m_kbd, &td->m_clk);
+  td->m_computer = new Computer(td->m_screenMem, &td->m_kbd, &td->m_clk);
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
   while (true) {

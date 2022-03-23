@@ -5,8 +5,9 @@
 void test_Computer_Max(TestContext& ctx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/asm/Max.hack");
 
@@ -52,8 +53,9 @@ void test_Computer_Max(TestContext& ctx) {
 void test_Computer_Add(TestContext& ctx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/asm/Add.hack");
 
@@ -82,8 +84,9 @@ void test_Computer_Add(TestContext& ctx) {
 void test_Computer_TickTock(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/asm/TickTock.hack");
 
@@ -112,8 +115,9 @@ void test_Computer_TickTock(TestContext& cx) {
 void test_Computer_Rect(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/asm/Rect.hack");
 
@@ -144,8 +148,9 @@ void test_Computer_Rect(TestContext& cx) {
 void test_Computer_BasicTest(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/BasicTest/BasicTest.hack");
 
@@ -178,8 +183,9 @@ void test_Computer_BasicTest(TestContext& cx) {
 void test_Computer_PointerTest(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/PointerTest/PointerTest.hack");
 
@@ -205,8 +211,9 @@ void test_Computer_PointerTest(TestContext& cx) {
 void test_Computer_StaticTest(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/StaticTest/StaticTest.hack");
 
@@ -228,8 +235,9 @@ void test_Computer_StaticTest(TestContext& cx) {
 void test_Computer_SimpleAdd(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/SimpleAdd/SimpleAdd.hack");
 
@@ -252,8 +260,9 @@ void test_Computer_SimpleAdd(TestContext& cx) {
 void test_Computer_StackTest(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/StackTest/StackTest.hack");
 
@@ -285,8 +294,9 @@ void test_Computer_StackTest(TestContext& cx) {
 void test_Computer_FibonacciElement(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/FibonacciElement/FibonacciElement.hack");
 
@@ -308,8 +318,9 @@ void test_Computer_FibonacciElement(TestContext& cx) {
 void test_Computer_NestedCall(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/NestedCall/NestedCall.hack");
 
@@ -352,8 +363,9 @@ void test_Computer_NestedCall(TestContext& cx) {
 void test_Computer_SimpleFunction(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/SimpleFunction/SimpleFunction.hack");
 
@@ -391,8 +403,9 @@ void test_Computer_SimpleFunction(TestContext& cx) {
 void test_Computer_StaticsTest(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/StaticsTest/StaticsTest.hack");
 
@@ -416,8 +429,9 @@ void test_Computer_StaticsTest(TestContext& cx) {
 void test_Computer_BasicLoop(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/BasicLoop/BasicLoop.hack");
 
@@ -443,8 +457,9 @@ void test_Computer_BasicLoop(TestContext& cx) {
 void test_Computer_FibonacciSeries(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
+  uint16_t clk = 0;
 
-  IComputer* computer = new shallow::Computer(screen, &kbd);
+  IComputer* computer = new Computer(screen, &kbd, &clk);
 
   auto rom = FileUtils::readHackFile("../test_programs/vm/FibonacciSeries/FibonacciSeries.hack");
 

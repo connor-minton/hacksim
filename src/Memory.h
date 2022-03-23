@@ -49,21 +49,23 @@ public:
   // OUT out[16]
   inline uint16_t out() const { return m_out; }
 
-  Memory(uint16_t* screen, uint16_t* kbd)
-    : m_screen(screen), m_kbd(kbd) { }
+  Memory(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
+    : m_screen(screen), m_kbd(kbd), m_clk(clk) { }
 
   // Bypass the clocking system to examine memory at `offset`
   inline uint16_t peek(uint16_t offset) const {
     if (offset < SCREEN) return m_ram.peek(offset);
     if (offset < KBD)    return m_screen.peek(offset - KBD);
-    return *m_kbd;
+    if (offset == KBD)   return *m_kbd;
+    return *m_clk;
   }
 
   // Bypass the clocking system to set memory at `offset` to `val`
   inline void poke(uint16_t offset, uint16_t val) {
-    if (offset < SCREEN)   m_ram.poke(offset, val);
-    else if (offset < KBD) m_screen.poke(offset - KBD, val);
-    else                   *m_kbd = val;
+    if (offset < SCREEN)    m_ram.poke(offset, val);
+    else if (offset < KBD)  m_screen.poke(offset - KBD, val);
+    else if (offset == KBD) *m_kbd = val;
+    else                    *m_clk = val;
   }
 
   inline void tick() {
@@ -74,6 +76,10 @@ public:
     m_demuxScreenKbd.set_in(m_demuxRAM.b());
     m_demuxScreenKbd.set_sel(getBit<13>(address()));
     m_demuxScreenKbd.computeOutput();
+
+    m_demuxKbdClk.set_in(m_demuxScreenKbd.b());
+    m_demuxKbdClk.set_sel(getBit<0>(address()));
+    m_demuxKbdClk.computeOutput();
 
     m_ram.set_in(in());
     m_ram.set_load(m_demuxRAM.a());
@@ -89,9 +95,17 @@ public:
     m_screen.set_address(address() & 0x1fff);
     m_screen.tick();
 
+    // same with hardware clock
+    tickClock();
+
+    m_muxKbdClkOut.set_sel(getBit<0>(address()));
+    m_muxKbdClkOut.set_a(*m_kbd);
+    m_muxKbdClkOut.set_b(*m_clk);
+    m_muxKbdClkOut.computeOutput();
+
     m_muxScreenKbdOut.set_sel(getBit<13>(address()));
     m_muxScreenKbdOut.set_a(m_screen.out());
-    m_muxScreenKbdOut.set_b(*m_kbd);
+    m_muxScreenKbdOut.set_b(m_muxKbdClkOut.out());
     m_muxScreenKbdOut.computeOutput();
 
     m_muxOut.set_sel(getBit<14>(address()));
@@ -110,9 +124,17 @@ public:
     // screen is a shallow chip, doesn't need optimization
     m_screen.tock();
 
+    // same for hardware clock
+    tockClock();
+
+    m_muxKbdClkOut.set_sel(getBit<0>(address()));
+    m_muxKbdClkOut.set_a(*m_kbd);
+    m_muxKbdClkOut.set_b(*m_clk);
+    m_muxKbdClkOut.computeOutput();
+
     m_muxScreenKbdOut.set_sel(getBit<13>(address()));
     m_muxScreenKbdOut.set_a(m_screen.out());
-    m_muxScreenKbdOut.set_b(*m_kbd);
+    m_muxScreenKbdOut.set_b(m_muxKbdClkOut.out());
     m_muxScreenKbdOut.computeOutput();
 
     m_muxOut.set_sel(getBit<14>(address()));
@@ -131,12 +153,29 @@ private:
 
   uint16_t* m_kbd;
 
+  uint16_t* m_clk;
+  uint16_t m_clkIn = 0;
+  bool m_clkLoad = false;
+
   RAM16K m_ram;
   shallow::Screen m_screen;
   DMux m_demuxRAM;
   DMux m_demuxScreenKbd;
+  DMux m_demuxKbdClk;
+  Mux16 m_muxKbdClkOut;
   Mux16 m_muxScreenKbdOut;
   Mux16 m_muxOut;
+
+  void tickClock() {
+    m_clkIn = in();
+    m_clkLoad = m_demuxKbdClk.b();
+  }
+
+  void tockClock() {
+    if (m_clkLoad) {
+      *m_clk = m_clkIn;
+    }
+  }
 };
 
 namespace shallow {

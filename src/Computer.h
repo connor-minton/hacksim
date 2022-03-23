@@ -113,8 +113,8 @@ uint16_t BaseComputer::nextPC() const { return m_cpu->pc(); }
 
 class Computer : public BaseComputer {
 public:
-  Computer(uint16_t* screen, uint16_t* kbd)
-    : BaseComputer(new Memory(screen, kbd), new CPU())
+  Computer(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
+    : BaseComputer(new Memory(screen, kbd, clk), new CPU())
   { }
 
   ~Computer() {
