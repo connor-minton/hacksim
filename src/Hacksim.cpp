@@ -24,7 +24,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     ExitProcess(1);
   }
 
-  if (!win.Create(L"Hacksim", WS_MINIMIZEBOX | WS_SYSMENU)) {
+  if (!win.Create(L"HackSim", WS_MINIMIZEBOX | WS_SYSMENU)) {
     return 0;
   }
 

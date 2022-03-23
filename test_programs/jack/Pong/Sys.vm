@@ -1,0 +1,75 @@
+function Sys.init 0
+call Memory.init 0
+pop temp 0
+call Math.init 0
+pop temp 0
+call Screen.init 0
+pop temp 0
+call Output.init 0
+pop temp 0
+call Keyboard.init 0
+pop temp 0
+call Main.main 0
+pop temp 0
+call Sys.halt 0
+pop temp 0
+push constant 0
+return
+function Sys.halt 0
+label WHILE_EXP0
+push constant 0
+not
+not
+if-goto WHILE_END0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+
+
+// modified Sys.wait uses the hardware clock memory map
+function Sys.wait 1
+push argument 0
+push constant 0
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+call Sys.error 1  // error if argument is less than 0
+pop temp 0
+label IF_FALSE0
+push pointer 1        // save THAT
+push constant 24577   // address of hardware clock
+pop pointer 1
+push argument 0
+pop that 0
+label WHILE_EXP0
+push that 0
+push constant 0
+eq
+if-goto WHILE_END0
+goto WHILE_EXP0
+label WHILE_END0
+pop pointer 1        // restore THAT
+push constant 0
+return
+
+
+function Sys.error 0
+push constant 69
+call Output.printChar 1
+pop temp 0
+push constant 82
+call Output.printChar 1
+pop temp 0
+push constant 82
+call Output.printChar 1
+pop temp 0
+push argument 0
+call Output.printInt 1
+pop temp 0
+call Sys.halt 0
+pop temp 0
+push constant 0
+return
