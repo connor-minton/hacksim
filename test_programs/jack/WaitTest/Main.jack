@@ -1,0 +1,20 @@
+class Main {
+  function void main() {
+    var int i;
+
+    do Output.printString("Numbers should appear approx every 1 second.");
+    do Output.println();
+
+    let i = 1;
+    while (~(i = 10)) {
+      do Sys.wait(1000);
+      do Output.printInt(i);
+      do Output.println();
+      let i = i + 1;
+    }
+
+    do Output.printString("Test complete.");
+
+    return;
+  }
+}

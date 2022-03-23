@@ -13,6 +13,7 @@ class IMemory : public ISequentialCircuit {
 public:
   static const uint16_t SCREEN = 0x4000;
   static const uint16_t KBD = 0x6000;
+  static const uint16_t CLK = 0x6001;
 
   // IN in[16], load, address[15]
   virtual uint16_t in() const = 0;
@@ -142,8 +143,8 @@ namespace shallow {
 
 class Memory : public IMemory {
 public:
-  Memory(uint16_t* screen, uint16_t* kbd)
-    : m_screen(screen), m_kbd(kbd), m_ram(16384) { }
+  Memory(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
+    : m_screen(screen), m_kbd(kbd), m_clk(clk), m_ram(16384) { }
 
   uint16_t in() const { return m_in; }
   bool load() const { return m_load; }
@@ -159,13 +160,15 @@ public:
   uint16_t peek(uint16_t offset) const {
     if (offset < SCREEN) return m_ram[offset];
     if (offset < KBD)    return m_screen.peek(offset - SCREEN);
-    return *m_kbd;
+    if (offset == KBD)   return *m_kbd;
+    return *m_clk;
   }
 
   void poke(uint16_t offset, uint16_t val) {
     if (offset < SCREEN) m_ram[offset] = val;
     if (offset < KBD)    m_screen.poke(offset - SCREEN, val);
-    *m_kbd = val;
+    if (offset == KBD)   *m_kbd = val;
+    *m_clk = val;
   }
 
   void tick() {
@@ -182,10 +185,15 @@ public:
       m_screen.tick();
       m_out = m_screen.out();
     }
-    else {
+    else if (m_address == KBD) {
       m_screen.set_load(false);
       m_screen.tick();
       m_out = *m_kbd;
+    }
+    else {
+      m_screen.set_load(false);
+      m_screen.tick();
+      m_out = *m_clk;
     }
   }
 
@@ -199,8 +207,14 @@ public:
     else if (m_address < KBD) {
       m_out = m_screen.out();
     }
-    else {
+    else if (m_address == KBD) {
       m_out = *m_kbd;
+    }
+    else {
+      if (m_load) {
+        *m_clk = m_in;
+      }
+      m_out = *m_clk;
     }
   }
 
@@ -213,6 +227,7 @@ private:
   std::vector<uint16_t> m_ram;
   shallow::Screen m_screen;
   uint16_t* m_kbd;
+  uint16_t* m_clk;
 };
 
 }

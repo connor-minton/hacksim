@@ -36,11 +36,13 @@ private:
   using Clock = std::chrono::steady_clock;
   using TimePoint = std::chrono::time_point<Clock>;
 
-  void outputScreen();
-
   IComputer* m_computer = nullptr;
   uint16_t* m_screenMem = nullptr;
   uint16_t m_kbd = 0;
+  uint16_t m_clk = 0;
+  uint16_t m_clkStart = 0;
+  TimePoint m_clkStartTime;
+  bool m_clkRunning = false;
   std::vector<uint16_t> m_rom;
   KeyboardManager & m_km;
   HWND m_hwnd;
@@ -50,5 +52,8 @@ private:
     std::chrono::microseconds(16667); // average of about 60 FPS
   BitmapManager & m_bm;
   TimePoint m_lastRender;
+
+  void outputScreen();
+  void updateClock();
 };
 
