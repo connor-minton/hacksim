@@ -10,7 +10,7 @@
 
 class BitmapManager;
 class KeyboardManager;
-class Computer;
+class IComputer;
 
 class SimulatorThread : public Thread<SimulatorThread> {
 public:
@@ -38,7 +38,7 @@ private:
 
   void outputScreen();
 
-  Computer* m_computer = nullptr;
+  IComputer* m_computer = nullptr;
   uint16_t* m_screenMem = nullptr;
   uint16_t m_kbd = 0;
   std::vector<uint16_t> m_rom;

@@ -12,7 +12,27 @@
 #include "ALU.h"
 #include "Mux16.h"
 
-class CPU : public ISequentialCircuit {
+class ICPU : public ISequentialCircuit {
+public:
+  // IN inM[16], instruction[16], reset
+  virtual uint16_t inM() const = 0;
+  virtual uint16_t instruction() const = 0;
+  virtual bool reset() const = 0;
+
+  virtual void set_inM(uint16_t val) = 0;
+  virtual void set_instruction(uint16_t val) = 0;
+  virtual void set_reset(bool val) = 0;
+
+  // OUT outM[16], addressM[15], writeM, pc[15]
+  virtual uint16_t outM() const = 0;
+  virtual uint16_t addressM() const = 0;
+  virtual bool writeM() const = 0;
+  virtual uint16_t pc() const = 0;
+
+  virtual ~ICPU() { }
+};
+
+class CPU : public ICPU {
 public:
   // IN inM[16], instruction[16], reset
   inline uint16_t inM() const { return m_inM; }
@@ -185,3 +205,109 @@ private:
   }
 };
 
+namespace shallow {
+
+class CPU : public ICPU {
+public:
+  CPU() {
+    m_pc.set_load(true);
+  }
+
+  // IN inM[16], instruction[16], reset
+  virtual uint16_t inM() const = 0;
+  virtual uint16_t instruction() const = 0;
+  virtual bool reset() const = 0;
+
+  virtual void set_inM(uint16_t val) = 0;
+  virtual void set_instruction(uint16_t val) = 0;
+  virtual void set_reset(bool val) = 0;
+
+  // OUT outM[16], addressM[15], writeM, pc[15]
+  virtual uint16_t outM() const = 0;
+  virtual uint16_t addressM() const = 0;
+  virtual bool writeM() const = 0;
+  virtual uint16_t pc() const = 0;
+
+  void tick() {
+    tickALU();
+    m_outM = m_alu.out();
+    m_writeM = getBit<3>(m_instruction) && getBit<15>(m_instruction);
+    tickRegD();
+    tickRegA();
+    tickPC();
+  }
+
+  void tock() {
+    m_regD.tock();
+    m_regA.tock();
+    m_pc.tock();
+    m_addressM = m_regA.out();
+    // the getter for output pc retrives m_pc.out() directly
+  }
+
+private:
+  uint16_t m_inM = 0;
+  uint16_t m_instruction = 0;
+  bool m_reset = false;
+
+  uint16_t m_outM = 0;
+  uint16_t m_addressM = 0;
+  bool m_writeM = false;
+
+  // internal components
+  shallow::ALU      m_alu;
+  shallow::Register m_regD;
+  shallow::Register m_regA;
+  shallow::Register m_pc;
+
+  void tickRegD() {
+    m_regD.set_in(m_alu.out());
+    m_regD.set_load(getBit<4>(m_instruction) && getBit<15>(m_instruction));
+    m_regD.tick();
+  }
+
+  void tickRegA() {
+    if (getBit<15>(m_instruction)) {
+      m_regA.set_in(m_alu.out());
+    }
+    else {
+      m_regA.set_in(m_instruction);
+    }
+    m_regA.set_load(getBit<5>(m_instruction) || !getBit<15>(m_instruction));
+    m_regA.tick();
+  }
+
+  void tickALU() {
+    m_alu.set_x(m_regD.out());
+    if (getBit<12>(m_instruction)) {
+      m_alu.set_y(m_inM);
+    }
+    else {
+      m_alu.set_y(m_regA.out());
+    }
+    m_alu.set_instruction(m_instruction);
+    m_alu.computeOutput();
+  }
+
+  void tickPC() {
+    if (m_reset) {
+      m_pc.set_in(0);
+    }
+    else if (pcShouldJump()) {
+      m_pc.set_in(m_regA.out());
+    }
+    else {
+      m_pc.set_in(m_pc.out() + 1);
+    }
+    m_pc.tick();
+  }
+
+  bool pcShouldJump() {
+    return getBit<15>(m_instruction) &&
+      (getBit<2>(m_instruction) && m_alu.ng()
+            || getBit<1>(m_instruction) && m_alu.zr()
+            || getBit<0>(m_instruction) && !m_alu.ng() && !m_alu.zr());
+  }
+};
+
+}

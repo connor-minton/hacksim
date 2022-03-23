@@ -28,7 +28,7 @@ public:
   Screen(uint16_t* buf) : m_screen(buf) { }
 
   // Bypass the clocking system to examine the value at `offset`
-  inline uint16_t peek(uint16_t offset) { return m_screen[offset & 0x1fff]; }
+  inline uint16_t peek(uint16_t offset) const { return m_screen[offset & 0x1fff]; }
 
   // Bypass the clocking system to forcefully set the underlying value
   // at `offset` to `val`

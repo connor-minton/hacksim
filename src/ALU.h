@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include "Bits.h"
+#include "Exceptions.h"
 
 #include "ICombinationalCircuit.h"
 #include "Mux16.h"
@@ -156,4 +158,98 @@ private:
   inline void set_zr(bool val) { setBit<6>(m_pins, val); }
   inline void set_ng(bool val) { setBit<7>(m_pins, val); }
 };
+
+namespace shallow {
+
+class ALU : ICombinationalCircuit {
+public:
+  inline uint16_t x() { return m_x; }
+  inline uint16_t y() { return m_y; }
+  inline uint16_t instruction() { return m_instr; }
+
+  inline void set_x(uint16_t val) { m_x = val; }
+  inline void set_y(uint16_t val) { m_y = val; }
+  inline void set_instruction(uint16_t val) { m_instr = val; }
+
+  inline uint16_t out() { return m_out; }
+  inline bool zr() { return m_zr; }
+  inline bool ng() { return m_ng; }
+
+  inline void computeOutput() {
+    uint16_t compCode = (m_instr & 0xfc0) >> 6;
+
+    switch (compCode) {
+    case (0x2a): // 101010
+      m_out = 0;
+      break;
+    case (0x3f): // 111111
+      m_out = 1;
+      break;
+    case (0x3a): // 111010
+      m_out = -1;
+      break;
+    case (0x0c): // 001100
+      m_out = m_x;
+      break;
+    case (0x30): // 110000
+      m_out = m_y;
+      break;
+    case (0x0d): // 001101
+      m_out = ~m_x;
+      break;
+    case (0x31): // 110001
+      m_out = ~m_y;
+      break;
+    case (0x0f): // 001111
+      m_out = -m_x;
+      break;
+    case (0x33): // 110011
+      m_out = -m_y;
+      break;
+    case (0x1f): // 011111
+      m_out = m_x + 1;
+      break;
+    case (0x37): // 110111
+      m_out = m_y + 1;
+      break;
+    case (0x0e): // 001110
+      m_out = m_x - 1;
+      break;
+    case (0x32): // 110010
+      m_out = m_y - 1;
+      break;
+    case (0x02): // 000010
+      m_out = m_x + m_y;
+      break;
+    case (0x13): // 010011
+      m_out = m_x - m_y;
+      break;
+    case (0x07): // 000111
+      m_out = m_y - m_x;
+      break;
+    case (0x00): // 000000
+      m_out = m_x & m_y;
+      break;
+    case (0x15): // 010101
+      m_out = m_x | m_y;
+      break;
+    default:
+      throw Error("Unknown C-instruction computation code: " + std::to_string(compCode));
+    }
+
+    m_zr = m_out == 0;
+    m_ng = getBit<15>(m_out);
+  }
+
+private:
+  uint16_t m_x = 0;
+  uint16_t m_y = 0;
+  uint16_t m_instr = 0;
+
+  uint16_t m_out = 0;
+  bool m_zr = false;
+  bool m_ng = false;
+};
+
+}
 

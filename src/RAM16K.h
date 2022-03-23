@@ -25,7 +25,7 @@ public:
   inline uint16_t out() const { return m_out; }
 
   // Bypass the clocking system to examine the value at `offset`
-  inline uint16_t peek(uint16_t offset) {
+  inline uint16_t peek(uint16_t offset) const {
     return m_rams[(offset & 0x3000) >> 12].peek(offset & 0xfff);
   }
 

@@ -9,11 +9,31 @@
 #include "DMux.h"
 #include "ShallowChips.h"
 
-class Memory : public ISequentialCircuit {
+class IMemory : public ISequentialCircuit {
 public:
   static const uint16_t SCREEN = 0x4000;
   static const uint16_t KBD = 0x6000;
 
+  // IN in[16], load, address[15]
+  virtual uint16_t in() const = 0;
+  virtual bool load() const = 0;
+  virtual uint16_t address() const = 0;
+
+  virtual void set_in(uint16_t val) = 0;
+  virtual void set_load(bool val) = 0;
+  virtual void set_address(uint16_t val) = 0;
+
+  // OUT out[16]
+  virtual uint16_t out() const = 0;
+
+  virtual uint16_t peek(uint16_t offset) const = 0;
+  virtual void poke(uint16_t offset, uint16_t val) = 0;
+
+  virtual ~IMemory() { }
+};
+
+class Memory : public IMemory {
+public:
   // IN in[16], load, address[15]
   inline uint16_t in() const { return m_in; }
   inline bool load() const { return getBit<0>(m_pins); }
@@ -32,7 +52,7 @@ public:
     : m_screen(screen), m_kbd(kbd) { }
 
   // Bypass the clocking system to examine memory at `offset`
-  inline uint16_t peek(uint16_t offset) {
+  inline uint16_t peek(uint16_t offset) const {
     if (offset < SCREEN) return m_ram.peek(offset);
     if (offset < KBD)    return m_screen.peek(offset - KBD);
     return *m_kbd;
@@ -118,3 +138,81 @@ private:
   Mux16 m_muxOut;
 };
 
+namespace shallow {
+
+class Memory : public IMemory {
+public:
+  Memory(uint16_t* screen, uint16_t* kbd)
+    : m_screen(screen), m_kbd(kbd), m_ram(16384) { }
+
+  uint16_t in() const { return m_in; }
+  bool load() const { return m_load; }
+  uint16_t address() const { return m_address; }
+
+  void set_in(uint16_t val) { m_in = val; }
+  void set_load(bool val) { m_load = val; }
+  void set_address(uint16_t val) { m_address = val & 0x7fff; }
+
+  // OUT out[16]
+  uint16_t out() const { return m_out; }
+
+  uint16_t peek(uint16_t offset) const {
+    if (offset < SCREEN) return m_ram[offset];
+    if (offset < KBD)    return m_screen.peek(offset - SCREEN);
+    return *m_kbd;
+  }
+
+  void poke(uint16_t offset, uint16_t val) {
+    if (offset < SCREEN) m_ram[offset] = val;
+    if (offset < KBD)    m_screen.poke(offset - SCREEN, val);
+    *m_kbd = val;
+  }
+
+  void tick() {
+    m_screen.set_in(m_in);
+    m_screen.set_address(m_address & 0x1fff);
+
+    if (m_address < SCREEN) {
+      m_screen.set_load(false);
+      m_screen.tick();
+      m_out = m_ram[m_address];
+    }
+    else if (m_address < KBD) {
+      m_screen.set_load(m_load);
+      m_screen.tick();
+      m_out = m_screen.out();
+    }
+    else {
+      m_screen.set_load(false);
+      m_screen.tick();
+      m_out = *m_kbd;
+    }
+  }
+
+  void tock() {
+    m_screen.tock();
+    if (m_address < SCREEN) {
+      if (m_load)
+        m_ram[m_address] = m_in;
+      m_out = m_ram[m_address];
+    }
+    else if (m_address < KBD) {
+      m_out = m_screen.out();
+    }
+    else {
+      m_out = *m_kbd;
+    }
+  }
+
+private:
+  uint16_t m_in = 0;
+  uint16_t m_out = 0;
+  uint16_t m_address = 0;
+  bool m_load = false;
+
+  std::vector<uint16_t> m_ram;
+  shallow::Screen m_screen;
+  uint16_t* m_kbd;
+};
+
+}
