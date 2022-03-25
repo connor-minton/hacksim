@@ -1,5 +1,8 @@
 #include "SimulatorThread.h"
 
+#include <memory>
+
+#include "AppConfig.h"
 #include "Chips.h"
 #include "BitmapManager.h"
 #include "KeyboardManager.h"
@@ -11,7 +14,25 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   for (int i = 0; i < shallow::Screen::SCREEN_SIZE; i++) {
     td->m_screenMem[i] = 0;
   }
-  td->m_computer = new shallow::Computer(td->m_screenMem, &td->m_kbd, &td->m_clk);
+
+  std::unique_ptr<IMemory> memory;
+  std::unique_ptr<ICPU> cpu_;
+
+  if (AppConfig::shallowMemory()) {
+    memory = std::make_unique<shallow::Memory>(td->m_screenMem, &td->m_kbd, &td->m_clk);
+  }
+  else {
+    memory = std::make_unique<Memory>(td->m_screenMem, &td->m_kbd, &td->m_clk);
+  }
+
+  if (AppConfig::shallowCPU()) {
+    cpu_ = std::make_unique<shallow::CPU>();
+  }
+  else {
+    cpu_ = std::make_unique<CPU>();
+  }
+
+  td->m_computer = new BaseComputer(memory.get(), cpu_.get());
   td->m_computer->set_rom(td->m_rom);
   td->m_bm.SetScreenMem(td->m_screenMem);
   while (true) {

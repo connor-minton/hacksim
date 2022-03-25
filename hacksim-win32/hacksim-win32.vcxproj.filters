@@ -33,6 +33,9 @@
     <ClCompile Include="..\src\SimulatorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AppConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BaseWindow.h">
@@ -184,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="..\src\ISequentialCircuit.h">
       <Filter>Header Files\Chips</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AppConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StringUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

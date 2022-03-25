@@ -1,21 +1,32 @@
 #include <iostream>
+#include <filesystem>
 #include <vector>
 #include <exception>
 
 #include <Windows.h>
 
+#include "AppConfig.h"
 #include "MainWindow.h"
 #include "SimulatorThread.h"
 #include "BitmapManager.h"
 #include "FileUtils.h"
 #include "KeyboardManager.h"
 
+void initializeAppConfig() {
+  namespace fs = std::filesystem;
+  if (fs::is_regular_file(L"./hacksim.conf")) {
+    AppConfig::initializeFromFile(L"hacksim.conf");
+  }
+}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   BitmapManager bm;
   KeyboardManager km;
   MainWindow win(bm, km);
+  
   std::vector<uint16_t> rom;
   try {
+    initializeAppConfig();
     std::wstring inputROMFile = win.OpenROMDialog();
     rom = FileUtils::readHackFile(inputROMFile);
   }

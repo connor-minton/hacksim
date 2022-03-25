@@ -12,7 +12,7 @@ class RAM8 : public ISequentialCircuit {
 public:
   RAM8() {
     for (int i = 0; i < 8; i++) {
-      m_regs[i] = new shallow::Register();
+      m_regs[i] = new Register();
     }
   }
 

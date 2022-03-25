@@ -119,6 +119,7 @@ public:
 
   ~Computer() {
     delete m_mem;
+    delete m_cpu;
   }
 };
 
@@ -132,6 +133,7 @@ public:
 
   ~Computer() {
     delete m_mem;
+    delete m_cpu;
   }
 };
 

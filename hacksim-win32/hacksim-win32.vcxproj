@@ -97,6 +97,9 @@
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)src\hacksim.conf" "$(OutDir)hacksim.conf" /d /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -117,6 +120,9 @@
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)src\hacksim.conf" "$(OutDir)hacksim.conf" /d /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -147,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AppConfig.cpp" />
     <ClCompile Include="..\src\BitmapManager.cpp" />
     <ClCompile Include="..\src\FileUtils.cpp" />
     <ClCompile Include="..\src\Hacksim.cpp" />
@@ -158,6 +165,7 @@
     <ClInclude Include="..\src\ALU.h" />
     <ClInclude Include="..\src\And.h" />
     <ClInclude Include="..\src\And16.h" />
+    <ClInclude Include="..\src\AppConfig.h" />
     <ClInclude Include="..\src\BaseWindow.h" />
     <ClInclude Include="..\src\Bit.h" />
     <ClInclude Include="..\src\BitmapManager.h" />
@@ -201,6 +209,7 @@
     <ClInclude Include="..\src\ShallowChips.h" />
     <ClInclude Include="..\src\SimulatorThread.h" />
     <ClInclude Include="..\src\MainWindow.h" />
+    <ClInclude Include="..\src\StringUtils.h" />
     <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\WinUtils.h" />
     <ClInclude Include="..\src\Xor.h" />
