@@ -6,7 +6,7 @@ A deep hardware simulator for the Hack computer of Nand2Tetris.
 
 # Technical Documentation
 
-**If you want to learn more about how my hardware simulator works, read my [design document](HACKSIM-DESIGN-DOCUMENT.md)!**
+**If you want to learn more about how my hardware simulator works, read my [design document](HACKSIM-DESIGN-DOCUMENT.pdf)!**
 
 # About
 
