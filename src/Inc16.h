@@ -17,7 +17,7 @@ public:
 
   Inc16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_add.set_a(m_in);
     m_add.set_b(1);
     m_add.computeOutput();

@@ -17,7 +17,7 @@ public:
 
   Not16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_nand.set_a(in());
     m_nand.set_b(in());
     m_nand.computeOutput();

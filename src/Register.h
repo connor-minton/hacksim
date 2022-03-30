@@ -37,7 +37,7 @@ public:
 
   // Bypass the clocking system to forcefully set the underlying value
   // to `val`
-  inline void poke(uint16_t val) {
+  void poke(uint16_t val) {
     m_bits[0].poke(getBit<0>(val));
     m_bits[1].poke(getBit<1>(val));
     m_bits[2].poke(getBit<2>(val));
@@ -75,7 +75,7 @@ public:
 
   Register() { tock(); }
 
-  inline void tick() {
+  void tick() {
     m_bits[0].set_in(getBit<0>(m_in));
     m_bits[1].set_in(getBit<1>(m_in));
     m_bits[2].set_in(getBit<2>(m_in));
@@ -128,7 +128,7 @@ public:
     m_bits[15].tick();
   }
 
-  inline void tock() {
+  void tock() {
     m_bits[0].tock();
     m_bits[1].tock();
     m_bits[2].tock();

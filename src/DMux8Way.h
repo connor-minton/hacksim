@@ -30,7 +30,7 @@ public:
   inline bool g() const { return getBit<10>(m_pins); }
   inline bool h() const { return getBit<11>(m_pins); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_mux.set_in(in());
     m_mux.set_sel(getBit<3>(m_pins));
     m_mux.computeOutput();

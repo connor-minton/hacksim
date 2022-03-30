@@ -16,7 +16,7 @@ HackSim is a deep hardware simulator of my implementation of the Hack computer f
 
 The advantage of Nand2Tetris's hardware simulator is that it can accept any valid hardware configuration as input. The trade-off is that such a simulator is hard to optimize and is overwhelmed by the thousands of components in, say, a 4K RAM module. The authors of the Nand2Tetris hardware simulator subvert this problem by providing built-in simulations for large components like RAM modules. This modular design allows the hardware designer, while enjoying a significant simulation speedup, to test components in isolation.
 
-Indeed, this is a practical solution, but a part of me really wanted to see all of the cogs I designed come together to create a living computer. I wondered if it was possible perform a deep simulation of _all_ of my hardware, all the way down to the NAND gates and flip-flops. It turns out that, with the help of a few optimizations, it was possible. This bizarre obsession of mine culminated in this C++ project, entitled _HackSim_.
+Indeed, this is a practical solution, but a part of me really wanted to see all of the cogs I designed come together to create a living computer. I wondered if it was possible perform a deep simulation of _all_ of my hardware, all the way down to the NAND gates and flip-flops. It turns out that, with the help of a single optimization, it was possible. This bizarre obsession of mine culminated in this C++ project, entitled _HackSim_.
 
 
 # Getting Started

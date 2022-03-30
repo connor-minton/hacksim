@@ -47,7 +47,7 @@ public:
     m_regs[offset & 0x7]->poke(val);
   }
 
-  inline void tick() {
+  void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel(address());
     m_dmux.computeOutput();
@@ -87,7 +87,7 @@ public:
     m_out = m_mux.out();
   }
 
-  inline void tock() {
+  void tock() {
     m_regs[m_dmux.sel()]->tock();
 
     // duplicate logic from tick, but necessary after tocking the reg

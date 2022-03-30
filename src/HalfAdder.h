@@ -22,7 +22,7 @@ public:
 
   HalfAdder() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_xor.set_a(a());
     m_xor.set_b(b());
     m_xor.computeOutput();

@@ -49,7 +49,7 @@ public:
 
   ALU() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     // zero x?
     m_xx.set_a(x());
     m_xx.set_b(0);
@@ -175,7 +175,7 @@ public:
   inline bool zr() { return m_zr; }
   inline bool ng() { return m_ng; }
 
-  inline void computeOutput() {
+  void computeOutput() {
     uint16_t compCode = (m_instr & 0xfc0) >> 6;
 
     switch (compCode) {

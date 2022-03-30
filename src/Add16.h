@@ -7,6 +7,13 @@
 #include "HalfAdder.h"
 #include "FullAdder.h"
 
+/**
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ *
+ * IN  a[16], b[16]
+ * OUT out[16]
+ */
 class Add16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16]
@@ -21,7 +28,7 @@ public:
 
   Add16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_ha.set_a(getBit<0>(m_a));
     m_fa[0].set_a(getBit<1>(m_a));
     m_fa[1].set_a(getBit<2>(m_a));
@@ -107,10 +114,12 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_a = 0;
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
+  // internal components
   HalfAdder m_ha;
   FullAdder m_fa[15];
 };

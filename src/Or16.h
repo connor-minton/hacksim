@@ -20,7 +20,7 @@ public:
 
   Or16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_notA.set_in(a());
     m_notA.computeOutput();
     m_notB.set_in(b());

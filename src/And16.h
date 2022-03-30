@@ -20,7 +20,7 @@ public:
 
   And16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_nand.set_a(a());
     m_nand.set_b(b());
     m_nand.computeOutput();

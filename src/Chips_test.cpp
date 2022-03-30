@@ -1314,7 +1314,7 @@ void test_Memory(TestContext& ctx) {
   uint16_t clk = 0;
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
 
-  IMemory* chip = new shallow::Memory(screen, &kbd, &clk);
+  IMemory* chip = new Memory(screen, &kbd, &clk);
 
   // test lower memory
   chip->set_load(false);

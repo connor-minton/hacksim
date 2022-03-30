@@ -68,7 +68,7 @@ public:
     else                    *m_clk = val;
   }
 
-  inline void tick() {
+  void tick() {
     m_demuxRAM.set_in(load());
     m_demuxRAM.set_sel(getBit<14>(address()));
     m_demuxRAM.computeOutput();
@@ -116,7 +116,7 @@ public:
     m_out = m_muxOut.out();
   }
 
-  inline void tock() {
+  void tock() {
     // optimization: tock ram ONLY if it is being accessed
     if (!getBit<14>(address()))
       m_ram.tock();
@@ -185,25 +185,25 @@ public:
   Memory(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
     : m_screen(screen), m_kbd(kbd), m_clk(clk), m_ram(16384) { }
 
-  uint16_t in() const { return m_in; }
-  bool load() const { return m_load; }
-  uint16_t address() const { return m_address; }
+  inline uint16_t in() const { return m_in; }
+  inline bool load() const { return m_load; }
+  inline uint16_t address() const { return m_address; }
 
-  void set_in(uint16_t val) { m_in = val; }
-  void set_load(bool val) { m_load = val; }
-  void set_address(uint16_t val) { m_address = val & 0x7fff; }
+  inline void set_in(uint16_t val) { m_in = val; }
+  inline void set_load(bool val) { m_load = val; }
+  inline void set_address(uint16_t val) { m_address = val & 0x7fff; }
 
   // OUT out[16]
   uint16_t out() const { return m_out; }
 
-  uint16_t peek(uint16_t offset) const {
+  inline uint16_t peek(uint16_t offset) const {
     if (offset < SCREEN) return m_ram[offset];
     if (offset < KBD)    return m_screen.peek(offset - SCREEN);
     if (offset == KBD)   return *m_kbd;
     return *m_clk;
   }
 
-  void poke(uint16_t offset, uint16_t val) {
+  inline void poke(uint16_t offset, uint16_t val) {
     if (offset < SCREEN) m_ram[offset] = val;
     if (offset < KBD)    m_screen.poke(offset - SCREEN, val);
     if (offset == KBD)   *m_kbd = val;

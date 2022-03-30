@@ -25,7 +25,7 @@ public:
 
   FullAdder() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_axb.set_a(a());
     m_axb.set_b(b());
     m_axb.computeOutput();

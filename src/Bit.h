@@ -25,7 +25,7 @@ public:
 
   Bit() { tock(); }
 
-  inline void tick() {
+  void tick() {
     m_mux.set_a(m_dff.out());
     m_mux.set_b(in());
     m_mux.set_sel(load());
@@ -34,7 +34,7 @@ public:
     m_dff.set_in(m_mux.out());
   }
 
-  inline void tock() {
+  void tock() {
     m_dff.tock();
     set_out(m_dff.out());
   }

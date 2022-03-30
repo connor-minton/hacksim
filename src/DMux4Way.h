@@ -25,7 +25,7 @@ public:
 
   DMux4Way() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_dm1.set_in(in());
     m_dm1.set_sel(getBit<2>(m_pins));
     m_dm1.computeOutput();

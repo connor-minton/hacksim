@@ -21,7 +21,7 @@ public:
 
   Or() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_notA.set_in(a());
     m_notB.set_in(b());
     m_notA.computeOutput();

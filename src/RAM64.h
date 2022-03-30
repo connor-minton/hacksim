@@ -35,7 +35,7 @@ public:
     m_rams[(offset & 0x38) >> 3].poke(offset & 0x7, val);
   }
 
-  inline void tick() {
+  void tick() {
     m_dmux.set_in(load());
     m_dmux.set_sel((address() & 0x38) >> 3);
     m_dmux.computeOutput();
@@ -84,7 +84,7 @@ public:
     m_out = m_mux.out();
   }
 
-  inline void tock() {
+  void tock() {
     // optimization: only tock() the selected ram module
     m_rams[m_dmux.sel()].tock();
 

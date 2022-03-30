@@ -24,7 +24,7 @@ public:
 
   Mux16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_notSel.set_in(sel());
     m_notSel.computeOutput();
 

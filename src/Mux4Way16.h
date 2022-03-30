@@ -27,7 +27,7 @@ public:
 
   Mux4Way16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_ab.set_a(m_a);
     m_ab.set_b(m_b);
     m_ab.set_sel(getBit<0>(m_pins));

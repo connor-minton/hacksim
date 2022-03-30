@@ -26,7 +26,7 @@ public:
 
   PC() { m_reg.set_load(true); }
 
-  inline void tick() {
+  void tick() {
     m_inc.set_in(m_reg.out());
     m_inc.computeOutput();
 
@@ -49,7 +49,7 @@ public:
     m_reg.tick();
   }
 
-  inline void tock() {
+  void tock() {
     m_reg.tock();
     m_out = m_reg.out();
   }

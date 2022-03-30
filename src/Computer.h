@@ -57,7 +57,7 @@ public:
   uint16_t curPC() const;
   uint16_t nextPC() const;
 
-  inline void tick() {
+  void tick() {
     m_rom.set_address(m_cpu->pc());
 
     m_mem->set_address(m_cpu->addressM());
@@ -85,7 +85,7 @@ public:
     // memory register to be different before the tick.
   }
 
-  inline void tock() {
+  void tock() {
     m_mem->tock();
     m_cpu->tock();
   }

@@ -37,7 +37,7 @@ public:
 
   Mux8Way16() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_abcd.set_a(m_a);
     m_abcd.set_b(m_b);
     m_abcd.set_c(m_c);

@@ -18,7 +18,7 @@ public:
 
   Or8Way() { computeOutput(); }
 
-  inline void computeOutput() {
+  void computeOutput() {
     m_or01.set_a(getBit<0>(m_in));
     m_or01.set_b(getBit<1>(m_in));
     m_or01.computeOutput();
