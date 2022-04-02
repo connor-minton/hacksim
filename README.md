@@ -27,8 +27,24 @@ By default, HackSim will run as a deep hardware simulator, meaning that everythi
 
 Though the spirit of this project was to see my implementation of the Hack hardware come to life, you can also run HackSim as an optimized Hack computer emulator, much like the one provided by the instructors of Nand2Tetris. The optimizations can be turned on by editing the `hacksim.conf` text file that appears in the same directory as the executable. For full speed, set both optimizations to `true`. This allows you to play the classic Pong game, included in `test_programs/jack/`. You can also experiment with turning on only the CPU or memory optimization.
 
+## Description of Test Programs
+
+In the release zip you can find a `test_programs/` directory with some demo ROMs to open with HackSim.
+
+- `asm/`: Lightweight Hack programs handwritten in Hack assembly language. Designed to demonstrate HackSim without optimizations.
+    - `Animation.hack`: A small square bounces down and up the screen. The animation speed is proportional to the clock speed; it is best viewed with optimizations off.
+    - `AnimationWait.hack`: Same as `Animation.hack`, but it uses a timer register I added to calculate a 15 ms delay between frames. Compare running with and without optimizations. The animation speed is not significantly impacted by the optimization level.
+    - `Fill.hack`: The screen is filled with black when a key is pressed and white when no key is pressed. Interesting to view with or without optimizations.
+    - `Rect100.hack`: Draws a static 16x100 rectangle at the top left. Can be viewed with or without optimizations.
+- `jack/`: Programs written in the Nand2Tetris Jack programming language and compiled down to Hack machine language. It is recommended to run these programs with full optimizations (set flags in `hacksim.conf` to `true`), as the OS services take a long time to initialize otherwise. Big thanks to @benvenutti's optimized VM translator, which generates assembly that fits into the 32K ROM.
+    - `HelloWorld.hack`: Classic hello-world program. Uses the Jack OS from the Nand2Tetris course to print "Hello world" to the screen. Best run with optimizations, but can be run without optimizations if you're patient enough (it takes about 2.5 minutes for "Hello world" to appear on my machine without optimizations).
+    - `KeyboardTest.hack`: Demonstrates interaction with the Hack computer via the keyboard. Best run with optimizations, but runnable without. Don't expect caps lock to work.
+    - `Pong.hack`: Classic Pong game. Use the left and right arrow keys to control the bat. Turn optimizations on to have fun.
+    - `ScreenTest.hack`: Draws a happy little house and sun. Kind of fun to turn off optimizations and watch it slowly draw everything.
+    - `WaitTest.hack`: This program tests my modified `Sys.wait()` function from the Jack OS Sys library. I extended the Hack hardware to include a register that can be used as a timer. The `Sys.wait()` function will wait the specified number of milliseconds regardless of the Hack clock speed. At extremely slow clock speeds (such as when optimizations are off), it takes longer than expected for each number to appear because there is about a second of overhead between calls to `Sys.wait()`.
+
 # Special Thanks
 
-I would like to thank Shimon Schocken and Noam Nisan for creating the fountain of knowledge that is the Nand2Tetris course and for making all of its lessons and project materials open-source and available for free. It was a great pleasure to audit Parts 1 and 2 on Coursera, and I highly recommend both courses to any student of computer science, whether self-taught or university.
+I would like to thank Shimon Schocken, Noam Nisan, and the other Nand2Tetris contributors for creating the fountain of knowledge that is the Nand2Tetris course and for making all of its lessons and project materials open-source and available for free. It was a great pleasure to audit Parts 1 and 2 on Coursera, and I highly recommend both courses to any student of computer science, whether self-taught or university.
 
 I would also like to give fellow Nand2Tetris enthusiast Ben Venutti (@benvenutti) a shout-out for making his [VM Translator](https://github.com/benvenutti/nand2tetris/tree/master/08%20-%20vm%202/vmTranslator) available. It includes crucial optimizations to generate a program that fits into the 32K ROM. I used it to generate all of the ROMs in `test_programs/jack/`. I compiled the VM Translator for Linux and put a copy in `tools/bvvm` for convenience.
