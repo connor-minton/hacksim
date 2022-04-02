@@ -21,11 +21,24 @@ Indeed, this is a practical solution, but a part of me really wanted to see all 
 
 # Getting Started
 
-To get started, download the latest release from the GitHub page. Launch `hacksim-win32.exe` and choose a `.hack` file to run. A `.hack` file is a "binary" (0's and 1's in plain text) file consisting of a sequence of 16-bit instructions in the Hack computer instruction set. If you are familiar with the Nand2Tetris course, you can assemble your own Hack program with the assembler on the course website and run the generated `.hack` file with HackSim.
+## Building from Source
+
+Check out the repository and open the Visual Studio solution file. **It is highly recommended to run HackSim in Release mode.** Here is a description of the projects:
+
+- `Chips_test`: Runs tests on the `Chips.h` library, except `Computer`.
+- `Computer_test`: Runs tests on `Computer`.
+- `dasm`: A CLI disassembler for Hack programs. Useful sometimes for development.
+- `FileUtils_test`: Runs tests on the `FileUtils.h` library.
+- `hacksim-win32`: This is the HackSim GUI. Select this project as the startup project to build `hacksim-win32.exe`. If HackSim is running slow on simple Hack programs, make sure the Release configuration is selected when building. The build process copies `src/hacksim.conf` (the default config file) to the build directory if the file is newer or does not exist. HackSim expects to see `hacksim.conf` in the same directory as `hacksim-win32.exe`.
+- `StringUtils_test`: Runs tests on the `StringUtils.h` library.
+
+## Running HackSim
+
+To get started without building from source, download the latest release from the GitHub page. Launch `hacksim-win32.exe` and choose a `.hack` file to run. A `.hack` file is a "binary" (0's and 1's in plain text) file consisting of a sequence of 16-bit instructions in the Hack computer instruction set. If you are familiar with the Nand2Tetris course, you can assemble your own Hack program with the assembler on the course website and run the generated `.hack` file with HackSim.
 
 By default, HackSim will run as a deep hardware simulator, meaning that everything down to the NAND gates and flip-flops is being simulated. Naturally, this is resource-intensive and very slow, but even in this mode, it is still possible to demonstrate some of the Hack computer's capabilities. Examples that work well with the deep simulation mode include the programs in the `test_programs/asm/` directory.
 
-Though the spirit of this project was to see my implementation of the Hack hardware come to life, you can also run HackSim as an optimized Hack computer emulator, much like the one provided by the instructors of Nand2Tetris. The optimizations can be turned on by editing the `hacksim.conf` text file that appears in the same directory as the executable. For full speed, set both optimizations to `true`. This allows you to play the classic Pong game, included in `test_programs/jack/`. You can also experiment with turning on only the CPU or memory optimization.
+Though the spirit of this project was to see my implementation of the Hack hardware come to life, you can also run HackSim as an optimized Hack computer emulator, much like the one provided by the instructors of Nand2Tetris. This mode can be enabled by editing the `hacksim.conf` text file that appears in the same directory as the executable. For full speed, set both optimizations to `true`. This allows you to play the classic Pong game, included in `test_programs/jack/`. You can also experiment with turning on only the CPU or memory optimization.
 
 ## Description of Test Programs
 
