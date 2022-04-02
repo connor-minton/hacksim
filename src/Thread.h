@@ -21,7 +21,7 @@ class Thread {
 public:
   /**
    * Calls the Windows CreateThread() function with reasonable defaults to
-   * run the thread.
+   * run the thread. Throws std::runtime_error if the thread could not be created.
    */
   void Create();
 

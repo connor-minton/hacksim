@@ -88,7 +88,7 @@ void SimulatorThread::updateClock() {
     // This strategy calculates the number to subtract as the difference between now and
     // when the timer was started.
     Clock::duration durSinceClockStart = Clock::now() - m_clkStartTime;
-    uint32_t msSinceClockStart = duration_cast<milliseconds>(durSinceClockStart).count();
+    long long msSinceClockStart = duration_cast<milliseconds>(durSinceClockStart).count();
     if (msSinceClockStart >= m_clkStart) {
       // The requested time to wait has elapsed, so reset the timer.
       m_clkRunning = false;

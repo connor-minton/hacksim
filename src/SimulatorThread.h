@@ -6,11 +6,11 @@
 
 #include <Windows.h>
 
+#include "Computer.h"
 #include "Thread.h"
 
 class BitmapManager;
 class KeyboardManager;
-class IComputer;
 
 /**
  * SimulatorThread

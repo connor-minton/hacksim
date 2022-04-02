@@ -56,8 +56,6 @@ private:
 
   uint32_t *m_screenMem = nullptr; // bitmap buffer managed by BitmapManager
 
-  bool m_drawnResults = false;
-
   HRESULT CreateGraphicsResources();
   void DiscardGraphicsResources();
 
@@ -80,10 +78,6 @@ private:
    * Fills bitmap buffer with white pixels.
    */
   void InitializeScreen();
-
-  // unneeded functions
-  void FillScreen();
-  void UpdateScreen();
 };
 
 MainWindow::MainWindow(BitmapManager & bm, KeyboardManager & km)
@@ -126,22 +120,6 @@ BOOL MainWindow::Create(PCWSTR lpWindowName, DWORD dwStyle) {
 void MainWindow::InitializeScreen() {
   for (uint32_t i = 0; i < 256 * 512; i++) {
     m_screenMem[i] = 0x00ffffff;
-  }
-}
-
-void MainWindow::FillScreen() {
-  for (uint32_t i = 0; i < 256; i++) {
-    for (uint32_t j = 0; j < 512; j++) {
-      m_screenMem[i*512 + j] = (i << 16) | (i << 8) | i;
-    }
-  }
-}
-
-void MainWindow::UpdateScreen() {
-  for (uint32_t i = 0; i < 256; i++) {
-    for (uint32_t j = 0; j < 512; j++) {
-      m_screenMem[i*512 + j] = (i << 16) | (i << 8) | 255;
-    }
   }
 }
 
@@ -335,7 +313,7 @@ std::wstring MainWindow::OpenROMDialog() {
     hr = shItem->GetDisplayName(SIGDN_FILESYSPATH, &filepath);
     out = filepath;
   }
-  catch (std::exception& e) {
+  catch (std::exception&) {
     SafeCoTaskMemFree(&filepath);
     SafeRelease(&shItem);
     SafeRelease(&dialog);

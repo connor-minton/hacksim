@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\AppConfig.cpp" />
     <ClCompile Include="..\src\BitmapManager.cpp" />
+    <ClCompile Include="..\src\Computer.cpp" />
     <ClCompile Include="..\src\FileUtils.cpp" />
     <ClCompile Include="..\src\Hacksim.cpp" />
     <ClCompile Include="..\src\KeyboardManager.cpp" />
