@@ -5,6 +5,16 @@
 #include "ICombinationalCircuit.h"
 #include "Add16.h"
 
+/**
+ * Inc16
+ *
+ * IN  in[16]
+ * OUT out[16]
+ *
+ * 16-bit incrementer:
+ * out = in + 1 (arithmetic addition)
+ */
+
 class Inc16 : public ICombinationalCircuit {
 public:
   // INPUT in[16]
@@ -25,9 +35,11 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Add16 m_add;
 };
 

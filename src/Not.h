@@ -7,6 +7,15 @@
 #include "ICombinationalCircuit.h"
 #include "Nand.h"
 
+/**
+ * Not
+ *
+ * IN  in
+ * OUT out
+ *
+ * Not gate:
+ * out = not in
+ */
 class Not : public ICombinationalCircuit {
 public:
   // INPUT
@@ -30,9 +39,12 @@ public:
   }
 
 private:
+  // pins layout
+  //   0   1
   // { in, out }
   uint8_t pins = 0;
 
+  // internal components
   Nand m_nand;
 
   inline void set_out(bool val) { setBit<1>(pins, val); }

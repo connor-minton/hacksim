@@ -8,6 +8,16 @@
 #include "And16.h"
 #include "Or16.h"
 
+/**
+ * Mux16
+ *
+ * IN  a[16], b[16], sel
+ * OUT out[16]
+ *
+ * 16-bit multiplexor:
+ * for i = 0..15 out[i] = a[i] if sel == 0
+ *                        b[i] if sel == 1
+ */
 class Mux16 : public ICombinationalCircuit {
 public:
   // INPUT
@@ -44,13 +54,17 @@ public:
   }
 
 private:
-  // extra pins
+  // pins
+
+  // m_pins layout
+  //   0
   // { m_sel }
   uint8_t m_pins = 0;
   uint16_t m_a = 0;
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Not m_notSel;
   And16 m_aOut;
   And16 m_bOut;

@@ -1051,6 +1051,7 @@ void test_ALU_xory(TestContext& ctx, ALU& chip, uint16_t x, uint16_t y) {
 void test_ALU(TestContext& ctx) {
   ALU chip;
 
+  // just some example operands
   std::vector<uint16_t> x =
     { 0x1234, 0x0000, 0xe0e0, 0xabcd,
       0x4312, 0x0001, 0x00aa, 0xffff };

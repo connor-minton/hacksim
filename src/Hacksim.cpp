@@ -1,3 +1,9 @@
+/**
+ * Hacksim.cpp
+ *
+ * HackSim application entry point.
+ */
+
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -23,7 +29,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
   BitmapManager bm;
   KeyboardManager km;
   MainWindow win(bm, km);
-  
+
   std::vector<uint16_t> rom;
   try {
     initializeAppConfig();
@@ -35,6 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     ExitProcess(1);
   }
 
+  // this combination of options makes the window non-resizable
   if (!win.Create(L"HackSim", WS_MINIMIZEBOX | WS_SYSMENU)) {
     return 0;
   }

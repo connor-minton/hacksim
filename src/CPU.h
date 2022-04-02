@@ -12,6 +12,33 @@
 #include "ALU.h"
 #include "Mux16.h"
 
+/**
+ * ICPU
+ *
+ * IN  inM[16], instruction[16], reset
+ * OUT outM[16], addressM[15], writeM, pc[15]
+ *
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input
+ * holds the value of this location. If the current instruction needs
+ * to write a value to M, the value is placed in outM, the address
+ * of the target location is placed in the addressM output, and the
+ * writeM control bit is asserted. (When writeM==0, any value may
+ * appear in outM). The outM and writeM outputs are combinational:
+ * they are affected instantaneously by the execution of the current
+ * instruction. The addressM and pc outputs are clocked: although they
+ * are affected by the execution of the current instruction, they commit
+ * to their new values only in the next time step. If reset==1 then the
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather
+ * than to the address resulting from executing the current instruction.
+ */
+
 class ICPU : public ISequentialCircuit {
 public:
   // IN inM[16], instruction[16], reset
@@ -31,6 +58,12 @@ public:
 
   virtual ~ICPU() { }
 };
+
+/**
+ * CPU
+ *
+ * Deeply simulated Hack CPU. See ICPU for documentation on interface.
+ */
 
 class CPU : public ICPU {
 public:
@@ -162,11 +195,19 @@ public:
   }
 
 private:
+  // pins
+
+  // m_pins layout
+  //   0..14            15      16..30     31
   // { addressM[0..14], writeM, pc[0..14], reset }
   uint32_t m_pins = 0;
+
+  // other pins
   uint16_t m_inM = 0;
   uint16_t m_outM = 0;
   uint16_t m_instruction = 0;
+
+  // internal components
 
   // Registers
   Register m_regA;
@@ -207,6 +248,13 @@ private:
 
 namespace shallow {
 
+/**
+ * shallow::CPU
+ *
+ * A super efficient Hack CPU. Not deeply simulated. See ICPU documentation
+ * for information on interface.
+ */
+
 class CPU : public ICPU {
 public:
   CPU() {
@@ -246,6 +294,7 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_inM = 0;
   uint16_t m_instruction = 0;
   bool m_reset = false;

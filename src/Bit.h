@@ -7,6 +7,17 @@
 #include "Mux.h"
 #include "DFF.h"
 
+/**
+ * Bit
+ *
+ * IN  in, load
+ * OUT out
+ *
+ * 1-bit register:
+ * If load[t] == 1 then out[t+1] = in[t]
+ *                 else out does not change (out[t+1] = out[t])
+ */
+
 class Bit : public ISequentialCircuit {
 public:
   // INPUT in, load
@@ -40,9 +51,14 @@ public:
   }
 
 private:
+  // pins
+
+  // m_pins layout
+  //   0   1     2
   // { in, load, out }
   uint8_t m_pins = 0;
 
+  // internal components
   Mux m_mux;
   DFF m_dff;
 

@@ -6,6 +6,16 @@
 #include "ISequentialCircuit.h"
 #include "Bit.h"
 
+/**
+ * IRegister
+ *
+ * IN  in[16], load
+ * OUT out[16]
+ *
+ * 16-bit register:
+ * If load[t] == 1 then out[t+1] = in[t]
+ * else out does not change
+ */
 class IRegister : public ISequentialCircuit {
 public:
   // INPUT in[16], load
@@ -23,6 +33,11 @@ public:
   virtual ~IRegister() { }
 };
 
+/**
+ * Register
+ *
+ * A deeply simulated register. See IRegister for interface documentation.
+ */
 class Register : public IRegister {
 public:
   // INPUT in[16], load
@@ -165,16 +180,24 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0
   // { load }
   uint8_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Bit m_bits[16];
 };
 
 namespace shallow {
 
+/**
+ * shallow::Register
+ *
+ * Efficient register. Not deeply simulated. See IRegister for interface documentation.
+ */
 class Register : public IRegister {
 public:
   // INPUT in[16], load

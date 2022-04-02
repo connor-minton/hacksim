@@ -5,6 +5,18 @@
 #include "ICombinationalCircuit.h"
 #include "Mux16.h"
 
+/**
+ * Mux4Way16
+ *
+ * IN  a[16], b[16], c[16], d[16], sel[2]
+ * OUT out[16]
+ *
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
 class Mux4Way16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16], c[16], d[16], sel[2]
@@ -47,6 +59,10 @@ public:
   }
 
 private:
+  // pins
+
+  // m_pins layout
+  //   0..1
   // { sel[0..1] }
   uint8_t m_pins = 0;
   uint16_t m_a = 0;
@@ -55,6 +71,7 @@ private:
   uint16_t m_d = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Mux16 m_ab;
   Mux16 m_cd;
   Mux16 m_muxOut;

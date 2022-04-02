@@ -8,6 +8,17 @@
 #include "And.h"
 #include "Or.h"
 
+/**
+ * Mux
+ *
+ * IN  a, b, sel
+ * OUT out
+ *
+ * Multiplexor:
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
 class Mux : public ICombinationalCircuit {
 public:
   // INPUT
@@ -40,9 +51,12 @@ public:
   }
 
 private:
+  // pins layout
+  //  0  1  2    3
   // {a, b, sel, out}
   uint8_t pins = 0;
 
+  // internal components
   Not m_notSel;
   And m_andA;
   And m_andB;

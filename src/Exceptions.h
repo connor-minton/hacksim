@@ -1,7 +1,13 @@
 #pragma once
 
 #include <exception>
+#include <string>
 
+/**
+ * Error
+ *
+ * A convenience exception class that carries a string around with it.
+ */
 class Error : public std::exception {
 public:
   Error() : std::exception(), m_err("An unexpected error has occurred.")

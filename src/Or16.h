@@ -6,6 +6,15 @@
 #include "Not16.h"
 #include "Nand16.h"
 
+/**
+ * Or16
+ *
+ * IN  a[16], b[16]
+ * OUT out[16]
+ *
+ * 16-bit bitwise Or:
+ * for i = 0..15 out[i] = (a[i] or b[i])
+ */
 class Or16 : public ICombinationalCircuit {
 public:
   // INPUT
@@ -34,10 +43,12 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_a = 0;
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Not16 m_notA;
   Not16 m_notB;
   Nand16 m_nand;

@@ -6,6 +6,15 @@
 #include "Nand16.h"
 #include "Not16.h"
 
+/**
+ * And16
+ *
+ * IN  a[16], b[16]
+ * OUT out
+ *
+ * 16-bit bitwise And:
+ * for i = 0..15: out[i] = (a[i] and b[i])
+ */
 class And16 : public ICombinationalCircuit {
 public:
   // INPUT
@@ -30,10 +39,12 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_a = 0;
   uint16_t m_b = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Nand16 m_nand;
   Not16 m_not;
 };

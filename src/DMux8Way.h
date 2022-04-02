@@ -7,6 +7,19 @@
 #include "DMux.h"
 #include "DMux4Way.h"
 
+/**
+ * DMux8Way
+ *
+ * IN  in, sel
+ * OUT a, b, c, d, e, f, g, h
+ *
+ * 8-way demultiplexor:
+ * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
+ *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
+ *                            etc.
+ *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
+ */
+
 class DMux8Way : public ICombinationalCircuit {
 public:
   DMux8Way() { computeOutput(); }
@@ -54,6 +67,8 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0   1..3       4  5  ... 10 11
   // { in, sel[0..2], a, b, ..., g, h }
   uint16_t m_pins;
 

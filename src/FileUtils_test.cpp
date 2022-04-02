@@ -5,6 +5,7 @@
 #include "Test.h"
 
 void test_readHackFile(TestContext& cx) {
+  // This is what the ROM from Max.hack should look like once it is loaded.
   std::vector<uint16_t> maxRom = {
     0x0000, 0xfc10, 0x0001, 0xf4d0,
     0x000a, 0xe301, 0x0001, 0xfc10,

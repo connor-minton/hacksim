@@ -1,3 +1,9 @@
+/**
+ * dasm
+ *
+ * Disassembles a Hack ROM. Dumps each instruction in assembly language to stdout.
+ */
+
 #include <cstdlib>
 #include <fstream>
 #include <iostream>

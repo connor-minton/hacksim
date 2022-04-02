@@ -7,6 +7,15 @@
 #include "Not.h"
 #include "Nand.h"
 
+/**
+ * Xor
+ *
+ * IN  a, b
+ * OUT out
+ *
+ * Exclusive-or gate:
+ * out = not (a == b)
+ */
 class Xor : public ICombinationalCircuit {
 public:
   // INPUT
@@ -39,9 +48,12 @@ public:
   }
 
 private:
+  // pins layout
+  //  0  1  2
   // {a, b, out}
   uint8_t pins = 0;
 
+  // internal components
   Not m_notA;
   Not m_notB;
   Nand m_nand1;

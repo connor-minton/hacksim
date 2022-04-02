@@ -6,6 +6,19 @@
 #include "ICombinationalCircuit.h"
 #include "DMux.h"
 
+/**
+ * DMux4Way
+ *
+ * IN  in, sel[2]
+ * OUT a, b, c, d
+ *
+ * 4-way demultiplexor:
+ * {a, b, c, d} = {in, 0, 0, 0} if sel == 00
+ *                {0, in, 0, 0} if sel == 01
+ *                {0, 0, in, 0} if sel == 10
+ *                {0, 0, 0, in} if sel == 11
+ */
+
 class DMux4Way : public ICombinationalCircuit {
 public:
   // INPUT in, sel[2]
@@ -45,9 +58,12 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0   1..2       3  4  5  6
   // { in, sel[0..1], a, b, c, d }
   uint8_t m_pins = 0;
 
+  // internal components
   DMux m_dm1;
   DMux m_dm2;
   DMux m_dm3;

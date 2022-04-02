@@ -8,6 +8,17 @@
 #include "Mux8Way16.h"
 #include "RAM64.h"
 
+/**
+ * RAM512
+ *
+ * IN  in[16], load, address[9]
+ * OUT out[16]
+ *
+ * Memory of 512 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then
+ * the in value is loaded into the memory location specified by address
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
 class RAM512 : public ISequentialCircuit {
 public:
   // INPUT in[16], load, address[9]
@@ -103,11 +114,14 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0     1..9
   // { load, address[0..8] }
   uint16_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
+  // internal components
   DMux8Way m_dmux;
   Mux8Way16 m_mux;
   RAM64 m_rams[8];

@@ -6,6 +6,21 @@
 #include "Mux4Way16.h"
 #include "Mux16.h"
 
+/**
+ * Mux8Way16
+ *
+ * IN  a[16], b[16], c[16], d[16],
+ *     e[16], f[16], g[16], h[16],
+ *     sel
+ *
+ * OUT out[16]
+ *
+ * 8-way 16-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
 class Mux8Way16 : public ICombinationalCircuit {
 public:
   // INPUT a[16], b[16], c[16], d[16],
@@ -61,6 +76,10 @@ public:
   }
 
 private:
+  // pins
+
+  // m_pins layout
+  //   0..2
   // { sel[0..2] }
   uint8_t m_pins = 0;
   uint16_t m_a = 0;
@@ -73,6 +92,7 @@ private:
   uint16_t m_h = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Mux4Way16 m_abcd;
   Mux4Way16 m_efgh;
   Mux16 m_muxOut;

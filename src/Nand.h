@@ -5,6 +5,14 @@
 #include "ICombinationalCircuit.h"
 #include "Bits.h"
 
+/**
+ * Nand
+ *
+ * IN  a, b
+ * OUT out
+ *
+ * Nand gate: out = a Nand b.
+ */
 class Nand : public ICombinationalCircuit {
 public:
   // INPUT
@@ -24,6 +32,8 @@ public:
   }
 
 private:
+  // pins layout
+  //   0  1  2
   // { a, b, out }
   uint8_t pins = 0;
 

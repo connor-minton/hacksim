@@ -7,6 +7,16 @@
 #include "Not.h"
 #include "Nand.h"
 
+/**
+ * Or
+ *
+ * IN  a, b
+ * OUT out
+ *
+ * Or gate:
+ * out = 1 if (a == 1 or b == 1)
+ *       0 otherwise
+ */
 class Or : public ICombinationalCircuit {
 public:
   // INPUT
@@ -33,9 +43,12 @@ public:
   }
 
 private:
+  // pins layout
+  //  0  1  2
   // {a, b, out}
   uint8_t pins = 0;
 
+  // internal components
   Not m_notA;
   Not m_notB;
   Nand m_nand;

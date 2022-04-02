@@ -15,6 +15,12 @@
 #include "Exceptions.h"
 #include "KeyboardManager.h"
 
+/**
+ * MainWindow
+ *
+ * The main window, which displays the Hack computer screen. The constructor
+ * initializes COM and the destructor uninitializes COM.
+ */
 class MainWindow : public BaseWindow<MainWindow> {
 public:
   MainWindow(BitmapManager & bm, KeyboardManager & km);
@@ -24,7 +30,7 @@ public:
     delete[] m_screenMem;
   }
 
-  PCWSTR ClassName() const 
+  PCWSTR ClassName() const
     { return L"Circle Window Class"; }
 
   ID2D1Bitmap* GetScreenBitmap() const
@@ -34,38 +40,58 @@ public:
 
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+  /**
+   * Invokes the IFileOpenDialog to allow the user to select a *.hack file.
+   */
   std::wstring OpenROMDialog();
 
 private:
   ID2D1Factory *m_factory;
   ID2D1HwndRenderTarget *m_renderTarget;
-  ID2D1SolidColorBrush *m_brush;
-  ID2D1Bitmap *m_screenBitmap;
+  ID2D1SolidColorBrush *m_brush; // for the background
+  ID2D1Bitmap *m_screenBitmap; // representing the Hack computer screen
 
   BitmapManager & m_bm;
   KeyboardManager & m_km;
 
-  uint32_t *m_screenMem = nullptr;
+  uint32_t *m_screenMem = nullptr; // bitmap buffer managed by BitmapManager
 
   bool m_drawnResults = false;
 
   HRESULT CreateGraphicsResources();
   void DiscardGraphicsResources();
+
+  /**
+   * WM_PAINT
+   */
   void OnPaint();
+
+  /**
+   * WM_CREATE
+   */
   void OnCreate();
+
+  /**
+   * WM_RESIZE
+   */
   void Resize();
 
+  /**
+   * Fills bitmap buffer with white pixels.
+   */
   void InitializeScreen();
+
+  // unneeded functions
   void FillScreen();
   void UpdateScreen();
 };
 
-MainWindow::MainWindow(BitmapManager & bm, KeyboardManager & km) 
+MainWindow::MainWindow(BitmapManager & bm, KeyboardManager & km)
   : m_factory(nullptr),
     m_renderTarget(nullptr),
     m_brush(nullptr),
-    m_screenBitmap(nullptr), 
-    m_bm(bm), 
+    m_screenBitmap(nullptr),
+    m_bm(bm),
     m_km(km)
 {
   HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -78,7 +104,7 @@ MainWindow::MainWindow(BitmapManager & bm, KeyboardManager & km)
   m_bm.SetDestMem(m_screenMem);
 }
 
-BOOL MainWindow::Create(PCWSTR lpWindowName, DWORD dwStyle) { 
+BOOL MainWindow::Create(PCWSTR lpWindowName, DWORD dwStyle) {
   RECT windowRect;
   windowRect.top = 100;
   windowRect.left = 100;
@@ -133,7 +159,7 @@ void MainWindow::OnCreate() {
   int width = 512 + wWidth - cWidth;
   int height = 256 + wHeight - cHeight;
 
-  SetWindowPos(m_hwnd, 
+  SetWindowPos(m_hwnd,
                NULL,
                wr.left,
                wr.top,

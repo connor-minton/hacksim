@@ -7,6 +7,24 @@
 
 namespace shallow {
 
+/**
+ * shallow::ROM32K
+ *
+ * IN  address[15]
+ * OUT instruction[16]
+ *
+ * Read-Only memory (ROM) of 32K registers, each 16-bit wide.
+ * The chip is designed to facilitate data read, as follows:
+ *     instruction(t) = ROM32K[address(t)](t)
+ * In words: the chip always outputs the value stored at the
+ * memory location specified by address.
+ *
+ * Shallow, because it would be more or less implemented like the RAM.
+ *
+ * The tick() and tock() functions do nothing. The user of ROM32K can
+ * access an instruction immediately after setting the address with
+ * set_address(). Alternatively, the user may call instructionAt(addr).
+ */
 class ROM32K : public ISequentialCircuit {
 public:
   // IN address[15]
@@ -27,8 +45,14 @@ public:
     return 0;
   }
 
+  /**
+   * Gets a copy of the data stored in ROM.
+   */
   inline std::vector<uint16_t> get_rom() const { return m_instructions; }
 
+  /**
+   * Sets the data in the ROM unit to a copy of `instructions`.
+   */
   inline void set_rom(std::vector<uint16_t> instructions)
     { m_instructions = instructions; }
 

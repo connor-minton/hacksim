@@ -18,7 +18,7 @@ uint16_t KeyboardManager::GetScanCode() {
   size_t whichKey = (size_t)LogicalKey::UNKNOWN;
   bool isShiftDown = false;
 
-  {
+  { // critical section
     std::lock_guard scopeLock(m_mtx);
     if (!m_dirty) return m_lastScanCode;
 
@@ -26,6 +26,8 @@ uint16_t KeyboardManager::GetScanCode() {
 
     isShiftDown = m_logicalKeyState[(size_t)LogicalKey::SHIFT];
 
+    // this loop sets whichKey to be the first (in order of increasing LogicalKey enum)
+    // non-shift key currently pressed.
     for (size_t i = 1; i <= m_logicalKeyState.size(); i++) {
       if (i == (size_t)LogicalKey::SHIFT)
         continue;
@@ -35,7 +37,7 @@ uint16_t KeyboardManager::GetScanCode() {
         break;
       }
     }
-  }
+  } // end critical section
 
   m_lastScanCode = (uint16_t)LogicalKeyToHackKey((LogicalKey)whichKey, isShiftDown);
   return m_lastScanCode;
@@ -43,13 +45,13 @@ uint16_t KeyboardManager::GetScanCode() {
 
 KeyboardManager::LogicalKey
 KeyboardManager::WinVKToLogicalKey(WPARAM vkCode) {
-  if (vkCode >= 'A' && vkCode <= 'Z') {
+  if (vkCode >= 'A' && vkCode <= 'Z') { // range A to Z
     return (LogicalKey)((unsigned)LogicalKey::A + (vkCode - 'A'));
   }
-  if (vkCode >= '0' && vkCode <= '9') {
+  if (vkCode >= '0' && vkCode <= '9') { // range 0 to 9
     return (LogicalKey)((unsigned)LogicalKey::D0 + (vkCode - '0'));
   }
-  if (vkCode >= VK_F1 && vkCode <= VK_F12) {
+  if (vkCode >= VK_F1 && vkCode <= VK_F12) { // range F1 to F12
     return (LogicalKey)((unsigned)LogicalKey::F1 + (vkCode - VK_F1));
   }
 
@@ -112,7 +114,7 @@ KeyboardManager::WinVKToLogicalKey(WPARAM vkCode) {
   }
 }
 
-KeyboardManager::HackKey 
+KeyboardManager::HackKey
 KeyboardManager::LogicalKeyToHackKey(LogicalKey key, bool isShiftDown) {
   constexpr size_t idxA = (size_t)LogicalKey::A;
   constexpr size_t idxZ = (size_t)LogicalKey::Z;
@@ -123,6 +125,7 @@ KeyboardManager::LogicalKeyToHackKey(LogicalKey key, bool isShiftDown) {
 
   uint16_t whichKey = (uint16_t)key;
 
+  // a-z or A-Z
   if (whichKey >= idxA && whichKey <= idxZ) {
     if (isShiftDown)
       return (HackKey)((uint16_t)HackKey::A + (whichKey - idxA));
@@ -130,6 +133,7 @@ KeyboardManager::LogicalKeyToHackKey(LogicalKey key, bool isShiftDown) {
       return (HackKey)((uint16_t)HackKey::a + (whichKey - idxA));
   }
 
+  // 0-9 or the corresponding top row digit symbols
   if (whichKey >= idx0 && whichKey <= idx9) {
     if (isShiftDown) {
       switch ((LogicalKey)whichKey) {
@@ -151,11 +155,12 @@ KeyboardManager::LogicalKeyToHackKey(LogicalKey key, bool isShiftDown) {
     }
   }
 
+  // F1-F12
   if (whichKey >= idxF1 && whichKey <= idxF12) {
     return (HackKey)((uint16_t)HackKey::F1 + (whichKey - idxF1));
   }
 
-  // Keys other than a-z, A-Z, 0-9, and !@#$%^&*()
+  // Keys other than a-z, A-Z, 0-9, F1-F12, and !@#$%^&*()
 
   switch ((LogicalKey)whichKey) {
     case (LogicalKey::BACKTICK):

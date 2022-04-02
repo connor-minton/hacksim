@@ -8,6 +8,18 @@
 #include "Mux16.h"
 #include "Register.h"
 
+/**
+ * PC
+ *
+ * IN  in[16], load, inc, reset
+ * OUT out[16]
+ *
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t] == 1) out[t+1] = 0
+ * else if (load[t] == 1)  out[t+1] = in[t]
+ * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                    out[t+1] = out[t]
+ */
 class PC : public ISequentialCircuit {
 public:
   // INPUT in[16], load, inc, reset
@@ -55,11 +67,14 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0     1    2
   // { load, inc, reset }
   uint8_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Inc16 m_inc;
   Mux16 m_incMux;
   Mux16 m_loadMux;

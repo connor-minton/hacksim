@@ -8,6 +8,15 @@
 #include "And.h"
 #include "Or.h"
 
+/**
+ * FullAdder
+ *
+ * IN  a, b, c
+ * OUT sum, carry
+ *
+ * Computes the sum of three bits.
+ */
+
 class FullAdder : public ICombinationalCircuit {
 public:
   // INPUT a, b, c
@@ -51,9 +60,12 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0  1  2  3    4
   // { a, b, c, sum, carry }
   uint8_t m_pins = 0;
 
+  // internal components
   Xor m_axb;
   Xor m_xSum;
 

@@ -7,6 +7,15 @@
 #include "Xor.h"
 #include "And.h"
 
+/**
+ * HalfAdder
+ *
+ * IN  a, b
+ * OUT sum, carry
+ *
+ * Computes the sum of two bits.
+ */
+
 class HalfAdder : public ICombinationalCircuit {
 public:
   // INPUT a, b
@@ -35,6 +44,8 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0  1  2    3
   // { a, b, sum, carry }
   uint8_t m_pins = 0;
 

@@ -9,10 +9,55 @@
 #include "DMux.h"
 #include "ShallowChips.h"
 
+/**
+ * IMemory
+ *
+ * IN  in[16], load, address[15]
+ * OUT out[16]
+ *
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O.
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory
+ * location specified by address. If load==1, the in value is loaded
+ * into the memory location specified by address. This value becomes
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+2 words of the Memory chip are used.
+ * Access to address>0x6001 is invalid. Access to any address in
+ * the range 0x4000-0x5FFF results in accessing the screen memory
+ * map. Access to address 0x6000 results in accessing the keyboard
+ * memory map. Access to the address 0x6001 results in accessing the timer
+ * memory map.
+ *
+ * The HackSim project extends the Hack memory map by adding a timer
+ * at address 0x6001 (IMemory::CLK). This register starts at zero.
+ * If a Hack instruction modifies this register to a nonzero value,
+ * then the simulation environment interprets this value as the number
+ * of milliseconds until the register should read zero. Each clock cycle,
+ * the simulation environment keeps the value of the register up to date
+ * until the register reads zero. A Hack program can use this register to
+ * implement a wait() system call.
+ */
+
 class IMemory : public ISequentialCircuit {
 public:
+  /**
+   * The base address of the screen memory map, which occupies the range
+   * 0x4000 - 0x5fff.
+   */
   static const uint16_t SCREEN = 0x4000;
+
+  /**
+   * The base address of the keyboard memory map.
+   */
   static const uint16_t KBD = 0x6000;
+
+  /**
+   * The base address of the timer memory map.
+   */
   static const uint16_t CLK = 0x6001;
 
   // IN in[16], load, address[15]
@@ -27,12 +72,24 @@ public:
   // OUT out[16]
   virtual uint16_t out() const = 0;
 
+  /**
+   * Bypass the clocking system to observe the value of memory at `offset`.
+   */
   virtual uint16_t peek(uint16_t offset) const = 0;
+
+  /**
+   * Bypass the clocking system to set the value of memory at `offset` to `val`.
+   */
   virtual void poke(uint16_t offset, uint16_t val) = 0;
 
   virtual ~IMemory() { }
 };
 
+/**
+ * Memory
+ *
+ * Deeply simulated memory. See IMemory for interface documentation.
+ */
 class Memory : public IMemory {
 public:
   // IN in[16], load, address[15]
@@ -49,6 +106,18 @@ public:
   // OUT out[16]
   inline uint16_t out() const { return m_out; }
 
+  /**
+   * Create a new Memory that writes to screen, kbd, and clk.
+   *
+   * screen
+   *   An 8192-element array of uint16_t.
+   *
+   * kbd
+   *   A pointer to a single uint16_t. Holds the scan code of the keyboard.
+   *
+   * clk
+   *   A pointer to a single uint16_t. Holds the value of the timer.
+   */
   Memory(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
     : m_screen(screen), m_kbd(kbd), m_clk(clk) { }
 
@@ -95,7 +164,7 @@ public:
     m_screen.set_address(address() & 0x1fff);
     m_screen.tick();
 
-    // same with hardware clock
+    // same with hardware timer
     tickClock();
 
     m_muxKbdClkOut.set_sel(getBit<0>(address()));
@@ -124,7 +193,7 @@ public:
     // screen is a shallow chip, doesn't need optimization
     m_screen.tock();
 
-    // same for hardware clock
+    // same for hardware timer
     tockClock();
 
     m_muxKbdClkOut.set_sel(getBit<0>(address()));
@@ -146,10 +215,16 @@ public:
   }
 
 private:
+  // pins
+
+  // layout of m_pins
+  //   0     1..15
   // { load, address[0..14] }
   uint16_t m_pins = 0;
   uint16_t m_in = 0;
   uint16_t m_out = 0;
+
+  // internal components
 
   uint16_t* m_kbd;
 
@@ -180,8 +255,25 @@ private:
 
 namespace shallow {
 
+/**
+ * shallow::Memory
+ *
+ * Efficient memory unit. Not deeply simulated. See IMemory for interface documentation.
+ */
 class Memory : public IMemory {
 public:
+  /**
+   * Create a new shallow::Memory that writes to screen, kbd, and clk.
+   *
+   * screen
+   *   An 8192-element array of uint16_t.
+   *
+   * kbd
+   *   A pointer to a single uint16_t. Holds the scan code of the keyboard.
+   *
+   * clk
+   *   A pointer to a single uint16_t. Holds the value of the timer.
+   */
   Memory(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
     : m_screen(screen), m_kbd(kbd), m_clk(clk), m_ram(16384) { }
 
@@ -207,7 +299,7 @@ public:
     if (offset < SCREEN) m_ram[offset] = val;
     if (offset < KBD)    m_screen.poke(offset - SCREEN, val);
     if (offset == KBD)   *m_kbd = val;
-    *m_clk = val;
+    else                 *m_clk = val;
   }
 
   void tick() {
@@ -258,11 +350,13 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_in = 0;
   uint16_t m_out = 0;
   uint16_t m_address = 0;
   bool m_load = false;
 
+  // internal components
   std::vector<uint16_t> m_ram;
   shallow::Screen m_screen;
   uint16_t* m_kbd;

@@ -5,6 +5,16 @@
 
 #include "ISequentialCircuit.h"
 
+/**
+ * DFF
+ *
+ * IN  in
+ * OUT out
+ *
+ * Data Flip-flop: out(t) = in(t-1)
+ * where t is the current time unit, or clock cycle.
+ */
+
 class DFF : public ISequentialCircuit {
 public:
   // INPUT in

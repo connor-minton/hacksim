@@ -7,6 +7,17 @@
 #include "Not.h"
 #include "And.h"
 
+/**
+ * DMux
+ *
+ * IN  in, sel
+ * OUT a, b
+ *
+ * Demultiplexor:
+ * {a, b} = {in, 0} if sel == 0
+ *          {0, in} if sel == 1
+ */
+
 class DMux : public ICombinationalCircuit {
 public:
   // INPUT
@@ -36,9 +47,12 @@ public:
   }
 
 private:
+  // pins layout
+  //  0   1    2  3
   // {in, sel, a, b}
   uint8_t pins = 0;
 
+  // internal components
   Not m_notSel;
   And m_andA;
   And m_andB;

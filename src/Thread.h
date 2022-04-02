@@ -1,3 +1,9 @@
+/**
+ * Thread.h
+ *
+ * Simple threading library for Windows.
+ */
+
 #pragma once
 
 #include <stdexcept>
@@ -5,18 +11,38 @@
 
 #include <Windows.h>
 
+/**
+ * Thread
+ *
+ * Represents a thread along with its entry point function.
+ */
 template <typename T>
 class Thread {
 public:
+  /**
+   * Calls the Windows CreateThread() function with reasonable defaults to
+   * run the thread.
+   */
   void Create();
+
+  /**
+   * Calls the Windows TerminateThread() function. Is NOT called by the destructor.
+   */
   void Terminate();
 
   DWORD GetTID() const { return m_tid; }
   HANDLE GetHandle() const { return m_handle; }
   DWORD GetResult() const { return m_result; }
 
+  /**
+   * Convenience for implicit casting a thread to a HANDLE when passing a thread
+   * to the Windows API.
+   */
   operator HANDLE() const { return m_handle; }
 
+  /**
+   * Asks Windows to release the thread's system resources.
+   */
   ~Thread();
 
 protected:

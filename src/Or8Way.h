@@ -6,6 +6,15 @@
 #include "ICombinationalCircuit.h"
 #include "Or.h"
 
+/**
+ * Or8Way
+ *
+ * IN  in[8]
+ * OUT out
+ *
+ * 8-way Or:
+ * out = (in[0] or in[1] or ... or in[7])
+ */
 class Or8Way : public ICombinationalCircuit {
 public:
   // INPUT in[8]
@@ -51,10 +60,13 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0
   // { out }
   uint8_t m_pins = 0;
   uint8_t m_in = 0;
 
+  // internal components
   Or m_or01;
   Or m_or23;
   Or m_or45;

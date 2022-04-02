@@ -1,3 +1,9 @@
+/**
+ * Test.h
+ *
+ * A simple unit testing framework.
+ */
+
 #pragma once
 
 #include <functional>
@@ -6,23 +12,49 @@
 #include <iostream>
 #include <iomanip>
 
+/**
+ * TestContext
+ *
+ * Create a TestContext to measure the number of tests that succeed and fail.
+ *
+ * Example:
+ *     TestContext cx;
+ *     cx.test("This test should pass", [](_cx) { _cx.expectEqual(1, 1); });
+ *     cx.test("This test should fail", [](_cx) { _cx.expectEqual(0, 1); });
+ *     cx.printResults();
+ */
 class TestContext {
 public:
+  /**
+   * If actual == theoretical, does nothing. Otherwise, increments the tests failed count.
+   */
   template <typename T, typename U>
   bool expectEqual(const T& actual, const U& theoretical);
 
+  /**
+   * Runs the func and prints the results, including the time elapsed.
+   */
   void test(std::string name, std::function<void(TestContext&)> func);
 
+  /**
+   * Prints the number of tests run and number of tests that failed.
+   */
   void printResults() const;
 
 private:
+  // incremented for every expectXXX() call
   int testNum = 1;
+
   int successCt = 0;
   int failedCt = 0;
 
+  // Keeps track of the number of failed expectXXX() calls in the current test() call.
   int currentTestFailed = 0;
 };
 
+/**
+ * Output a vector.
+ */
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T> v);
 

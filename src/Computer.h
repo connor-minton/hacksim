@@ -11,6 +11,20 @@
 #include "CPU.h"
 #include "ShallowChips.h"
 
+/**
+ * IComputer
+ *
+ * IN  reset
+ *
+ * The HACK computer, including CPU, ROM and RAM.
+ *
+ * The ROM is represented as a vector of uint16_t. To set the ROM,
+ * call the set_rom() function.
+ *
+ * When reset is 0, the program stored in the computer's ROM executes.
+ * When reset is 1, the execution of the program restarts.
+ */
+
 class IComputer : public ISequentialCircuit {
 public:
   // IN reset
@@ -21,17 +35,36 @@ public:
 
   virtual IMemory& mem() = 0;
 
+  // These functions return the current and next instruction to be executed
+  // as a uint16_t. Meant for debugging purposes.
   virtual uint16_t curInstruction() const = 0;
   virtual uint16_t nextInstruction() const = 0;
 
+  // These functions return the current and next instruction to be executed
+  // in the instruction's mnemonic assembly form. Meant for debugging purposes.
   virtual std::string curInstrDbg() const = 0;
   virtual std::string nextInstrDbg() const = 0;
-  
+
+  // These functions return the current and next value of the PC. Meant for
+  // debugging purposes.
   virtual uint16_t curPC() const = 0;
   virtual uint16_t nextPC() const = 0;
 
   virtual ~IComputer() { }
 };
+
+/**
+ * BaseComputer
+ *
+ * A concrete computer that takes pointers to an IMemory and an ICPU.
+ * To make a deeply simulated computer, use a ::Memory and a ::CPU.
+ * To make an optimized Hack emulator, use a shallow::Memory and a
+ * shallow::CPU.
+ *
+ * The BaseComputer destructor does not clean up the memory or CPU. It
+ * is the responsibility of whoever creates the BaseComputer to manage the
+ * IMemory and ICPU resources.
+ */
 
 class BaseComputer : public IComputer {
 public:
@@ -39,6 +72,8 @@ public:
   inline bool reset() const { return m_reset; }
   inline void set_reset(bool val) { m_reset = val; }
 
+  // It is the responsibility of the caller to delete the IMemory and ICPU
+  // when done.
   BaseComputer(IMemory* mem, ICPU* cpu_) : m_mem(mem), m_cpu(cpu_) { }
 
   virtual ~BaseComputer() { }
@@ -46,6 +81,7 @@ public:
   inline void set_rom(const std::vector<uint16_t>& instructions)
     { m_rom.set_rom(instructions); }
 
+  // Returns the IMemory the computer is using.
   inline IMemory& mem() { return *m_mem; }
 
   uint16_t curInstruction() const;
@@ -91,8 +127,10 @@ public:
   }
 
 protected:
+  // pins
   bool m_reset = false;
 
+  // internal components
   shallow::ROM32K m_rom;
   IMemory*        m_mem = nullptr;
   ICPU*           m_cpu = nullptr;
@@ -111,8 +149,27 @@ std::string BaseComputer::nextInstrDbg() const
 uint16_t BaseComputer::curPC() const { return m_rom.address(); }
 uint16_t BaseComputer::nextPC() const { return m_cpu->pc(); }
 
+/**
+ * Computer
+ *
+ * A deeply simulated Hack computer.
+ */
+
 class Computer : public BaseComputer {
 public:
+  /**
+   * screen
+   *   An 8192-element array of uint16_t. Each bit represents the state of one pixel.
+   *
+   * kbd
+   *   A pointer to a single uint16_t. Holds the "scan code" of the currently pressed key.
+   *
+   * clk
+   *   A pointer to a single uint16_t. A Hack program can set this register to a nonzero
+   *   value, at which point the simulator will decrease this value over time until it
+   *   reaches zero again. The value in the register represents the number of milliseconds
+   *   remaining until it will reach zero.
+   */
   Computer(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
     : BaseComputer(new Memory(screen, kbd, clk), new CPU())
   { }
@@ -125,8 +182,27 @@ public:
 
 namespace shallow {
 
+/**
+ * shallow::Computer
+ *
+ * A super efficient Hack computer. Not deeply simulated.
+ */
+
 class Computer : public BaseComputer {
 public:
+  /**
+   * screen
+   *   An 8192-element array of uint16_t. Each bit represents the state of one pixel.
+   *
+   * kbd
+   *   A pointer to a single uint16_t. Holds the "scan code" of the currently pressed key.
+   *
+   * clk
+   *   A pointer to a single uint16_t. A Hack program can set this register to a nonzero
+   *   value, at which point the simulator will decrease this value over time until it
+   *   reaches zero again. The value in the register represents the number of milliseconds
+   *   remaining until it will reach zero.
+   */
   Computer(uint16_t* screen, uint16_t* kbd, uint16_t* clk)
     : BaseComputer(new shallow::Memory(screen, kbd, clk), new shallow::CPU())
   { }

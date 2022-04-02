@@ -13,15 +13,48 @@
 #include "Or8Way.h"
 #include "Or.h"
 
+/**
+ * ALU
+ *
+ * IN
+ *     x[16], y[16],
+ *     zx, // zero the x input
+ *     nx, // negate the x input
+ *     zy, // zero the y input
+ *     ny, // negate the y input
+ *     f,  // calculate x + y if f=1 or x & y if f=0
+ *     no  // negate the output
+ *
+ * OUT
+ *     out[16],
+ *     zr, // true iff out = 0
+ *     ng  // true iff out < 0
+ *
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs,
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x & y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out < 0) set ng = 1
+
 class ALU : public ICombinationalCircuit {
 public:
-  // INPUT x[16], y[16],
-  //       zx, // zero the x input
-  //       nx, // negate the x input
-  //       zy, // zero the y input
-  //       ny, // negate the y input
-  //       f,  // calculate x + y if f=1 or x & y if f=0
-  //       no  // negate the output
+  // INPUT
   inline uint16_t x() const { return m_x; }
   inline uint16_t y() const { return m_y; }
   inline bool zx() const { return getBit<0>(m_pins); }
@@ -40,9 +73,7 @@ public:
   inline void set_f(bool val) { setBit<4>(m_pins, val); }
   inline void set_no(bool val) { setBit<5>(m_pins, val); }
 
-  // OUTPUT out[16],
-  //        zr, // true iff out = 0
-  //        ng  // true iff out < 0
+  // OUTPUT
   inline uint16_t out() const { return m_out; }
   inline bool zr() const { return getBit<6>(m_pins); }
   inline bool ng() const { return getBit<7>(m_pins); }
@@ -126,12 +157,17 @@ public:
   }
 
 private:
+  // m_pins layout
+  //   0   1   2   3   4  5   6   7
   // { zx, nx, zy, ny, f, no, zr, ng }
   uint8_t m_pins = 0;
+
+  // other pins
   uint16_t m_x = 0;
   uint16_t m_y = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Mux16  m_xx;
   Mux16  m_yy;
 
@@ -161,8 +197,14 @@ private:
 
 namespace shallow {
 
+/**
+ * shallow::ALU
+ *
+ * An optimized ALU. See ::ALU for interface documentation.
+ */
 class ALU : ICombinationalCircuit {
 public:
+  // INPUT
   inline uint16_t x() { return m_x; }
   inline uint16_t y() { return m_y; }
   inline uint16_t instruction() { return m_instr; }
@@ -171,6 +213,7 @@ public:
   inline void set_y(uint16_t val) { m_y = val; }
   inline void set_instruction(uint16_t val) { m_instr = val; }
 
+  // OUTPUT
   inline uint16_t out() { return m_out; }
   inline bool zr() { return m_zr; }
   inline bool ng() { return m_ng; }
@@ -234,6 +277,10 @@ public:
       m_out = m_x | m_y;
       break;
     default:
+      // if bit 15 in the instruction is set and we have reached this point,
+      // the instruction is requesting an operation that is not defined. The
+      // deeply simulated ALU would produce deterministic but undefined behavior.
+      // This ALU throws an exception.
       if (getBit<15>(m_instr))
         throw Error("Unknown C-instruction computation code: " + std::to_string(compCode));
     }

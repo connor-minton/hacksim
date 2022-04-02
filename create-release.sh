@@ -1,3 +1,7 @@
+# Run this script in the root of the repository to create a .zip file for
+# distributing the binaries and selected sample programs.
+# Modify the VERSION variable as necessary.
+
 set -e
 
 VERSION=1.0.0

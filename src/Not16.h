@@ -5,6 +5,15 @@
 #include "ICombinationalCircuit.h"
 #include "Nand16.h"
 
+/**
+ * Not16
+ *
+ * IN  in
+ * OUT out
+ *
+ * 16-bit Not:
+ * for i=0..15: out[i] = not in[i]
+ */
 class Not16 : public ICombinationalCircuit {
 public:
   // INPUT
@@ -25,9 +34,11 @@ public:
   }
 
 private:
+  // pins
   uint16_t m_in = 0;
   uint16_t m_out = 0;
 
+  // internal components
   Nand16 m_nand;
 };
 

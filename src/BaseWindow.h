@@ -11,6 +11,10 @@
 template <class TDerived>
 class BaseWindow {
 public:
+  /**
+   * The callback function that is passed to RegisterClass(). Eventually calls
+   * TDerived::HandleMessage(uMsg, wParam, lParam).
+   */
   static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     TDerived* pThis = nullptr;
 
@@ -37,8 +41,13 @@ public:
   }
 
   BaseWindow() : m_hwnd(NULL) { }
+
   virtual ~BaseWindow() { }
 
+  /**
+   * Calls CreateWindowEx with reasonable defaults or the specified parameter values.
+   * m_hwnd is nullptr until this function is called and sets m_hwnd.
+   */
   BOOL Create(
     PCWSTR lpWindowName,
     DWORD dwStyle,
@@ -65,21 +74,44 @@ public:
     return (m_hwnd ? TRUE : FALSE);
   }
 
+  /**
+   * Gets the window's hwnd.
+   */
   HWND Window() const { return m_hwnd; }
 
+  /**
+   * Converts pixels to DIPs according to the window's DPI scale.
+   */
   template <typename T>
   float PixelsToDips(T pixels) {
     return static_cast<float>(pixels) / m_dpiScale;
   }
 
+  /**
+   * Shows an error message box containing the desired string.
+   */
   void ShowError(std::string err) {
     MessageBoxA(m_hwnd, err.c_str(), "Error", MB_OK | MB_ICONERROR);
   }
 
 protected:
+  /**
+   * Define this function to give your derived window a custom class name.
+   */
   virtual PCWSTR ClassName() const = 0;
+
+  /**
+   * This function is called for every message received by the window.
+   */
   virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
+  /**
+   * The handle of the window.
+   */
   HWND m_hwnd = NULL;
+
+  /**
+   * The DPI scale for the window, which is set after creating the window.
+   */
   float m_dpiScale = 1.0f;
 };
