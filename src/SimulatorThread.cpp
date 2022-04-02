@@ -7,13 +7,11 @@
 #include "BitmapManager.h"
 #include "KeyboardManager.h"
 
-DWORD WINAPI SimulatorThread::Run(void* data) {
-  SimulatorThread* td = (SimulatorThread*)data;
-
+DWORD SimulatorThread::Run() {
   // Initialize screen memory
-  td->m_screenMem = new uint16_t[shallow::Screen::SCREEN_SIZE];
+  m_screenMem = new uint16_t[shallow::Screen::SCREEN_SIZE];
   for (int i = 0; i < shallow::Screen::SCREEN_SIZE; i++) {
-    td->m_screenMem[i] = 0;
+    m_screenMem[i] = 0;
   }
 
   std::unique_ptr<IMemory> memory;
@@ -21,11 +19,11 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
 
   if (AppConfig::shallowMemory()) {
     // optimized simulation
-    memory = std::make_unique<shallow::Memory>(td->m_screenMem, &td->m_kbd, &td->m_clk);
+    memory = std::make_unique<shallow::Memory>(m_screenMem, &m_kbd, &m_clk);
   }
   else {
     // deep simulation
-    memory = std::make_unique<Memory>(td->m_screenMem, &td->m_kbd, &td->m_clk);
+    memory = std::make_unique<Memory>(m_screenMem, &m_kbd, &m_clk);
   }
 
   if (AppConfig::shallowCPU()) {
@@ -38,22 +36,22 @@ DWORD WINAPI SimulatorThread::Run(void* data) {
   }
 
   // initialize computer
-  td->m_computer = new BaseComputer(memory.get(), cpu_.get());
-  td->m_computer->set_rom(td->m_rom);
+  m_computer = new BaseComputer(memory.get(), cpu_.get());
+  m_computer->set_rom(m_rom);
 
   // initialize BitmapManager
-  td->m_bm.SetScreenMem(td->m_screenMem);
+  m_bm.SetScreenMem(m_screenMem);
 
   // MAIN SIMULATION LOOP
   while (true) {
-    td->m_kbd = td->m_km.GetScanCode();
-    td->updateClock();
-    td->m_computer->tick();
-    td->m_computer->tock();
-    td->outputScreen();
+    m_kbd = m_km.GetScanCode();
+    updateClock();
+    m_computer->tick();
+    m_computer->tock();
+    outputScreen();
   }
 
-  td->m_result = 0;
+  m_result = 0;
   return 0;
 }
 

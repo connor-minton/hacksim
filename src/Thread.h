@@ -50,7 +50,8 @@ protected:
   HANDLE m_handle = nullptr;
   DWORD m_result = 0;
 
-  static DWORD WINAPI Run(void* data) { return 0; }
+  virtual DWORD Run() = 0;
+  static DWORD WINAPI EntryPoint(void* data);
 };
 
 template <typename T>
@@ -58,7 +59,7 @@ void Thread<T>::Create() {
   m_handle = CreateThread(
     NULL,
     0,
-    T::Run,
+    T::EntryPoint,
     this,
     0,
     &m_tid
@@ -81,4 +82,10 @@ Thread<T>::~Thread() {
   if (m_handle) {
     CloseHandle(m_handle);
   }
+}
+
+template <typename T>
+DWORD WINAPI Thread<T>::EntryPoint(void* data) {
+  auto thread = (Thread<T>*)data;
+  return thread->Run();
 }

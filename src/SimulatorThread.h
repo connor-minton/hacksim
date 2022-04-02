@@ -42,7 +42,7 @@ public:
     delete[] m_screenMem;
   }
 
-  static DWORD WINAPI Run(void* data);
+  DWORD Run();
 
 private:
   using Clock = std::chrono::steady_clock;
