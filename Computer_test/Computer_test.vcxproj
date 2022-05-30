@@ -65,6 +65,7 @@
     <ClInclude Include="..\src\Xor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Computer.cpp" />
     <ClCompile Include="..\src\Computer_test.cpp" />
     <ClCompile Include="..\src\FileUtils.cpp" />
   </ItemGroup>

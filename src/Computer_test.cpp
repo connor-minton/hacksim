@@ -112,6 +112,32 @@ void test_Computer_TickTock(TestContext& cx) {
   delete computer;
 }
 
+void test_Computer_TickTock2(TestContext& cx) {
+  uint16_t screen[shallow::Screen::SCREEN_SIZE] = { 0 };
+  uint16_t kbd = 0;
+  uint16_t clk = 0;
+
+  Computer* computer = new Computer(screen, &kbd, &clk);
+
+  auto rom = FileUtils::readHackFile("../test_programs/asm/TickTock2.hack");
+
+  computer->set_rom(rom);
+
+  IMemory& mem = computer->mem();
+  mem.poke(50, 0);
+  mem.poke(51, 0);
+
+  for (int i = 0; i < 3; i++) {
+    computer->tick();
+    computer->tock();
+  }
+
+  cx.expectEqual(mem.peek(50), 51);
+  cx.expectEqual(mem.peek(51), 0);
+
+  delete computer;
+}
+
 void test_Computer_Rect(TestContext& cx) {
   uint16_t screen[shallow::Screen::SCREEN_SIZE] = {0};
   uint16_t kbd = 0;
@@ -490,9 +516,10 @@ void test_Computer_FibonacciSeries(TestContext& cx) {
 int main() {
   TestContext cx;
 
-  cx.test("Computer / asm / Max", test_Computer_Max);
-  cx.test("Computer / asm / Add", test_Computer_Add);
-  cx.test("Computer / asm / TickTock", test_Computer_TickTock);
+  //cx.test("Computer / asm / Max", test_Computer_Max);
+  //cx.test("Computer / asm / Add", test_Computer_Add);
+  //cx.test("Computer / asm / TickTock", test_Computer_TickTock);
+  cx.test("Computer / asm / TickTock2", test_Computer_TickTock2);
   cx.test("Computer / asm / Rect", test_Computer_Rect);
 
   cx.test("Computer / vm / BasicTest", test_Computer_BasicTest);
